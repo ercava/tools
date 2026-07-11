@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Directory</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:italic,wght@700&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ercava-dark': '#152638',
+                        'ercava-charcoal': '#263B4C',
+                        'ercava-soft': '#F8FAFC',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --mario-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --mario-blue: #152638;
+            --mario-charcoal: #263B4C;
+        }
+
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+
+        .asset-card {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+            transition: all 0.4s var(--mario-squish);
+            border-radius: 2.5rem !important;
+        }
+
+        .asset-card:hover {
+            box-shadow: 0 30px 40px -10px rgb(0 0 0 / 0.15) !important;
+        }
+
+        /* Mario UI Background */
+        .mario-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-color: #f8fafc;
+        }
+
+        .mario-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(38, 59, 76, 0.03) 20px,
+                    rgba(38, 59, 76, 0.03) 40px);
+            background-size: 56.57px 56.57px;
+            animation: panPattern 10s linear infinite;
+        }
+
+        @keyframes panPattern {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 56.57px 0;
+            }
+        }
+
+        .mario-gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(248, 250, 252, 0.8) 100%);
+        }
+
+        .squishy {
+            transition: transform 0.4s var(--mario-squish);
+        }
+
+        .squishy:hover {
+            transform: scale(1.05) rotate(1deg);
+        }
+
+        .squishy:active {
+            transform: scale(0.95);
+        }
+
+        /* Stylized Scrollbar for Directory */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--mario-charcoal);
+            border-radius: 10px;
+            border: 2px solid #f8fafc;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--mario-blue);
+        }
+    </style>
+</head>
+
+<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed">
+    <!-- Mario UI Background -->
+    <div class="mario-bg-container">
+        <div class="mario-pattern"></div>
+        <div class="mario-gradient-overlay"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        <nav class="mb-12">
+            <a href="index.html"
+                class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-ercava-dark transition squishy">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Portal
+            </a>
+        </nav>
+
+        <header class="mb-16">
+            <h1 class="font-mono text-5xl font-bold mb-4">Asset Directory</h1>
+            <p class="text-slate-500 max-w-xl">A complete collection of Ercava iconograpy available for use.</p>
+        </header>
+
+        <div id="assetGrid" class="masonry-grid">
+        </div>
+
+    </div>
+
+
+
+    <script>
+        const assets = [
+            // ERC Folder
+            { name: "Color Pallete", path: "assets/erc/Color Pallete.jpg" },
+            { name: "ERC Icon", path: "assets/erc/ERC.svg" },
+            { name: "ERCAVA Logotype", path: "assets/erc/ERCAVA.svg" },
+            { name: "INTI KOMET Mark", path: "assets/erc/INTI KOMET.svg" },
+            { name: "INTI_KOMET PNG", path: "assets/erc/INTI_KOMET.png" },
+            { name: "Kapal Comet Artwork", path: "assets/erc/Kapal_Comet.png" },
+            { name: "Kucing Comet Artwork", path: "assets/erc/Kucing_Comet.png" },
+            { name: "Logo Base HD", path: "assets/erc/Logo_Base HD.png" },
+            { name: "Logo Base", path: "assets/erc/Logo_Base.png" },
+            { name: "Logo Bolong", path: "assets/erc/Logo_Bolong.png" },
+            { name: "Logo Gradien", path: "assets/erc/Logo_Gradien.png" },
+            { name: "Profil Ercava", path: "assets/erc/Profil_Ercava.png" },
+            { name: "Maskot Birthday", path: "assets/erc/maskot birthday.png" },
+            { name: "Maskot Standard", path: "assets/erc/maskot.jpg" },
+            { name: "Tifo Color Artwork", path: "assets/erc/Tifo Color.png" },
+
+            // IC Folder
+            { name: "CBC Mark", path: "assets/ic/CBC.png" },
+            { name: "CHOIR Mark", path: "assets/ic/CHOIR.png" },
+            { name: "FLP Mark", path: "assets/ic/FLP.jpg" },
+            { name: "HADROH Mark", path: "assets/ic/HADROH.jpg" },
+            { name: "KEMENAG Logo", path: "assets/ic/KEMENAG.png" },
+            { name: "MANICS BASE", path: "assets/ic/MANICS BASE.png" },
+            { name: "MANICS SIMPLE", path: "assets/ic/MANICS SIMPLE.png" },
+            { name: "MANICS-MINI", path: "assets/ic/MANICS-MINI.png" },
+            { name: "MPS CENDEKIA", path: "assets/ic/MPS CENDEKIA.png" },
+            { name: "OS CENDEKIA", path: "assets/ic/OS CENDEKIA.png" },
+            { name: "PACIFIC Mark", path: "assets/ic/PACIFIC.png" },
+            { name: "RDC Mark", path: "assets/ic/RDC.png" },
+            { name: "SLC Mark", path: "assets/ic/SLC.png" },
+
+            // OS Folder
+            { name: "AKLI Logo", path: "assets/os/AKLI.png" },
+            { name: "BPH MPS Logo", path: "assets/os/BPH MPS.png" },
+            { name: "BPH OS Logo", path: "assets/os/BPH OS.png" },
+            { name: "DIVLING Logo", path: "assets/os/DIVLING.png" },
+            { name: "DIVOR Logo", path: "assets/os/DIVOR.png" },
+            { name: "Diorama Artwork", path: "assets/os/Diorama.png" },
+            { name: "HUMAS Logo", path: "assets/os/HUMAS.png" },
+            { name: "IMTAQ Logo", path: "assets/os/IMTAQ.png" },
+            { name: "KEDIS Logo", path: "assets/os/KEDIS.png" },
+            { name: "MEDPUB Logo", path: "assets/os/MEDPUB.png" },
+            { name: "OS Black", path: "assets/os/OS Black.png" },
+            { name: "OS White", path: "assets/os/OS White.png" },
+            { name: "PPBN Logo", path: "assets/os/PPBN.png" },
+            { name: "SASBUD Logo", path: "assets/os/SASBUD.png" },
+            { name: "WIRUS Logo", path: "assets/os/WIRUS.png" },
+
+
+            { name: "Jersey Basket Mockup", path: "assets/mockups/Jersey Basket Mockup.png" },
+            { name: "Jersey Dark Mockup", path: "assets/mockups/Jersey Dark Mockup.png" },
+            { name: "Jersey Light Mockup", path: "assets/mockups/Jersey Light Mockup.png" },
+            { name: "Shooting Shirt Mockup", path: "assets/mockups/Shooting Shirt Mockup.png" },
+            { name: "T Shirt Mockup", path: "assets/mockups/T Shirt Mockup.png" },
+            { name: "Work Jacket Dark Mockup", path: "assets/mockups/Work Jacket Dark Mockup.jpg" },
+            { name: "Work Jacket Light Mockup", path: "assets/mockups/Work Jacket Light Mockup.jpg" },
+
+        ];
+
+        async function forceDownload(url, filename) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename || url.split('/').pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            } catch (error) {
+                console.error('Download failed:', error);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename || url.split('/').pop();
+                link.target = '_blank';
+                link.click();
+            }
+        }
+
+        const grid = document.getElementById('assetGrid');
+
+        assets.forEach(asset => {
+            const isImage = asset.path.match(/\.(jpg|jpeg|png|gif|svg)$/i);
+            const card = document.createElement('div');
+            card.className = "asset-card group bg-white rounded-3xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2";
+
+            let previewHtml = '';
+            if (isImage) {
+                previewHtml = `<div class="p-4 bg-slate-50"><img src="${asset.path}" alt="${asset.name}" class="w-full h-auto rounded-2xl object-contain max-h-96"></div>`;
+            } else {
+                previewHtml = `<div class="aspect-square bg-ercava-dark flex flex-col items-center justify-center p-8 text-white">
+                    <span class="text-4xl mb-4">📄</span>
+                    <span class="text-[10px] font-bold tracking-widest uppercase opacity-60 text-center">${asset.path.split('.').pop()} FILE</span>
+                </div>`;
+            }
+
+            card.innerHTML = `
+                ${previewHtml}
+                <div class="p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-sm mb-1">${asset.name.replace(/_/g, ' ')}</h3>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">${asset.path.split('.').pop()}</p>
+                        </div>
+                    </div>
+                    <button onclick="forceDownload('${asset.path}')" class="w-full py-3 bg-ercava-dark text-white rounded-xl font-bold text-[10px] tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2 squishy">
+                        DOWNLOAD
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+    </script>
+
+    <footer class="relative bg-ercava-dark text-white py-20 px-6 overflow-hidden shadow-2xl border-t border-white/5">
+        <div
+            class="absolute right-0 bottom-0 w-[500px] h-[500px] opacity-[0.05] pointer-events-none translate-x-1/4 translate-y-1/4">
+            <img src="assets/erc/INTI KOMET.svg" class="w-full h-full object-contain filter invert" alt="">
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
+                <div class="lg:col-span-3">
+                    <h2 class="font-mono text-3xl font-bold mb-6 italic tracking-tight">Ercava Iconography Center</h2>
+
+                    <p class="text-sm text-slate-400 max-w-2xl leading-relaxed mb-6">
+                        This center serves as a platform for the public to explore and utilize iconographies related to
+                        Ercava. Whether you are a researcher, alumni, or just a curious one, these assets are freely
+                        available for viewing and reference. <br> <br>
+
+
+                        While the archive is free to access, we uphold the rights of our contributors. All artworks
+                        provided herein remain the exclusive property of their respective authors.
+                    </p>
+                    <p class="text-[10px] font-bold tracking-[0.5em] text-slate-500 uppercase mb-4">ESTRELLA LUXAMERTA
+                        CLAVISANTARA</p>
+                    <p class="text-[11px] font-bold tracking-[0.3em] text-white/20 uppercase">Terbitkan Asa, Lintasi
+                        Dunia!</p>
+                </div>
+
+                <div class="lg:col-span-1 lg:border-l lg:border-white/10 lg:pl-12">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-slate-500">Got questions and
+                        requests? Just hit us up!</h3>
+                    <ul class="space-y-6 text-xs font-bold tracking-widest uppercase">
+                        <li>
+                            <a href="https://instagram.com/@ercava29" target="_ercava29"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Instagram
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://x.com/ercava29" target="_ercava29"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Twitter/X
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:a29manics@gmail.com"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Email Us
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+    </footer>
+
+    <script>
+        // Mouse Star Trail
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.1) return;
+
+            const star = document.createElement('div');
+            star.innerHTML = '✦'; // 4-pointed star
+            star.className = 'absolute pointer-events-none opacity-100 transition-all duration-1000';
+            star.style.left = e.pageX + 'px';
+            star.style.top = e.pageY + 'px';
+            star.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            star.style.color = '#263B4C'; // Blue-hued
+            star.style.zIndex = '9999';
+
+            document.body.appendChild(star);
+
+            setTimeout(() => {
+                const angle = Math.random() * 360;
+                const dist = Math.random() * 100 + 50;
+                star.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${angle * 5}deg) scale(0)`;
+                star.style.opacity = '0';
+            }, 50);
+
+            setTimeout(() => {
+                star.remove();
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>

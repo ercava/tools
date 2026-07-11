@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peringkat | ERCAVIAN PTN/PTLN</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+        .main-content {
+            padding: 3rem;
+            background: var(--bg-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 2rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-gray);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 1.2rem 1rem;
+            background: white;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        td:first-child {
+            border-left: 1px solid var(--glass-border);
+            border-top-left-radius: 1rem;
+            border-bottom-left-radius: 1rem;
+        }
+
+        td:last-child {
+            border-right: 1px solid var(--glass-border);
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+        }
+
+        .rank-circle {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        .top-1 {
+            background: var(--accent-gold);
+            color: var(--primary-navy);
+        }
+
+        .top-2 {
+            background: #e2e8f0;
+            color: var(--primary-navy);
+        }
+
+        .top-3 {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand-text" style="padding: 2.5rem 2rem 0;">ERCAVIAN<br>PTN/PTLN 100%</div>
+            <nav class="nav-links">
+                <a href="dashboard" class="nav-item"><i class="fas fa-home"></i> Beranda</a>
+                <a href="todo" class="nav-item"><i class="fas fa-list-check"></i> Daftar Tugas</a>
+                <a href="materials" class="nav-item"><i class="fas fa-book"></i> Materi Belajar</a>
+                <a href="spiritual" class="nav-item"><i class="fas fa-pray"></i> Jalur Langit</a>
+
+                <div class="nav-dropdown active" id="moreDropdown">
+                    <div class="nav-item dropdown-trigger" onclick="toggleDropdown()">
+                        <i class="fas fa-ellipsis-h"></i> Lainnya <i class="fas fa-chevron-down"
+                            style="margin-left: auto; font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="rankings" class="dropdown-item active"><i class="fas fa-trophy"></i> Peringkat
+                            TO</a>
+                        <a href="campus" class="dropdown-item"><i class="fas fa-university"></i> Target Kampus</a>
+                        <a href="streak" class="dropdown-item"><i class="fas fa-fire"></i> Statistik Streak</a>
+                    </div>
+                </div>
+
+                <div class="logout-container">
+                    <a href="index" class="nav-item" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i>
+                        Keluar</a>
+                </div>
+            </nav>
+        </aside>
+
+        <script>
+            function toggleDropdown() {
+                document.getElementById('moreDropdown').classList.toggle('active');
+            }
+        </script>
+
+        <main class="main-content">
+            <header style="margin-bottom: 3.5rem;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary-navy);">Papan Peringkat</h2>
+                <p style="color: var(--text-gray);">Pantau persaingan sehat seangkatan Ercavian.</p>
+            </header>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <div class="provider-slider">
+                    <button class="tab-btn active" onclick="setProvider('Overall')">Terbaik</button>
+                    <button class="tab-btn" onclick="setProvider('Inten')">Inten</button>
+                    <button class="tab-btn" onclick="setProvider('Ruangguru')">Ruangguru</button>
+                    <button class="tab-btn" onclick="setProvider('Pahamify')">Pahamify</button>
+                    <button class="tab-btn" onclick="setProvider('TDS')">TDS</button>
+                </div>
+                <select id="toNumber" class="btn-primary"
+                    style="background:white; color:var(--primary-navy); border:1px solid var(--glass-border); width:auto; text-transform:none;">
+                    <option value="all">Semua TO</option>
+                    <option value="1">TO #1</option>
+                    <option value="2">TO #2</option>
+                    <option value="3">TO #3</option>
+                    <option value="4">TO #4</option>
+                    <option value="5">TO #5</option>
+                    <option value="6">TO #6</option>
+                </select>
+            </div>
+
+            <table id="rankTable">
+                <thead>
+                    <tr>
+                        <th>Peringkat</th>
+                        <th>Nama</th>
+                        <th>Univ & Jurusan</th>
+                        <th>Skor</th>
+                    </tr>
+                </thead>
+                <tbody id="rankBody"></tbody>
+            </table>
+        </main>
+    </div>
+
+    <script>
+        let students = [], tryouts = [], currentProvider = 'Overall';
+
+        function loadData() {
+            Papa.parse('data/students_data.csv?v=' + Date.now(), {
+                download: true, header: true, complete: (s) => {
+                    students = s.data;
+                    Papa.parse('data/tryout_records.csv?v=' + Date.now(), {
+                        download: true, header: true, complete: (t) => {
+                            tryouts = t.data;
+                            renderRanks();
+                        }
+                    });
+                }
+            });
+        }
+
+        window.setProvider = (p) => {
+            currentProvider = (p === 'Pahamify') ? 'Mipy' : p;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText === (p === 'Overall' ? 'Terbaik' : p)));
+            document.getElementById('toNumber').style.display = p === 'Overall' ? 'none' : 'block';
+            renderRanks();
+        };
+
+        function renderRanks() {
+            const toNum = document.getElementById('toNumber').value;
+            const tbody = document.getElementById('rankBody');
+            tbody.innerHTML = '';
+
+            let pool = [];
+            if (currentProvider === 'Overall') {
+                // Best score for each student across all providers
+                const studentBest = {};
+                tryouts.forEach(t => {
+                    if (!studentBest[t.nisn] || parseInt(t.score) > studentBest[t.nisn]) {
+                        studentBest[t.nisn] = parseInt(t.score);
+                    }
+                });
+                pool = Object.keys(studentBest).map(nisn => ({ nisn, score: studentBest[nisn] }))
+                    .sort((a, b) => b.score - a.score);
+            } else {
+                pool = tryouts.filter(t => t.provider === currentProvider && (toNum === 'all' || t.to_number === toNum))
+                    .sort((a, b) => b.score - a.score);
+            }
+
+            pool.forEach((entry, idx) => {
+                const s = students.find(st => {
+                    if (!st.nisn || !entry.nisn) return false;
+                    const stN = st.nisn.toString().trim();
+                    const enN = entry.nisn.toString().trim();
+                    return stN === enN || stN.replace(/^0+/, '') === enN.replace(/^0+/, '');
+                });
+                if (!s) return;
+                const row = document.createElement('tr');
+                const r = idx + 1;
+                row.innerHTML = `
+                    <td><div class="rank-circle ${r <= 3 ? 'top-' + r : ''}">${r}</div></td>
+                    <td><div style="font-weight:800; color:var(--primary-navy);">${s.name}</div><div style="font-size:0.7rem; color:var(--text-gray);">${s.class}</div></td>
+                    <td><div style="font-size:0.85rem; font-weight:700;">${s.univ1}</div><div style="font-size:0.7rem; color:var(--text-gray);">${s.program1}</div></td>
+                    <td><div style="font-size:1.2rem; font-weight:800; color:var(--primary-navy);">${Math.round(entry.score)}</div></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.getElementById('toNumber').onchange = renderRanks;
+        loadData();
+    </script>
+</body>
+
+</html>

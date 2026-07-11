@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGASUS</title>
+  <link rel="icon" type="image/x-icon" href="https://ercava.github.io/logo/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --success: #22c55e;
+    }
+    
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, Arial, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+    }
+
+    /* Screen management */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      padding: 2rem 1rem;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Auth Screen styling */
+    .auth-container {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      margin-top: 5vh;
+      text-align: center;
+    }
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+    .logo img {
+      height: 120px;
+      object-fit: contain;
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+    .desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0 0 2rem 0;
+    }
+    .input-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .input-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* Dashboard Screen styling */
+    .dashboard-wrap {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2rem;
+    }
+    .user-info h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .user-info p {
+      margin: 0.25rem 0 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+    }
+    .logout-btn:hover {
+      background: var(--bg-light);
+      color: var(--accent);
+    }
+
+    /* CV Overview Box */
+    .overview-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .overview-card h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.5rem;
+    }
+    .overview-grid {
+      width: 100%;
+      overflow: hidden;
+    }
+    .tree-view {
+      font-family: 'Roboto Mono', monospace;
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 1.25rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 0;
+      line-height: 1.6;
+      font-size: 0.85rem;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    }
+    .tree-folder {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+    .tree-file {
+      color: #94a3b8;
+    }
+    .tree-role {
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    /* Category Menu Tabs */
+    .menu-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 1rem 0.5rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: var(--shadow);
+    }
+    .tab-btn span {
+      display: block;
+      font-size: 0.7rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+
+    /* Items grid and cards */
+    .items-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .item-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0;
+    }
+    .card-role {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent);
+      background: #eff6ff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      display: inline-block;
+      border: 1px solid #bfdbfe;
+    }
+    .card-badge {
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      padding: 0.25rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* LinkedIn Copy section */
+    .linkedin-box {
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      position: relative;
+    }
+    .linkedin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .linkedin-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .copy-btn {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--accent);
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .copy-btn.copied {
+      background: var(--success);
+      color: white;
+      border-color: var(--success);
+    }
+    .blurb-text {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      color: var(--text);
+      margin: 0;
+    }
+
+    /* Links and Metadata */
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding-top: 1rem;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .meta-item a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .meta-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* Loader */
+    .loader {
+      border: 4px solid var(--line);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .auth-container {
+        padding: 1.5rem;
+      }
+      .menu-tabs {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .meta-row {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+    
+    /* Sidebar Styles */
+    .search-sidebar {
+      position: fixed;
+      top: 0;
+      left: -400px;
+      width: 400px;
+      max-width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+    }
+    .search-sidebar.open {
+      left: 0;
+    }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .sidebar-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .sidebar-close-btn:hover {
+      color: var(--accent);
+    }
+    .sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .search-sidebar .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-sidebar .search-input {
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .search-sidebar .search-input:focus {
+      border-color: var(--primary);
+      background-color: var(--bg);
+    }
+    .search-sidebar .result-item {
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.15s;
+      text-align: left;
+    }
+    .search-sidebar .result-item:hover {
+      background: var(--bg-light);
+    }
+    .search-sidebar .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .search-sidebar .result-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .search-sidebar .result-category {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .search-sidebar .category-dokumentasi { background: rgba(38, 86, 140, 0.1); color: var(--primary); }
+    .search-sidebar .category-link { background: rgba(34, 197, 94, 0.1); color: var(--success); }
+    .search-sidebar .category-sertifikat { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+    .search-sidebar .category-kontak { background: rgba(217, 169, 56, 0.1); color: #b45309; }
+    .search-sidebar .category-siswa-a29 { background: rgba(236, 72, 153, 0.1); color: #db2777; }
+    .search-sidebar .result-meta { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .search-sidebar .result-links-container { display: flex; gap: 6px; flex-wrap: wrap; }
+    .search-sidebar .result-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .search-sidebar .result-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .search-sidebar .result-btn svg { width: 10px; height: 10px; }
+    .search-sidebar .mode-toggle-link { transition: color 0.2s; }
+    .search-sidebar .mode-toggle-link:hover,
+    .search-sidebar .mode-toggle-link.active-mode { color: #db2777; }
+
+    .search-sidebar .birthday-section { margin-bottom: 12px; }
+    .search-sidebar .birthday-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 4px; }
+    .search-sidebar .birthday-today .birthday-section-title { color: #db2777; }
+    .search-sidebar .birthday-person { padding: 2px 0; display: flex; align-items: center; justify-content: center; }
+    .search-sidebar .birthday-name { font-size: 13px; color: var(--text); }
+    .search-sidebar .birthday-date { font-size: 11px; color: var(--muted); margin-left: 6px; }
+
+    /* Right LinkedIn Sidebar Styles */
+    .linkedin-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 400px;
+      max-width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+      z-index: 1000;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--line);
+    }
+    .linkedin-sidebar.open {
+      right: 0;
+    }
+    .linkedin-sidebar .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .linkedin-sidebar .search-input {
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .linkedin-sidebar .search-input:focus {
+      border-color: #0077b5;
+      background-color: var(--bg);
+    }
+    .linkedin-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .linkedin-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: cardFadeInUp 0.3s ease-out both;
+    }
+    .linkedin-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: #0077b5;
+    }
+    .linkedin-card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: left;
+    }
+    .linkedin-card-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+    .linkedin-card-url {
+      font-size: 0.75rem;
+      color: var(--muted);
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .linkedin-card-btn {
+      background: #eef7fc;
+      border: 1px solid #cce5f5;
+      color: #0077b5;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .linkedin-card-btn:hover {
+      background: #0077b5;
+      color: white;
+      border-color: #0077b5;
+    }
+
+    /* Light Animations & Transitions */
+    .screen.active {
+      animation: screenFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes screenFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-container {
+      animation: authScaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes authScaleUp {
+      from { opacity: 0; transform: scale(0.96) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .item-card {
+      animation: cardFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    }
+    .item-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 8px 16px -8px rgba(0, 0, 0, 0.08);
+    }
+    @keyframes cardFadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-btn {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tab-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .tab-btn.active:hover {
+      color: white;
+    }
+    .tab-btn:active {
+      transform: translateY(0);
+    }
+
+    .error-msg {
+      animation: shake 0.35s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    #login-screen {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), url('assets/logo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="screen active">
+    <div style="text-align: center; margin-top: 25vh;">
+      <h1 class="title">PEGASUS</h1>
+      <p class="desc">Loading database & resources...</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen">
+    <div class="auth-container">
+      <div class="logo">
+        <img src="assets/logo.png" alt="Ercava Logo">
+      </div>
+      <h1 class="title">PEGASUS</h1>
+      <p class="desc">Masukkan NISN atau Nama kamu untuk membuka CV kamu, cavs.</p>
+      
+      <div class="input-group">
+        <label for="username-input" class="input-label">NISN/Nama Lengkap</label>
+        <input type="text" id="username-input" class="input-field" placeholder="Insert Name or NISN">
+        <div id="login-error" class="error-msg">Student not found in database.</div>
+      </div>
+      
+      <button id="login-btn" class="btn">Login</button>
+    </div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="dashboard-screen" class="screen">
+    <div class="dashboard-wrap">
+      
+      <!-- User bar -->
+      <div class="header-bar">
+        <div class="user-info">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <h2 id="student-name" style="margin: 0;">Loading...</h2>
+            <a id="student-linkedin" href="#" target="_blank" style="display: none; align-items: center; gap: 0.35rem; text-decoration: none; color: #0077b5; font-weight: 600; font-size: 0.8rem; padding: 0.3rem 0.6rem; background: #eef7fc; border-radius: 6px; border: 1px solid #cce5f5; transition: all 0.2s;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+              LinkedIn Profile
+            </a>
+          </div>
+          <p id="student-nisn" style="margin: 0.25rem 0 0 0;">NISN: Loading...</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <button id="search-toggle-btn" class="logout-btn" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Search
+          </button>
+          <button id="linkedin-toggle-btn" class="logout-btn" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </button>
+          <button id="logout-btn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
+
+      <!-- CV Summary Overview -->
+      <div class="overview-card">
+        <h3>Resume Overview</h3>
+        <div id="overview-grid" class="overview-grid">
+          <!-- CV positions summary list will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Categories tabs -->
+      <div class="menu-tabs">
+        <button class="tab-btn active" data-category="ANGKATAN">
+          ANGKATAN
+          <span id="count-ANGKATAN">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="THE BIG THREE">
+          THE BIG THREE
+          <span id="count-THE_BIG_THREE">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="EVENT INTERNAL">
+          EVENT INTERNAL
+          <span id="count-EVENT_INTERNAL">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="ORGANISASI">
+          ORGANISASI
+          <span id="count-ORGANISASI">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="PROJECTS">
+          PROJECTS
+          <span id="count-PROJECTS">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="PENGHARGAAN">
+          PENGHARGAAN
+          <span id="count-PENGHARGAAN">0 items</span>
+        </button>
+        <button class="tab-btn" data-category="IMPORT">
+          IMPORT
+          <span style="display: block; font-size: 0.7rem; opacity: 0.7; margin-top: 0.25rem;">DIRECTLY TO LINKEDIN</span>
+        </button>
+      </div>
+
+      <!-- Detail cards -->
+      <div id="items-list" class="items-container">
+        <!-- Rendered items go here -->
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/data.js"></script>
+  <script>
+    // State management
+    let students = [];
+    let contents = [];
+    let superlist = {};
+    let currentStudent = null;
+    let activeCategory = 'ANGKATAN';
+    let fileContentsCache = {};
+
+    // Column mappings
+    const categoryMapping = {
+      'ANGKATAN': [
+        { id: 'peresmian', col: 'PERESMIAN', file: 'PERESMIAN - Acara Resmi Penamaan dan Pengukuhan Angkatan 29.txt', label: 'Peresmian Angkatan' },
+        { id: 'ercavian_night', col: 'GALA DINNER', file: 'ERCAVIAN NIGHT - Perayaan 1 Tahun Dikukuhkan Ercava.txt', label: 'Ercavian Night' },
+        { id: 'pestamerta', col: 'PESTAMERTA', file: 'PESTAMERTA - Perayaan 2 Tahun dan Perpisahan Angkatan 29.txt', label: 'Pestamerta' },
+        { id: 'bph_angkatan', col: 'BPH ANGKATAN', file: null, label: 'BPH Angkatan' },
+        { id: 'identitas', col: 'IDENTITAS', file: null, label: 'Identitas Angkatan' }
+      ],
+      'THE BIG THREE': [
+        { id: 'sl24', col: 'SL24', file: 'SL24 - Sonic Linguistic 2024.md', label: 'Sonic Linguistic 2024 (SL24)' },
+        { id: 'sl25', col: 'SL25', file: 'SL25 - Sonic Linguistic 2025.md', label: 'Sonic Linguistic 2025 (SL25)' },
+        { id: 'icare24a', col: 'ICARE24A', file: 'ICARE24A - Program Sosial Penggalangan Dana.md', label: 'I Care 2024A (ICARE24A)' },
+        { id: 'icare24b', col: 'ICARE24B', file: 'ICARE24B - Program Sosial Bunny Era.md', label: 'I Care 2024B (ICARE24B)' },
+        { id: 'ifun1445h', col: 'IFUN1445H', file: 'IFUN1445H - Festival Religi Andalusian Renaissance.md', label: 'I-FUN 1445H' }
+      ],
+      'EVENT INTERNAL': [
+        { id: 'cladistics', col: 'CLADISTICS', file: null, label: 'Cladistics' },
+        { id: 'reformasi', col: 'REFORMASI', file: 'REFORMASI - Perlombaan HUT RI ke-79 dan Konser.txt', label: 'Reformasi' },
+        { id: 'hotel_legivania', col: 'HOTEL LEGIVANIA', file: 'HOTEL LEGIVANIA - Kompetisi Antar Angkatan.md', label: 'Hotel Legivania' },
+        { id: 'ophelia24', col: 'OPHELIA24', file: 'OPHELIA24 - Event Internal Ophelia 2024.md', label: 'Ophelia 2024 (Ophelia24)' },
+        { id: 'ophelia25', col: 'OPHELIA25', file: 'OPHELIA25 - Event Internal Ophelia 2025.txt', label: 'Ophelia 2025 (Ophelia25)' },
+        { id: 'ic_award_xx', col: 'IC AWARD XX', file: 'IC AWARD XX - Malam Apresiasi The Revealed Case.md', label: 'IC Award XX' },
+        { id: 'fbk2024', col: 'FBK 2024', file: 'FBK 2024 - Festival Bulan Bahasa dan Kebudayaan.md', label: 'FBK 2024' },
+        { id: 'matsama_al_fath', col: 'MATSAMA AL FATH', file: 'MATSAMA_AL_FATH_2024_LinkedIn_Experience.md', label: 'Matsama Al Fath' },
+        { id: 'matsama_al_isra', col: 'MATSAMA AL ISRA', file: 'MATSAMA_AL_ISRA_2025_LinkedIn_Experience.md', label: 'Matsama Al Isra' }
+      ],
+      'ORGANISASI': [
+        { id: 'os_bumantara', col: 'OS BUMANTARA', file: null, label: 'OS Bumantara' },
+        { id: 'os_atravika', col: 'OS ATRAVIKA', file: null, label: 'OS Atravika' },
+        { id: 'supervisor_event', col: 'SUPERVISOR EVENT', file: null, label: 'Supervisor Event' },
+        { id: 'cbc24', col: 'CBC 24', file: null, label: 'CBC 24' },
+        { id: 'cbc25', col: 'CBC 25', file: null, label: 'CBC 25' },
+        { id: 'slc24', col: 'SLC 24', file: null, label: 'SLC 24' },
+        { id: 'slc25', col: 'SCL 25', file: null, label: 'SLC 25' },
+        { id: 'flp25', col: 'FLP 25', file: null, label: 'FLP 25' },
+        { id: 'pacific25', col: 'PACIFIC 25', file: null, label: 'Pacific 25' },
+        { id: 'paskibra', col: 'PASKIBRA', file: null, label: 'Paskibra' }
+      ],
+      'PROJECTS': [
+        { id: 'magnet33', col: 'MAGNET 33', file: null, label: 'Magnet Edisi 33' },
+        { id: 'magnet34', col: 'MAGNET 34', file: null, label: 'Magnet Edisi 34' },
+        { id: 'drama', col: 'DRAMA', file: null, label: 'Drama' },
+        { id: 'cerpen', col: 'CERPEN', file: null, label: 'Cerpen' },
+        { id: 'rasa_asa', col: '29 RASA DAN ASA', file: null, label: '29 Rasa dan Asa' },
+        { id: 'exhibition', col: 'EXHIBITION KESENIAN', file: null, label: 'Exhibition Kesenian' },
+        { id: 'p5_lingkungan', col: 'P5 LINGKUNGAN', file: null, label: 'P5 Lingkungan' },
+        { id: 'p5_wirausaha', col: 'P5 KEWIRAUSAHAAN', file: null, label: 'P5 Kewirausahaan' },
+        { id: 'p5_teknologi', col: 'P5 TEKNOLOGI', file: null, label: 'P5 Teknologi' },
+        { id: 'fisika', col: 'FISIKA', file: null, label: 'Fisika' }
+      ],
+      'PENGHARGAAN': [
+        { id: 'prestasi', col: 'PRESTASI', file: null, label: 'Prestasi' },
+        { id: 'os_award', col: 'OS AWARD', file: null, label: 'OS Award' },
+        { id: 'rapor_tertinggi', col: 'RAPOR', file: null, label: 'Rapor Tertinggi' },
+        { id: 'ic_award_xxi', col: 'NOMINASI ICW 2024', file: null, label: 'Nominasi ICW 2024' },
+        { id: 'ic_award_xxii', col: 'NOMINASI ICW 2025', file: null, label: 'Nominasi ICW 2025' },
+        { id: 'bti', col: 'BINA TALENTA INDONESIA', file: null, label: 'Bina Talenta Indonesia' }
+      ]
+    };
+
+    // Dates mappings mapping item_id -> typical LinkedIn duration/date
+    const datesMapping = {
+      peresmian: 'Feb 2024',
+      ercavian_night: 'Feb 2025',
+      pestamerta: 'Feb 2026',
+      bph_angkatan: '2024 – 2026',
+      identitas: '2024 – 2025',
+      sl24: 'May 2023 – Apr 2024 · 1 yr',
+      sl25: 'May 2024 – Apr 2025 · 1 yr',
+      icare24a: 'Jul 2023 – Jan 2024 · 7 mos',
+      icare24b: 'Jul 2024 – Nov 2024 · 5 mos',
+      ifun1445h: 'Nov 2023 – Mar 2024 · 5 mos',
+      cladistics: 'Dec 2023',
+      reformasi: 'Jul 2024 – Aug 2024 · 2 mos',
+      hotel_legivania: 'May 2024 – Jun 2024 · 2 mos',
+      ophelia24: 'Dec 2023 – Jan 2024 · 2 mos',
+      ophelia25: 'Dec 2024 – Jan 2025 · 2 mos',
+      ic_award_xx: 'Dec 2024',
+      fbk2024: 'Sep 2024 – Oct 2024 · 2 mos',
+      os_bumantara: '2024 – 2025 · 1 yr',
+      os_atravika: '2023 – 2024 · 1 yr',
+      supervisor_event: '2024 – 2026',
+      cbc24: '2023 – 2024 · 1 yr',
+      cbc25: '2024 – 2025 · 1 yr',
+      slc24: '2023 – 2024 · 1 yr',
+      slc25: '2024 – 2025 · 1 yr',
+      flp25: '2024 – 2025 · 1 yr',
+      pacific25: '2024 – 2025 · 1 yr',
+      magnet33: '2023 – 2024',
+      magnet34: '2024 – 2025',
+      drama: 'Jul 2024 – Oct 2024',
+      cerpen: '2024',
+      rasa_asa: '2024',
+      exhibition: 'Jan 2026',
+      p5_lingkungan: 'Sep 2023 – Oct 2023',
+      p5_wirausaha: '2024',
+      p5_teknologi: '2024',
+      fisika: '2024',
+      prestasi: '2023 – 2026',
+      os_award: '2024 – 2025',
+      rapor_tertinggi: '2023 – 2026',
+      ic_award_xxi: 'Dec 2024',
+      ic_award_xxii: 'Dec 2025',
+      matsama_al_fath: 'Jul 2024',
+      matsama_al_isra: 'Jul 2025',
+      paskibra: '2024 – 2026',
+      bti: '2024'
+    };
+
+    // Helper: Parse CSV
+    function parseCSV(text) {
+      let lines = [];
+      let row = [""];
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        let next = text[i+1];
+        if (c === '"') {
+          if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (c === ',' && !inQuotes) {
+          row.push("");
+        } else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (c === '\r' && next === '\n') { i++; }
+          lines.push(row);
+          row = [""];
+        } else {
+          row[row.length - 1] += c;
+        }
+      }
+      if (row.length > 1 || row[0] !== "") { lines.push(row); }
+      return lines;
+    }
+
+    // Helper: Parse Markdown Superlist for docs and certs
+    function parseSuperlist(text) {
+      const items = {};
+      const sections = text.split(/### /);
+      sections.forEach(sec => {
+        const lines = sec.split('\n');
+        const titleLine = lines[0].trim();
+        if (!titleLine) return;
+        
+        let docs = null;
+        let certs = null;
+        lines.forEach(l => {
+          if (l.includes('Dokumentasi:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) docs = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Sertifikat:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) certs = { label: m[1], url: m[2] };
+          }
+          // Handle specific nested keys like SL24 and SL25 documentation
+          if (l.includes('Dokumentasi SL24:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['sl24_docs'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Dokumentasi SL25:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['sl25_docs'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Sertifikat SL — Atravika 24:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['sl24_certs_atravika'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Sertifikat SL — Bumantara 25:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['sl25_certs_bumantara'] = { label: m[1], url: m[2] };
+          }
+          // ICARE Specific
+          if (l.includes('Dokumentasi ICARE 2023:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['icare24a_docs'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Dokumentasi ICARE Bunny Era (2024):')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['icare24b_docs'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Sertifikat ICARE — Atravika 24:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['icare24a_certs_atravika'] = { label: m[1], url: m[2] };
+          }
+          if (l.includes('Sertifikat ICARE — Bumantara 25:')) {
+            const m = l.match(/\[(.*?)\]\((.*?)\)/);
+            if (m) items['icare24b_certs_bumantara'] = { label: m[1], url: m[2] };
+          }
+        });
+        
+        items[titleLine.toLowerCase()] = { docs, certs };
+      });
+      return items;
+    }
+
+    let _dd = null;
+    function getDashboardData() {
+      if (!_dd) {
+        try {
+          const binaryString = atob(window.__DASHBOARD_DATA);
+          const len = binaryString.length;
+          const bytes = new Uint8Array(len);
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const decodedText = new TextDecoder('utf-8').decode(bytes);
+          _dd = JSON.parse(decodedText);
+        } catch (e) {
+          console.error("Failed to decode payload", e);
+          _dd = { files: {} };
+        }
+      }
+      return _dd;
+    }
+
+    // Initialize application
+    async function init() {
+      try {
+        const raw = getDashboardData();
+        
+        // Fetch student links CSV
+        const projectLinkText = raw.project_link_csv || '';
+        const parsedProjectLink = parseCSV(projectLinkText);
+        
+        // Headers map
+        const headers = parsedProjectLink[0].map(h => h.trim());
+        
+        // Structure students
+        students = parsedProjectLink.slice(1).map(row => {
+          const studentObj = {};
+          headers.forEach((h, idx) => {
+            studentObj[h] = row[idx] ? row[idx].trim() : '';
+          });
+          return studentObj;
+        }).filter(s => s.NISN && s.NAME);
+
+        // Fetch generic content CSV
+        const contentText = raw.content_csv || '';
+        const parsedContent = parseCSV(contentText);
+        const contentHeaders = parsedContent[0].map(h => h.trim());
+        contents = parsedContent.slice(1).map(row => {
+          const cObj = {};
+          contentHeaders.forEach((h, idx) => {
+            cObj[h] = row[idx] ? row[idx].trim() : '';
+          });
+          return cObj;
+        }).filter(c => c.item_id);
+
+        // Fetch superlist md
+        const superlistText = raw.superlist_md || '';
+        superlist = parseSuperlist(superlistText);
+
+        // Fetch LinkedIn CSV
+        const linkedinText = raw.linkedin_csv || '';
+        const parsedLinkedin = parseCSV(linkedinText);
+        let linkedinMap = {};
+        if (parsedLinkedin.length > 1) {
+          const nameIdx = parsedLinkedin[0].indexOf('Name');
+          const urlIdx = parsedLinkedin[0].indexOf('URL');
+          if (nameIdx !== -1 && urlIdx !== -1) {
+            parsedLinkedin.slice(1).forEach(row => {
+              if (row[nameIdx]) {
+                linkedinMap[row[nameIdx].trim().toLowerCase()] = row[urlIdx] ? row[urlIdx].trim() : '';
+              }
+            });
+          }
+        }
+        window.__LINKEDIN_MAP = linkedinMap;
+
+        // Show login screen
+        document.getElementById('loading-screen').classList.remove('active');
+        document.getElementById('login-screen').classList.add('active');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to load database from payload.');
+      }
+    }
+
+    // Try finding specific description in markdown / text template
+    async function getSpecificBlurb(file, role, fallbackText) {
+      if (!file) return fallbackText;
+      
+      try {
+        let content = fileContentsCache[file];
+        if (!content) {
+          const raw = getDashboardData();
+          content = raw.files[file] || '';
+          fileContentsCache[file] = content;
+        }
+
+        // Normalize role name
+        const cleanRole = role.replace(/^(anggota|koordinator|vice koordinator|vk),?\s*/i, '').trim().toLowerCase();
+        
+        // Split content into lines
+        const lines = content.split('\n').map(l => l.trim());
+        
+        // Search for a line that contains the cleanRole or keywords
+        let matchIndex = -1;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].toLowerCase();
+          if (line.includes(cleanRole) && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
+            matchIndex = i;
+            break;
+          }
+        }
+        
+        // If not found, try a looser match with words
+        if (matchIndex === -1) {
+          const words = cleanRole.split(/\s+/).filter(w => w.length > 2);
+          if (words.length > 0) {
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i].toLowerCase();
+              const matchAll = words.every(w => line.includes(w));
+              if (matchAll && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
+                matchIndex = i;
+                break;
+              }
+            }
+          }
+        }
+        
+        // If still not found, try matching any key words
+        if (matchIndex === -1) {
+          const words = cleanRole.split(/\s+/).filter(w => w.length > 2);
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].toLowerCase();
+            const matchAny = words.some(w => line.includes(w));
+            if (matchAny && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
+              matchIndex = i;
+              break;
+            }
+          }
+        }
+
+        if (matchIndex !== -1) {
+          let descLines = [];
+          for (let j = matchIndex + 1; j < lines.length; j++) {
+            const line = lines[j];
+            const lineLower = line.toLowerCase();
+            
+            // Stop if we hit a new role block
+            const lineTrim = line.trim();
+            if (
+              lineTrim.startsWith('#') || 
+              lineTrim.startsWith('---') || 
+              (lineTrim.includes('—') && lineTrim.length < 80) ||
+              /^\d+\./.test(lineTrim) || 
+              /^\w+\d+\./.test(lineTrim) ||
+              /^(koordinator sie)/i.test(lineTrim)
+            ) {
+              break;
+            }
+            
+            if (!line) {
+              if (descLines.length > 0 && descLines[descLines.length - 1] !== "") {
+                descLines.push("");
+              }
+              continue;
+            }
+            
+            // Skip date/organization line if it looks like one
+            if (lineLower.includes('osis') || lineLower.includes('man') || lineLower.includes('duration:') || lineLower.includes('location:') || /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|202\d)\b/i.test(lineLower)) {
+              continue;
+            }
+            
+            descLines.push(line);
+          }
+          
+          if (descLines.length > 0) {
+            return descLines.join('\n').trim();
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to parse specific file', file, e);
+      }
+      
+      return fallbackText;
+    }
+
+    // Generate and display CV summary overview in tree style
+    function renderOverview() {
+      const grid = document.getElementById('overview-grid');
+      grid.innerHTML = '';
+      
+      let treeText = '<span class="tree-folder">📁 pegasus_resume</span>\n';
+      const categories = Object.keys(categoryMapping);
+      
+      let renderedCats = [];
+      categories.forEach(cat => {
+        let activeItems = [];
+        categoryMapping[cat].forEach(item => {
+          const role = currentStudent[item.col];
+          if (role) {
+            activeItems.push({ label: item.label, role });
+          }
+        });
+        if (activeItems.length > 0) {
+          renderedCats.push({ cat, items: activeItems });
+        }
+      });
+
+      renderedCats.forEach((catObj, catIdx) => {
+        const isLastCat = catIdx === renderedCats.length - 1;
+        const catPrefix = isLastCat ? "└── " : "├── ";
+        const childPrefix = isLastCat ? "    " : "│   ";
+        
+        treeText += `${catPrefix}<span class="tree-folder">📁 ${catObj.cat}</span>\n`;
+        catObj.items.forEach((child, childIdx) => {
+          const isLastChild = childIdx === catObj.items.length - 1;
+          const filePrefix = isLastChild ? "└── " : "├── ";
+          treeText += `${childPrefix}${filePrefix}<span class="tree-file">📄 ${child.label}</span> ── <span class="tree-role">${child.role}</span>\n`;
+        });
+      });
+      
+      const pre = document.createElement('pre');
+      pre.className = 'tree-view';
+      pre.innerHTML = treeText || '<span style="color: var(--muted)">No positions found.</span>';
+      grid.appendChild(pre);
+    }
+
+    // Render dashboard items
+    async function renderItems() {
+      const itemsList = document.getElementById('items-list');
+      itemsList.innerHTML = '<div class="loader"></div>';
+      
+      if (activeCategory === 'IMPORT') {
+        itemsList.innerHTML = `
+          <div class="item-card" style="padding: 2.5rem 1.5rem; max-width: 600px; margin: 0 auto;">
+            <h3 class="card-title" style="font-size: 1.35rem; margin-bottom: 0.5rem; color: var(--accent); text-align: center;">Auto Import to LinkedIn</h3>
+            <p style="color: var(--muted); font-size: 0.85rem; line-height: 1.6; margin: 0.5rem 0 1.5rem 0; text-align: center;">
+              Sorry! We are working on an automated import-to-linkedin tool, but the current LinkedIn terms of service is prohibiting use of bots or other automated services, so in the meantime, you can copy-and-paste provided text by yourself.
+            </p>
+            <button class="btn" disabled style="opacity: 0.5; cursor: not-allowed; margin: 0 auto 2rem auto; display: block; width: auto; padding: 0.75rem 2rem; max-width: 280px;">COMING SOON</button>
+            <div style="border-top: 1px solid var(--line); padding-top: 1.5rem; margin-top: 1.5rem; text-align: left;">
+              <h4 style="font-weight: 700; color: var(--accent); margin-bottom: 0.75rem; font-size: 0.95rem;">Other than that, we are working on bringing further functionalities into PEGASUS, such as:</h4>
+              <ol style="color: var(--muted); font-size: 0.85rem; line-height: 1.8; padding-left: 1.2rem; margin: 0 0 1.5rem 0;">
+                <li>Copiable images for events and organizations</li>
+                <li>Personalized certification download for every single individual</li>
+                <li>Downloadable CV Design template system</li>
+              </ol>
+              <div style="text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 1.5rem; line-height: 1.6;">
+                As usual, thank you for supporting this project.<br><br>
+                <strong>Ercava Development Program</strong><br>
+                PEGASUS VER.1.0.2
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const config = categoryMapping[activeCategory];
+      let hasAnyData = false;
+      const htmlFragments = [];
+
+      for (const item of config) {
+        const role = currentStudent[item.col];
+        if (role) {
+          hasAnyData = true;
+          
+          // Get fallback generic content
+          const contentMeta = contents.find(c => c.item_id === item.id);
+          const fallbackBlurb = contentMeta ? contentMeta.linkedin_copy : '';
+          
+          // Resolve documentation and cert links
+          let docLink = null;
+          let certLink = null;
+
+          if (superlist[item.label.toLowerCase()]) {
+            docLink = superlist[item.label.toLowerCase()].docs;
+            certLink = superlist[item.label.toLowerCase()].certs;
+          }
+          
+          // Special cases
+          if (item.id === 'sl24') {
+            docLink = superlist['sl24_docs'];
+            certLink = superlist['sl24_certs_atravika'];
+          } else if (item.id === 'sl25') {
+            docLink = superlist['sl25_docs'];
+            certLink = superlist['sl25_certs_bumantara'];
+          } else if (item.id === 'icare24a') {
+            docLink = superlist['icare24a_docs'];
+            certLink = superlist['icare24a_certs_atravika'];
+          } else if (item.id === 'icare24b') {
+            docLink = superlist['icare24b_docs'];
+            certLink = superlist['icare24b_certs_bumantara'];
+          }
+
+          // Fetch specific role copy if file is mapped
+          let resolvedBlurb = await getSpecificBlurb(item.file, role, fallbackBlurb);
+          
+          // Clean up hashtags and excessive spacing
+          resolvedBlurb = resolvedBlurb.replace(/#\w+/g, '').replace(/\s\s+/g, ' ').trim();
+
+          const duration = datesMapping[item.id] || 'Feb 2024';
+
+          const cardHtml = `
+            <div class="item-card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">${item.label}</h3>
+                  <span class="card-role">${role}</span>
+                </div>
+                <span class="card-badge">${activeCategory}</span>
+              </div>
+              
+              <div class="linkedin-box">
+                <div class="linkedin-header">
+                  <span class="linkedin-title"></span>
+                  <button class="copy-btn" onclick="copyText(this)">Copy Text</button>
+                </div>
+                <pre class="blurb-text">${role}\nOSIS MAN Insan Cendekia Serpong\n${duration}\n\n${resolvedBlurb}</pre>
+              </div>
+
+              <div class="meta-row">
+                <div class="meta-item">
+                  <strong>Date:</strong> ${duration}
+                </div>
+                ${docLink ? `
+                  <div class="meta-item">
+                    📁 <strong>Docs:</strong> <a href="${docLink.url}" target="_blank">${docLink.label}</a>
+                  </div>
+                ` : ''}
+                ${certLink ? `
+                  <div class="meta-item">
+                    🏅 <strong>Cert:</strong> <a href="${certLink.url}" target="_blank">${certLink.label}</a>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+          htmlFragments.push(cardHtml);
+        }
+      }
+
+      if (!hasAnyData) {
+        itemsList.innerHTML = `<p class="desc" style="margin-top: 3rem;">No activities found under ${activeCategory} for this student.</p>`;
+      } else {
+        itemsList.innerHTML = htmlFragments.join('');
+      }
+    }
+
+    // Count items per category for tab badges
+    function updateCategoryCounts() {
+      Object.keys(categoryMapping).forEach(cat => {
+        let count = 0;
+        categoryMapping[cat].forEach(item => {
+          if (currentStudent[item.col]) count++;
+        });
+        const elementId = `count-${cat.replace(/\s+/g, '_')}`;
+        const el = document.getElementById(elementId);
+        if (el) el.textContent = `${count} item${count !== 1 ? 's' : ''}`;
+      });
+    }
+
+    // Copy to clipboard helper
+    window.copyText = function(button) {
+      const container = button.closest('.linkedin-box');
+      const textEl = container.querySelector('.blurb-text');
+      
+      navigator.clipboard.writeText(textEl.textContent).then(() => {
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'Copy Text';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    };
+
+    // Helper to normalize search keys by stripping leading zeros
+    function cleanNISN(val) {
+      return val.replace(/^0+/, '');
+    }
+
+    // Event listeners
+    document.getElementById('login-btn').addEventListener('click', () => {
+      const input = document.getElementById('username-input').value.trim().toLowerCase();
+      const errorEl = document.getElementById('login-error');
+      
+      const cleanInput = cleanNISN(input);
+      
+      // Match by Name or NISN (graceful with leading zeros)
+      let found = students.find(s => 
+        s.NAME.toLowerCase().includes(input) || 
+        cleanNISN(s.NISN.toLowerCase()) === cleanInput
+      );
+
+      if (input === 'debug') {
+        found = {
+          NISN: '00000000',
+          NAME: 'Debug Mode (All Roles)'
+        };
+        if (students.length > 0) {
+          Object.keys(students[0]).forEach(k => {
+            if (k !== 'NISN' && k !== 'NAME') {
+              found[k] = 'Coordinator';
+            }
+          });
+        }
+      }
+
+      if (found) {
+        currentStudent = found;
+        errorEl.style.display = 'none';
+        
+        // Render Dashboard
+        document.getElementById('student-name').textContent = currentStudent.NAME;
+        document.getElementById('student-nisn').textContent = `NISN: ${currentStudent.NISN}`;
+        
+        // Resolve LinkedIn Profile Link
+        const lnLink = document.getElementById('student-linkedin');
+        if (window.__LINKEDIN_MAP) {
+          const lnUrl = window.__LINKEDIN_MAP[currentStudent.NAME.toLowerCase()];
+          if (lnUrl && lnUrl.trim()) {
+            lnLink.href = lnUrl;
+            lnLink.style.display = 'inline-flex';
+          } else {
+            lnLink.style.display = 'none';
+          }
+        } else {
+          lnLink.style.display = 'none';
+        }
+        
+        renderOverview();
+        updateCategoryCounts();
+        renderItems();
+        
+        document.getElementById('login-screen').classList.remove('active');
+        document.getElementById('dashboard-screen').classList.add('active');
+      } else {
+        errorEl.style.display = 'block';
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      currentStudent = null;
+      document.getElementById('username-input').value = '';
+      document.getElementById('dashboard-screen').classList.remove('active');
+      document.getElementById('login-screen').classList.add('active');
+    });
+
+    // Tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const tab = e.currentTarget;
+        tab.classList.add('active');
+        activeCategory = tab.dataset.category;
+        renderItems();
+      });
+    });
+
+    // Start
+    init();
+  </script>
+  <!-- Search Sidebar Drawer -->
+  <div id="search-sidebar" class="search-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-container" style="margin-bottom: 0; text-align: left; display: flex; align-items: center; gap: 0.5rem; user-select: none;">
+        <div>
+          <h1 class="logo-title" style="font-size: 20px; letter-spacing: 1px; margin: 0; line-height: 1; text-transform: lowercase; color: var(--accent);">ercava</h1>
+          <span class="logo-subtitle" style="font-size: 8px; letter-spacing: 2px; margin: 5px 0 0 0; line-height: 1; text-transform: uppercase; color: var(--muted); display: block;">search</span>
+        </div>
+      </div>
+      <button id="sidebar-close-btn" class="sidebar-close-btn">&times;</button>
+    </div>
+    
+    <div class="sidebar-body">
+      <div class="search-wrapper" style="width: 100%;">
+          <div class="search-box" style="position: relative; display: flex; align-items: center; width: 100%;">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 15px; width: 16px; height: 16px; color: var(--muted); pointer-events: none;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="search-input" class="search-input" placeholder="Cari dokumentasi, link penting, sertifikat..." autocomplete="off" style="width: 100%; padding: 12px 40px 12px 40px; font-size: 14px; font-family: inherit; background: var(--bg-light); border: 1px solid var(--line); border-radius: 20px; color: var(--text); outline: none; box-shadow: 0 2px 8px rgba(0,0,0,.05);"/>
+              <button id="search-clear" class="search-clear" aria-label="Clear search" style="display:none; position: absolute; right: 15px; background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color .2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div class="mode-toggle-container" style="text-align: center; margin-top: 15px; font-size: 13px;"><a href="#" id="mode-toggle-link" class="mode-toggle-link" style="color: var(--muted); text-decoration: none; transition: color .2s;">Mode ERC Only!</a></div>
+          <div id="birthday-tracker" class="birthday-tracker" style="display:none; margin-top: 20px; width: 100%; text-align: center;"></div>
+          <div id="results-dropdown" class="results-dropdown" style="display:none; width: 100%; margin-top: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.08); max-height: 60vh; overflow-y: auto;">
+              <div id="results-list" class="results-list" style="display: flex; flex-direction: column;"></div>
+              <div id="no-results" class="no-results" style="padding: 20px; text-align: center; color: var(--muted); font-size: 13px;">Tidak ada hasil ditemukan</div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LinkedIn Sidebar Drawer -->
+  <div id="linkedin-sidebar" class="linkedin-sidebar">
+    <div class="sidebar-header">
+      <div style="display: flex; align-items: center; gap: 0.5rem; user-select: none;">
+        <div>
+          <h1 class="logo-title" style="font-size: 20px; letter-spacing: 1px; margin: 0; line-height: 1; text-transform: lowercase; color: var(--accent);">ercava</h1>
+          <span class="logo-subtitle" style="font-size: 8px; letter-spacing: 2px; margin: 5px 0 0 0; line-height: 1; text-transform: uppercase; color: var(--muted); display: block;">linkedin</span>
+        </div>
+      </div>
+      <button id="linkedin-close-btn" class="sidebar-close-btn">&times;</button>
+    </div>
+    
+    <div class="sidebar-body">
+      <div class="search-wrapper" style="width: 100%;">
+          <div class="search-box" style="position: relative; display: flex; align-items: center; width: 100%;">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 15px; width: 16px; height: 16px; color: var(--muted); pointer-events: none;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              <input type="text" id="linkedin-search-input" class="search-input" placeholder="Cari nama atau tautan..." autocomplete="off" style="width: 100%; padding: 12px 40px 12px 40px; font-size: 14px; font-family: inherit; background: var(--bg-light); border: 1px solid var(--line); border-radius: 20px; color: var(--text); outline: none; box-shadow: 0 2px 8px rgba(0,0,0,.05);"/>
+              <button id="linkedin-search-clear" class="search-clear" aria-label="Clear search" style="display:none; position: absolute; right: 15px; background: transparent; border: none; color: var(--muted); cursor: pointer; transition: color .2s;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+          <div id="linkedin-list" class="linkedin-list">
+              <!-- Rendered LinkedIn profiles will go here -->
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <script src="search/data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script>
+    // Sidebars integration
+    (function() {
+      // Elements
+      const searchToggleBtn = document.getElementById('search-toggle-btn');
+      const searchCloseBtn = document.getElementById('sidebar-close-btn');
+      const searchSidebar = document.getElementById('search-sidebar');
+      
+      const linkedinToggleBtn = document.getElementById('linkedin-toggle-btn');
+      const linkedinCloseBtn = document.getElementById('linkedin-close-btn');
+      const linkedinSidebar = document.getElementById('linkedin-sidebar');
+      
+      const overlay = document.getElementById('sidebar-overlay');
+
+      // Search controls
+      function openSearch() {
+        closeLinkedin();
+        searchSidebar.classList.add('open');
+        overlay.classList.add('open');
+        document.getElementById('search-input').focus();
+      }
+      function closeSearch() {
+        searchSidebar.classList.remove('open');
+        if (!linkedinSidebar.classList.contains('open')) {
+          overlay.classList.remove('open');
+        }
+      }
+
+      // LinkedIn controls
+      function openLinkedin() {
+        closeSearch();
+        linkedinSidebar.classList.add('open');
+        overlay.classList.add('open');
+        document.getElementById('linkedin-search-input').focus();
+        renderLinkedinList();
+      }
+      function closeLinkedin() {
+        linkedinSidebar.classList.remove('open');
+        if (!searchSidebar.classList.contains('open')) {
+          overlay.classList.remove('open');
+        }
+      }
+
+      function closeAll() {
+        closeSearch();
+        closeLinkedin();
+      }
+
+      searchToggleBtn.addEventListener('click', openSearch);
+      searchCloseBtn.addEventListener('click', closeSearch);
+      
+      linkedinToggleBtn.addEventListener('click', openLinkedin);
+      linkedinCloseBtn.addEventListener('click', closeLinkedin);
+      
+      overlay.addEventListener('click', closeAll);
+
+      // Search variables
+      let allData = [];
+      let fuse = null;
+      let showSiswa = false;
+      const searchInput = document.getElementById('search-input');
+      const searchClear = document.getElementById('search-clear');
+      const dropdown = document.getElementById('results-dropdown');
+      const listContainer = document.getElementById('results-list');
+      const noResults = document.getElementById('no-results');
+      const modeToggleLink = document.getElementById('mode-toggle-link');
+      const birthdayTracker = document.getElementById('birthday-tracker');
+      const _escDiv = document.createElement('div');
+
+      function esc(s) {
+        if (!s) return '';
+        _escDiv.textContent = s;
+        return _escDiv.innerHTML;
+      }
+
+      function initSearch() {
+        try {
+          if (typeof window.__SEARCH_DATA === 'string') {
+            const decoded = atob(window.__SEARCH_DATA);
+            const bytes = new Uint8Array(decoded.length);
+            for (let i = 0; i < decoded.length; i++) {
+              bytes[i] = decoded.charCodeAt(i);
+            }
+            allData = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+          }
+        } catch (e) {
+          console.error("Failed to parse search data", e);
+        }
+        if (typeof Fuse !== 'undefined') {
+          fuse = new Fuse(allData, {
+            keys: [{ name: 'title', weight: .7 }, { name: 'category', weight: .15 }, { name: 'meta', weight: .15 }],
+            threshold: .4,
+            distance: 100
+          });
+        }
+        setupSearchEvents();
+        updateBirthday();
+      }
+
+      const CAT_CLASS = {
+        'Dokumentasi': 'category-dokumentasi',
+        'Sertifikat': 'category-sertifikat',
+        'Kontak': 'category-kontak',
+        'Siswa A29': 'category-siswa-a29'
+      };
+      const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+
+      function doSearch(q) {
+        if (!fuse) return;
+        if (q.length < 1) {
+          dropdown.style.display = 'none';
+          return;
+        }
+        const r = fuse.search(q);
+        const out = [];
+        for (let i = 0; i < r.length && out.length < 20; i++) {
+          const c = r[i].item.category;
+          if (showSiswa) {
+            if (c === 'Siswa A29') out.push(r[i]);
+          } else {
+            if (c !== 'Siswa A29') out.push(r[i]);
+          }
+        }
+        renderSearch(out);
+      }
+
+      function renderSearch(results) {
+        if (results.length === 0) {
+          listContainer.innerHTML = '';
+          noResults.style.display = 'block';
+          dropdown.style.display = 'block';
+          return;
+        }
+        noResults.style.display = 'none';
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < results.length; i++) {
+          const item = results[i].item;
+          const row = document.createElement('div');
+          row.className = 'result-item';
+          let links = '';
+          for (let j = 0; j < item.links.length; j++) {
+            const l = item.links[j];
+            links += `<a href="${esc(l.url)}" target="_blank" class="result-btn" rel="noopener noreferrer">${LINK_SVG}${esc(l.label)}</a>`;
+          }
+          row.innerHTML = `
+            <div class="result-header">
+              <span class="result-title">${esc(item.title)}</span>
+              <span class="result-category ${CAT_CLASS[item.category] || 'category-link'}">${esc(item.category)}</span>
+            </div>
+            <div class="result-meta">${esc(item.meta || '')}</div>
+            <div class="result-links-container">${links}</div>
+          `;
+          frag.appendChild(row);
+        }
+        listContainer.innerHTML = '';
+        listContainer.appendChild(frag);
+        dropdown.style.display = 'block';
+      }
+
+      function setupSearchEvents() {
+        let debounceTimer;
+        searchInput.addEventListener('input', function() {
+          const q = this.value.trim();
+          searchClear.style.display = q.length > 0 ? 'flex' : 'none';
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => { doSearch(q); }, 80);
+        });
+        searchClear.addEventListener('click', function() {
+          searchInput.value = '';
+          searchClear.style.display = 'none';
+          dropdown.style.display = 'none';
+          searchInput.focus();
+        });
+        modeToggleLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          showSiswa = !showSiswa;
+          if (showSiswa) {
+            modeToggleLink.textContent = 'Mode Non-ERC';
+            modeToggleLink.classList.add('active-mode');
+            searchInput.placeholder = 'Cari data ercavian...';
+          } else {
+            modeToggleLink.textContent = 'Mode ERC Only!';
+            modeToggleLink.classList.remove('active-mode');
+            searchInput.placeholder = 'Cari dokumentasi, link penting, sertifikat...';
+          }
+          updateBirthday();
+          const q = searchInput.value.trim();
+          if (q.length > 0) doSearch(q);
+        });
+      }
+
+      const BULAN = { januari:0, februari:1, maret:2, april:3, mei:4, juni:5, juli:6, agustus:7, september:8, oktober:9, november:10, desember:11 };
+      function parseBday(s) {
+        if (!s) return null;
+        const p = s.trim().split(/\s+/);
+        if (p.length < 3) return null;
+        const d = parseInt(p[0], 10);
+        const m = BULAN[p[1].toLowerCase()];
+        const y = parseInt(p[2], 10);
+        if (isNaN(d) || m === undefined || isNaN(y)) return null;
+        return { d, m, y };
+      }
+
+      function updateBirthday() {
+        if (!birthdayTracker) return;
+        if (!showSiswa) {
+          birthdayTracker.style.display = 'none';
+          return;
+        }
+        const now = new Date();
+        const tm = now.getMonth();
+        const td = now.getDate();
+        const ty = now.getFullYear();
+        const todayList = [];
+        let nextItem = null;
+        let nextDays = Infinity;
+        for (let i = 0; i < allData.length; i++) {
+          const it = allData[i];
+          if (it.category !== 'Siswa A29' || !it.birthday) continue;
+          const b = parseBday(it.birthday);
+          if (!b) continue;
+          if (b.m === tm && b.d === td) {
+            todayList.push(it);
+            continue;
+          }
+          const bd = new Date(ty, b.m, b.d);
+          let diff;
+          if (bd.getTime() > now.getTime()) diff = Math.ceil((bd - now) / 864e5);
+          else diff = Math.ceil((new Date(ty + 1, b.m, b.d) - now) / 864e5);
+          if (diff > 0 && diff < nextDays) {
+            nextDays = diff;
+            nextItem = it;
+          }
+        }
+        let h = '';
+        if (todayList.length > 0) {
+          h += '<div class="birthday-section birthday-today"><div class="birthday-section-title">Birthday Hari Ini</div>';
+          for (let j = 0; j < todayList.length; j++) {
+            h += `<div class="birthday-person"><span class="birthday-name">${esc(todayList[j].title)}</span><span class="birthday-date">${esc(todayList[j].birthday)}</span></div>`;
+          }
+          h += '</div>';
+        } else {
+          h += '<div class="birthday-section birthday-none"><div class="birthday-section-title">tidak ada ulang tahun hari ini</div></div>';
+        }
+        if (nextItem) {
+          h += `<div class="birthday-section birthday-next"><div class="birthday-section-title">Birthday Terdekat!</div><div class="birthday-person"><span class="birthday-name">${esc(nextItem.title)}</span><span class="birthday-date">${esc(nextItem.birthday)} · ${nextDays} hari lagi</span></div></div>`;
+        }
+        birthdayTracker.innerHTML = h;
+        birthdayTracker.style.display = 'block';
+      }
+
+      // LinkedIn Sidebar logic
+      const lnSearchInput = document.getElementById('linkedin-search-input');
+      const lnSearchClear = document.getElementById('linkedin-search-clear');
+      const lnListContainer = document.getElementById('linkedin-list');
+
+      function renderLinkedinList(query = '') {
+        lnListContainer.innerHTML = '';
+        const map = window.__LINKEDIN_MAP || {};
+        const entries = Object.entries(map).filter(([name, url]) => url && url.trim());
+        
+        entries.sort((a, b) => a[0].localeCompare(b[0]));
+
+        const filtered = entries.filter(([name, url]) => {
+          return name.toLowerCase().includes(query.toLowerCase()) || url.toLowerCase().includes(query.toLowerCase());
+        });
+
+        if (filtered.length === 0) {
+          lnListContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--muted); font-size: 13px;">Tidak ada profil ditemukan</div>';
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        filtered.forEach(([name, url], idx) => {
+          const card = document.createElement('div');
+          card.className = 'linkedin-card';
+          card.style.animationDelay = `${idx * 40}ms`;
+          const dispName = name.replace(/\b\w/g, c => c.toUpperCase());
+          card.innerHTML = `
+            <div class="linkedin-card-info">
+              <span class="linkedin-card-name">${dispName}</span>
+              <span class="linkedin-card-url" title="${url}">${url}</span>
+            </div>
+            <a href="${url}" target="_blank" class="linkedin-card-btn" rel="noopener noreferrer">Open</a>
+          `;
+          frag.appendChild(card);
+        });
+        lnListContainer.appendChild(frag);
+      }
+
+      let lnDebounceTimer;
+      lnSearchInput.addEventListener('input', function() {
+        const q = this.value.trim();
+        lnSearchClear.style.display = q.length > 0 ? 'flex' : 'none';
+        clearTimeout(lnDebounceTimer);
+        lnDebounceTimer = setTimeout(() => { renderLinkedinList(q); }, 80);
+      });
+      
+      lnSearchClear.addEventListener('click', function() {
+        lnSearchInput.value = '';
+        lnSearchClear.style.display = 'none';
+        renderLinkedinList();
+        lnSearchInput.focus();
+      });
+
+      // Check if data is already loaded or wait
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSearch);
+      } else {
+        initSearch();
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #0a0a0a;
+    font-family: Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #e5e5e5;
+    min-height: 100vh;
+    padding: 20px 40px;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 20px;
+    }
+}
+
+.search-container {
+    max-width: 600px;
+    margin: 40px auto 60px;
+    text-align: center;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #888;
+    pointer-events: none;
+}
+
+.search-input {
+    width: 100%;
+    padding: 16px 24px 16px 48px;
+    font-size: 16px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 50px;
+    color: #e5e5e5;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.search-input:focus {
+    border-color: #666;
+    background: #1f1f1f;
+}
+
+.search-input::placeholder {
+    color: transparent;
+}
+
+.gallery-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.masonry {
+    column-count: 5;
+    column-gap: 16px;
+}
+
+@media (max-width: 1200px) {
+    .masonry { column-count: 4; }
+}
+
+@media (max-width: 900px) {
+    .masonry { column-count: 3; }
+}
+
+@media (max-width: 600px) {
+    .masonry { column-count: 2; column-gap: 12px; }
+}
+
+@media (max-width: 400px) {
+    .masonry { column-count: 1; }
+}
+
+.card {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: visible;
+    background: transparent;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+}
+.card img {
+    transition: filter 0.3s ease;
+}
+.card:hover img {
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
+}
+
+.card img {
+    width: 100%;
+    display: block;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+}
+
+.card-name {
+    display: none;
+}
+
+.no-results {
+    text-align: center;
+    color: #666;
+    padding: 60px 20px;
+    font-size: 16px;
+    display: none;
+}
+
+/* Person Page Styles */
+.person-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #888;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 12px 0;
+    transition: color 0.2s;
+}
+
+.back-btn:hover {
+    color: #fff;
+}
+
+.back-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.person-name {
+    font-size: 32px;
+    font-weight: 300;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: lowercase;
+}
+
+/* Image Viewer */
+.viewer-stage {
+    position: relative;
+    width: 100%;
+    background: #0a0a0a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.slider-track {
+    display: flex;
+    transition: transform 0.3s ease;
+}
+
+.slide-page {
+    min-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.slide-page img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+    z-index: 10;
+}
+
+.nav-arrow:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.nav-arrow svg {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+    fill: none;
+}
+
+.nav-arrow.prev {
+    left: 10px;
+}
+
+.nav-arrow.next {
+    right: 10px;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #333;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dot.active {
+    background: #666;
+}
+
+/* Bio Section */
+.bio-section {
+    margin-top: 50px;
+    padding: 30px;
+    background: #141414;
+    border-radius: 8px;
+}
+
+.bio-section h2 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.bio-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #ccc;
+}
