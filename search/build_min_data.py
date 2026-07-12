@@ -9,8 +9,12 @@ DOK = os.path.join(BASE, "Untitled spreadsheet - Dokumentasi.csv")
 LINKS = os.path.join(BASE, "Untitled spreadsheet - Link Penting.csv")
 SERT = os.path.join(BASE, "Untitled spreadsheet - Sertifikat(1).csv")
 CONTACTS = os.path.join(BASE, "contacts.csv")
-SISWA = os.path.join(BASE, "Ercava Development Program - Sheet29(1).csv")
+STATUS = os.path.join(BASE, "Ercava Development Program - STATUS.csv")
 OUT = os.path.join(BASE, "data.js")
+OUT_PEGASUS = os.path.join(BASE, "..", "PEGASUS", "search", "data.js")
+OUTPUTS = [OUT]
+if os.path.exists(os.path.dirname(OUT_PEGASUS)):
+    OUTPUTS.append(OUT_PEGASUS)
 
 def clean_wa(phone):
     if not phone: return ""
@@ -72,9 +76,9 @@ def build():
                     links.append({"label": "Telepon", "url": f"tel:{phone}"})
                 data.append({"title": name, "category": "Kontak", "meta": meta, "links": links})
 
-    if os.path.exists(SISWA):
+    if os.path.exists(STATUS):
         seen = set()
-        with open(SISWA, 'r', encoding='utf-8') as f:
+        with open(STATUS, 'r', encoding='utf-8') as f:
             r = csv.reader(f); next(r, None)
             for row in r:
                 if not row or len(row) < 2: continue
@@ -82,25 +86,34 @@ def build():
                 name = row[1].strip()
                 nick = row[2].strip() if len(row) > 2 else ""
                 jk = row[3].strip() if len(row) > 3 else ""
-                birth = row[4].strip() if len(row) > 4 else ""
-                ig = row[5].strip() if len(row) > 5 else ""
+                birth = row[6].strip() if len(row) > 6 else ""
+                ig = row[7].strip() if len(row) > 7 else ""
+                linkedin = row[8].strip() if len(row) > 8 else ""
+                jurusan = row[9].strip() if len(row) > 9 else ""
+                univ = row[10].strip() if len(row) > 10 else ""
+                kerja = row[12].strip() if len(row) > 12 else ""
                 if not name or name in seen: continue
                 seen.add(name)
                 links, md = [], []
                 if nick: md.append(f"({nick})")
                 if birth: md.append(birth)
+                if kerja: md.append(kerja)
                 if ig: links.append({"label": "Instagram", "url": f"https://instagram.com/{ig.replace('@','')}"})
+                if linkedin: links.append({"label": "LinkedIn", "url": ensure_https(linkedin)})
                 gs = "Laki-laki" if jk == "L" else "Perempuan" if jk == "P" else jk
                 ms = " · ".join(md) if md else "Siswa A29"
                 if gs: ms += f" | {gs}"
+                if jurusan: ms += f" | {jurusan}"
+                if univ: ms += f" · {univ}"
                 entry = {"title": name, "category": "Siswa A29", "meta": ms, "links": links}
                 if birth: entry["birthday"] = birth
                 data.append(entry)
 
     enc = base64.b64encode(json.dumps(data, ensure_ascii=False, separators=(',',':')).encode('utf-8')).decode('ascii')
-    with open(OUT, 'w', encoding='utf-8') as f:
-        f.write(f'window.__SEARCH_DATA="{enc}";\n')
-    print(f"Done: {len(data)} items -> {OUT}")
+    for p in OUTPUTS:
+        with open(p, 'w', encoding='utf-8') as f:
+            f.write(f'window.__SEARCH_DATA="{enc}";\n')
+        print(f"Done: {len(data)} items -> {p}")
 
 if __name__ == "__main__":
     build()

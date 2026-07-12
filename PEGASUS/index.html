@@ -1742,10 +1742,6 @@
 
       function updateBirthday() {
         if (!birthdayTracker) return;
-        if (!showSiswa) {
-          birthdayTracker.style.display = 'none';
-          return;
-        }
         const now = new Date();
         const tm = now.getMonth();
         const td = now.getDate();
@@ -1778,14 +1774,16 @@
             h += `<div class="birthday-person"><span class="birthday-name">${esc(todayList[j].title)}</span><span class="birthday-date">${esc(todayList[j].birthday)}</span></div>`;
           }
           h += '</div>';
-        } else {
-          h += '<div class="birthday-section birthday-none"><div class="birthday-section-title">tidak ada ulang tahun hari ini</div></div>';
         }
         if (nextItem) {
           h += `<div class="birthday-section birthday-next"><div class="birthday-section-title">Birthday Terdekat!</div><div class="birthday-person"><span class="birthday-name">${esc(nextItem.title)}</span><span class="birthday-date">${esc(nextItem.birthday)} · ${nextDays} hari lagi</span></div></div>`;
         }
-        birthdayTracker.innerHTML = h;
-        birthdayTracker.style.display = 'block';
+        if (h) {
+          birthdayTracker.innerHTML = h;
+          birthdayTracker.style.display = 'block';
+        } else {
+          birthdayTracker.style.display = 'none';
+        }
       }
 
       // LinkedIn Sidebar logic
