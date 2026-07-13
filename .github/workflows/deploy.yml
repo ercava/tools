@@ -1,0 +1,47 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Inject Firebase Client Config
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        run: |
+          if [ -z "$FIREBASE_CONFIG" ]; then
+            echo "Warning: FIREBASE_CONFIG secret is empty."
+            exit 0
+          fi
+          # Replace the placeholder in the target files
+          node -e '
+            const fs = require("fs");
+            const config = process.env.FIREBASE_CONFIG;
+            const files = ["s/index.html", "404.html", "shortlink/index.html"];
+            files.forEach(file => {
+              if (fs.existsSync(file)) {
+                let content = fs.readFileSync(file, "utf8");
+                content = content.replace("const HARDCODED_CONFIG = null;", `const HARDCODED_CONFIG = ${config};`);
+                fs.writeFileSync(file, content, "utf8");
+                console.log(`Injected config into ${file}`);
+              }
+            });
+          '
+
+      - name: Deploy to gh-pages branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: .
+          branch: gh-pages
+          clean: true

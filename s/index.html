@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(17, 24, 39, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.3);
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(147, 51, 234, 0.05) 0%, transparent 40%);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 480px;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Loading UI */
+    .loader {
+      width: 64px;
+      height: 64px;
+      border: 4px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      margin: 0 auto 2rem;
+      animation: spin 1s infinite linear;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .code-display {
+      font-family: 'Roboto Mono', monospace;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    /* Error UI */
+    .error-icon {
+      font-size: 3rem;
+      color: var(--error);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.8rem 1.8rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+
+    /* Config Dialog UI */
+    .config-form {
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .form-group textarea {
+      width: 100%;
+      height: 120px;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="status-card">
+    <div id="loader-view">
+      <div class="loader"></div>
+      <h1>Redirecting</h1>
+      <p>Taking you to destination for <span class="code-display" id="code-lbl">...</span></p>
+    </div>
+
+    <!-- Error/404 View -->
+    <div id="error-view" class="hidden">
+      <div class="error-icon">⚠️</div>
+      <h1 id="error-title">Link Not Found</h1>
+      <p id="error-msg">The shortlink is invalid or has expired.</p>
+      <a href="../shortlink/" class="btn">Create Shortlink</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // HARDCODE CONFIG HERE FOR PRODUCTION TO BYPASS MODAL
+    // const HARDCODED_CONFIG = { apiKey: "...", projectId: "..." };
+    const HARDCODED_CONFIG = null;
+
+    const views = {
+      loader: document.getElementById('loader-view'),
+      error: document.getElementById('error-view')
+    };
+
+    function showView(viewName) {
+      Object.keys(views).forEach(k => {
+        if (k === viewName) {
+          views[k].classList.remove('hidden');
+        } else {
+          views[k].classList.add('hidden');
+        }
+      });
+    }
+
+    function getCode() {
+      const path = window.location.pathname;
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('c')) {
+        return params.get('c').trim();
+      }
+      
+      const segments = path.split('/').filter(Boolean);
+      if (segments.length > 0) {
+        const last = segments[segments.length - 1];
+        if (last !== 's' && last !== 'index.html') {
+          return last;
+        }
+      }
+      return '';
+    }
+
+    function sanitizeCode(code) {
+      return code.replace(/[^a-zA-Z0-9\-]/g, '');
+    }
+
+    async function init() {
+      const code = sanitizeCode(getCode());
+      document.getElementById('code-lbl').textContent = code || 'none';
+
+      if (!code) {
+        showError('No Code Provided', 'Please check URL or enter a valid shortlink code.');
+        return;
+      }
+
+      let config = HARDCODED_CONFIG;
+      if (!config) {
+        const stored = localStorage.getItem('firebase_config');
+        if (stored) {
+          try {
+            config = JSON.parse(stored);
+          } catch (e) {
+            console.error("Invalid stored config", e);
+          }
+        }
+      }
+
+      if (!config) {
+        showError('Setup Required', 'Database configuration missing. Please verify GitHub Secrets deployment or HARDCODED_CONFIG setup.');
+        return;
+      }
+
+      try {
+        const app = initializeApp(config);
+        const db = getFirestore(app);
+        const docRef = doc(db, "shortlinks", code);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          showError('Link Not Found', `No destination found for code: "${code}"`);
+          return;
+        }
+
+        let dest = docSnap.data().url;
+        if (!/^https?:\/\//i.test(dest)) {
+          dest = 'https://' + dest;
+        }
+        window.location.href = dest;
+
+      } catch (err) {
+        showError('System Error', 'Failed to connect to Firebase database.');
+        console.error(err);
+      }
+    }
+
+    function showError(title, msg) {
+      document.getElementById('error-title').textContent = title;
+      document.getElementById('error-msg').textContent = msg;
+      showView('error');
+    }
+
+    init();
+  </script>
+</body>
+</html>

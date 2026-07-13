@@ -1,0 +1,23 @@
+name: Request Shortlink
+description: Submit a request to generate a shortlink
+title: "[Shortlink]: Request"
+labels: ["shortlink-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a shortlink! The GitHub Action will process this request automatically.
+  - type: input
+    id: target_url
+    attributes:
+      label: Destination URL
+      placeholder: https://example.com/some/long/path
+    validations:
+      required: true
+  - type: input
+    id: custom_code
+    attributes:
+      label: Custom Code / Alias (Optional)
+      placeholder: leave empty for random code
+    validations:
+      required: false
