@@ -223,7 +223,7 @@
 
         <div class="prefilled-wrapper">
           <span class="prefilled-prefix">erc.my.id/s/</span>
-          <input type="text" id="custom-code" class="prefilled-input" placeholder="custom-alias" pattern="^[a-zA-Z0-9\-]+$" title="Hanya huruf, angka, dan strip (-) yang diperbolehkan" required>
+          <input type="text" id="custom-code" class="prefilled-input" placeholder="custom-url" pattern="^[a-zA-Z0-9\-]+$" title="Hanya huruf, angka, dan strip (-) yang diperbolehkan" required>
         </div>
       </div>
 
@@ -313,18 +313,19 @@
           return;
         }
 
-        // Insert
-        await setDoc(docRef, {
-          url: urlInput,
-          created_at: serverTimestamp()
-        });
+        // Redirect to GitHub Issue creation
+        const issueTitle = encodeURIComponent(`[Shortlink]: Request`);
+        const issueBody = encodeURIComponent(`### Destination URL\n\n${urlInput}\n\n### Custom Code / Alias (Optional)\n\n${code}`);
+        const repoUrl = "https://github.com/theonehzx/tools";
+        const issueUrl = `${repoUrl}/issues/new?title=${issueTitle}&labels=shortlink-request&body=${issueBody}`;
 
-        const fullUrl = `https://erc.my.id/s/${code}`;
-        showStatus(`Sukses! ERCLINK dibuat: <a href="${fullUrl}" target="_blank" style="color: var(--success); font-weight: 800;">${fullUrl}</a>`, 'success');
+        showStatus(`Menghubungkan ke GitHub... Selesaikan permintaan di GitHub untuk membuat link: <a href="${issueUrl}" target="_blank" style="color: var(--primary); font-weight: 800; text-decoration: underline;">Klik Disini untuk Submit</a>`, 'success');
         
-        // Regenerate prefilled input for next link
-        document.getElementById('custom-code').value = generateRandomCode();
+        window.open(issueUrl, '_blank');
+
+        // Reset inputs
         document.getElementById('dest-url').value = '';
+        document.getElementById('custom-code').value = generateRandomCode();
 
       } catch (err) {
         showStatus(`Database Error: ${err.message}`, 'error');
