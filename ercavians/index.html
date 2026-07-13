@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ercavians Directory</title>
+	<link rel="icon" type="image/x-icon" href="https://ercava.github.io/logo/favicon.ico" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="search-container">
+        <span class="search-icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </span>
+        <input type="text" class="search-input" id="searchInput" placeholder="">
+    </div>
+
+    <div class="gallery-container">
+        <div class="masonry" id="gallery"></div>
+        <div class="no-results" id="noResults">no ercavians found</div>
+    </div>
+
+    <script>
+        const peopleData = [
+            {
+                name: "faiz",
+                preview: "people/faiz.webp",
+                bio: "Faiz Haydar Akmal lahir di Semarang pada 18 Agustus 2007. Sejak kecil, ia dikenal sebagai sosok yang haus ilmu dan selalu bersenang belajar terutama pada pelajaran favoritnya astronomi, computer dan fisika. Hiburan yang selalu menemaninya disaat stress belajar adalah menonton anime dan hal ini lah yang membuatnya jatuh cinta pada Jepang. Impian terbesarnya adalah bisa kuliah dan tinggal di Jepang suatu hari nanti. Dengan tekad kuat, ia terus berusaha mewujudkan cita-citanya. Penasaran dengan kisah hidupnya? Yuk, intip Instagramnya di @faizakmml!"
+            },
+            {
+                name: "faris",
+                preview: "people/faris.webp",
+                bio: "Mereka bilang bermimpilah setinggi langit, tapi bukankah jatuh dari ketinggian itu sakit? itulah yang ada di pikiran remaja 17 tahun ini 6 bulan terakhir. Walau sering di bawah bayang-bayang penyesalan, ia berusaha untuk terus melihat打野, dan mencoba mencari secercah harapan (setidaknya itu yang ia inginkan). Kehidupannya di MAN Insan Cendekia Serpong ini tidak ada yang spesial. Akademik nanggung, olahraga nanggung, organisasi nanggung, sosial nanggung, olim nanggung, semua nanggung. Mungkin nanggungnya ini bisa menjadi keunikan tersendiri, namun bisakah ia mendapatkan sesuatu yang berarti dari hal ini? Oiya kenalin, namanya Faris Patria Chariansyah."
+            }
+        ];
+
+        function renderGallery(data) {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            if (data.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('noResults').style.display = 'none';
+
+            data.forEach(person => {
+                const card = document.createElement('a');
+                card.href = person.name + '.html';
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${person.preview}" alt="${person.name}" loading="lazy">
+                    <div class="card-name">${person.name}</div>
+                `;
+                gallery.appendChild(card);
+            });
+        }
+
+        function filterPeople(query) {
+            const q = query.toLowerCase().trim();
+            if (!q) return renderGallery(peopleData);
+
+            const filtered = peopleData.filter(person => {
+                return person.name.toLowerCase().includes(q) ||
+                       person.bio.toLowerCase().includes(q);
+            });
+
+            renderGallery(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterPeople(e.target.value);
+        });
+
+        renderGallery(peopleData);
+    </script>
+</body>
+</html>

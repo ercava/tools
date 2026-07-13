@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Nilai TKA wowow</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="data/results.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen flex flex-col items-center p-4 md:p-10">
+
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl w-full max-w-2xl">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-slate-800">CEK TKA ERCAVA ☄️</h1>
+            <p class="text-slate-500 mt-2">Pakai NISN untuk melihat detail nilai!</p>
+            <p class="text-blue-600 font-bold mt-1 animate-pulse">Sertifikat sudah rilis! Download sekarang!</p>
+        </div>
+
+        <div class="flex gap-2 mb-6">
+            <input type="text" id="nisnInput" placeholder="Disini 10 digit NISN..."
+                class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition">
+            <button onclick="cariNilai()"
+                class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md">
+                Cari
+            </button>
+        </div>
+
+        <div id="result" class="hidden animate-fade-in">
+            <div
+                class="bg-blue-50 p-4 rounded-lg mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <p class="text-sm text-blue-600 font-medium uppercase tracking-wider">Nama Peserta</p>
+                    <h2 id="outNama" class="text-xl font-bold text-slate-800"></h2>
+                    <p id="outTTL" class="text-slate-600 text-sm"></p>
+                </div>
+                <div id="certContainer">
+                    <a id="btnDownload" href="#" target="_blank"
+                        class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition flex items-center gap-2 shadow-sm">
+                        <span>Sertifikat</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-slate-200">
+                            <th class="py-3 px-2 text-slate-600 font-semibold">Mata Pelajaran</th>
+                            <th class="py-3 px-2 text-slate-600 font-semibold text-right">Nilai & Predikat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outNilai" class="divide-y divide-slate-100">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="error" class="mt-4 p-4 bg-red-50 text-red-600 text-center rounded-lg hidden">
+            Data tidak ditemukan. Pastikan NISN yang dimasukkan benar.
+        </div>
+    </div>
+
+    <script>
+        let dataSiswa = [];
+
+        if (window.RAW_DATA) {
+            Papa.parse(window.RAW_DATA, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    dataSiswa = results.data;
+                    console.log("Data loaded successfully from global variable");
+                }
+            });
+        } else {
+            console.error("Data variable RAW_DATA not found. Make sure data/results.js is loaded.");
+        }
+
+        function cariNilai() {
+            const input = document.getElementById('nisnInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const outNilai = document.getElementById('outNilai');
+            const btnDownload = document.getElementById('btnDownload');
+
+            const siswa = dataSiswa.find(row => {
+                if (!row || !row['Nomor Peserta NISN']) return false;
+                const fullID = row['Nomor Peserta NISN'] || "";
+                return fullID.includes(input) && input !== "" && input.length >= 10;
+            });
+
+            if (siswa) {
+                errorDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+
+                const nama = siswa['Nama Peserta'];
+                document.getElementById('outNama').innerText = nama;
+                document.getElementById('outTTL').innerText = (siswa['Tempat, Tanggal Lahir'] || "").replace(/\n/g, ' ');
+
+                const matchNisn = siswa['Nomor Peserta NISN'].match(/\d{10}/);
+                const actualNisn = matchNisn ? matchNisn[0] : input;
+
+                if (window.CERT_MAPPING && window.CERT_MAPPING[actualNisn]) {
+                    btnDownload.href = `certificates/${window.CERT_MAPPING[actualNisn]}`;
+                    btnDownload.classList.remove('hidden');
+                } else {
+                    btnDownload.classList.add('hidden');
+                }
+
+                const listMapel = [
+                    { label: 'Bahasa Indonesia', key: 'Bahasa Indonesia' },
+                    { label: 'Matematika', key: 'Matematika' },
+                    { label: 'Bahasa Inggris', key: 'Bahasa Inggris' },
+                    { label: 'Mapel Pilihan 1', key: 'Pilihan 1' },
+                    { label: 'Mapel Pilihan 2', key: 'Pilihan 2' }
+                ];
+
+                outNilai.innerHTML = "";
+                listMapel.forEach(m => {
+                    let val = siswa[m.key] ? siswa[m.key].replace(/\n/g, ' ') : '-';
+                    outNilai.innerHTML += `
+                        <tr>
+                            <td class="py-4 px-2 font-medium text-slate-700">${m.label}</td>
+                            <td class="py-4 px-2 text-right text-slate-600">${val}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                resultDiv.classList.add('hidden');
+                errorDiv.classList.remove('hidden');
+            }
+        }
+    </script>
+
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</body>
+
+</html>

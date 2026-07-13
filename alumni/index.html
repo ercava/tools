@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <title>Alumni MANICS Tracker</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Theme CSS Variables */
+        :root {
+            --clr-primary: #2563eb;
+            --clr-primary-light: #eff6ff;
+            --clr-primary-mid: #93c5fd;
+            --clr-primary-hover: #1d4ed8;
+            --clr-primary-100: #dbeafe;
+        }
+        .theme-blue   { --clr-primary:#2563eb; --clr-primary-light:#eff6ff; --clr-primary-mid:#93c5fd; --clr-primary-hover:#1d4ed8; --clr-primary-100:#dbeafe; }
+        .theme-yellow { --clr-primary:#d97706; --clr-primary-light:#fffbeb; --clr-primary-mid:#fcd34d; --clr-primary-hover:#b45309; --clr-primary-100:#fef3c7; }
+        .theme-emerald{ --clr-primary:#059669; --clr-primary-light:#ecfdf5; --clr-primary-mid:#6ee7b7; --clr-primary-hover:#047857; --clr-primary-100:#d1fae5; }
+        .theme-rose   { --clr-primary:#e11d48; --clr-primary-light:#fff1f2; --clr-primary-mid:#fda4af; --clr-primary-hover:#be123c; --clr-primary-100:#ffe4e6; }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-out {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(10px); }
+        }
+
+        /* Theme-aware tab active state */
+        .tab-active {
+            border-color: var(--clr-primary);
+            color: var(--clr-primary);
+        }
+        .tab-inactive {
+            border-color: transparent;
+            color: #64748b;
+        }
+        .tab-inactive:hover {
+            color: #334155;
+            border-color: #cbd5e1;
+        }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: var(--clr-primary); }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--clr-primary); }
+            @keyframes shine-x {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        .shine-text-hover:hover {
+            background: linear-gradient(120deg, #64748b 20%, #cbd5e1 40%, #64748b 60%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine-x 2s linear infinite;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(28px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-28px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .cohort-slide-right {
+            animation: slideInRight 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+        .cohort-slide-left {
+            animation: slideInLeft 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-gray-50 flex flex-col">
+            <!-- Header -->
+            <div class="bg-white/90 backdrop-blur-sm shadow-sm border-b border-slate-200 sticky top-0 z-10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div class="animate-fade-in">
+                            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent">Alumni MANICS Erc-Tracker</h1>
+                            <p class="text-slate-600 mt-1 sm:mt-2 text-sm sm:text-base md:text-lg">Pantau persebaran alumni MAN Insan Cendekia Serpong.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right animate-fade-in sm:block hidden">
+                                <div class="text-xs sm:text-sm text-slate-500">Sumber Data</div>
+                                <div class="text-xs sm:text-sm font-semibold text-slate-900">SNBT API &amp; Arsip Internal</div>
+                            </div>
+                            <button onclick="openSettings()" id="settingsBtn" title="Pengaturan" class="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-colors shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><circle cx="12" cy="12" r="3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Navigation Tabs -->
+                    <nav class="mt-4 sm:mt-6 pb-0 flex gap-4 border-b border-slate-200 overflow-x-auto" style="scrollbar-width: none;">
+                        <button id="tab-all" onclick="setCohort('all')" class="tab-active px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors focus:outline-none flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Semua Angkatan (Global)
+                        </button>
+                        <button id="tab-lsc" onclick="setCohort('lsc')" class="tab-inactive px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors focus:outline-none flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            Angkatan A27 (Lascaren)
+                        </button>
+                        <button id="tab-cls" onclick="setCohort('cls')" class="tab-inactive px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors focus:outline-none flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            Angkatan A28 (Calastra)
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+                <!-- Dashboard Stats - Row 1 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+                    <!-- Total Students -->
+                    <div class="animate-fade-in" style="animation-delay: 0.1s;">
+                        <div class="rounded-xl relative overflow-hidden group bg-white border border-slate-100 shadow-sm flex flex-col" style="min-height:140px">
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 bg-slate-600"></div>
+                            <div class="px-5 pt-5 pb-2 flex flex-row items-center justify-between">
+                                <h3 class="text-sm font-medium text-slate-500">Total Alumni</h3>
+                                <div class="p-2 rounded-lg bg-slate-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                </div>
+                            </div>
+                            <div class="px-5 pb-5 flex flex-col">
+                                <div class="text-4xl font-extrabold text-slate-900 mb-1 tracking-tight" id="stat-total">--</div>
+                                <p class="text-xs font-semibold text-slate-400 shine-text-hover cursor-default">Jumlah siswa terdata</p>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- PTN vs PTLN breakdown -->
+                    <div class="animate-fade-in" style="animation-delay: 0.2s;">
+                        <div class="rounded-xl relative overflow-hidden group bg-white border border-slate-100 shadow-sm flex flex-col" style="min-height:140px">
+                            <div class="absolute inset-0 opacity-0 group-hover:opacity-[0.06] transition-opacity duration-500 bg-blue-600"></div>
+                            <div class="px-5 pt-5 pb-1 flex flex-row items-center justify-between">
+                                <h3 class="text-sm font-medium text-slate-500">Tujuan Lanjut Studi</h3>
+                                <div class="p-2 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                </div>
+                            </div>
+                            <div class="px-5 pb-2 flex items-baseline gap-2">
+                                <span class="text-4xl font-extrabold text-slate-900 tracking-tight" id="stat-accepted">--</span>
+                                <span class="text-xs text-slate-500 font-medium">Telah Diterima</span>
+                            </div>
+                            <div class="px-5 pb-4 flex flex-col gap-2">
+                                <div class="w-full h-3 bg-slate-100 rounded-full flex shadow-inner overflow-hidden">
+                                    <div id="bar-ptn" class="h-full bg-emerald-500 transition-all duration-1000 w-0 rounded-l-full"></div>
+                                    <div id="bar-ptln" class="h-full bg-amber-400 transition-all duration-1000 w-0 rounded-r-full"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-slate-600 font-semibold">
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-emerald-500"></span>PTN: <span id="stat-ptn">0</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-sm bg-amber-400"></span>Non-PTN: <span id="stat-ptln">0</span></span>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </div>
+                    </div>
+
+                    <!-- Top University Pie Chart (Span 2) -->
+                    <div class="animate-fade-in lg:col-span-2" style="animation-delay: 0.3s;">
+                        <div class="rounded-xl relative overflow-hidden bg-white border border-slate-100 shadow-sm h-full flex flex-col p-4">
+                            <h3 class="text-sm font-medium text-slate-500 px-2 pt-2 mb-2">Sebaran Universitas Teratas</h3>
+                            <div class="flex-1 w-full relative h-[180px] min-h-[180px]">
+                                <canvas id="univPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UTBK SNBT Tracker Toggleable Row -->
+                <div id="snbtStatsContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12 hidden">
+                    <!-- Passed SNBT -->
+                    <div class="animate-fade-in" style="animation-delay: 0.1s;">
+                        <div class="rounded-xl relative overflow-hidden transition-all duration-300 group bg-white border border-slate-100 shadow-sm h-full flex flex-col">
+                            <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300 bg-emerald-600"></div>
+                            <div class="p-6 flex flex-row items-center justify-between pb-3">
+                                <h3 class="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Lolos SNBT</h3>
+                                <div class="p-2 rounded-lg bg-emerald-50 group-hover:bg-emerald-100 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                            </div>
+                            <div class="p-6 pt-0 flex-1">
+                                <div class="text-3xl font-bold text-slate-900 mb-1 group-hover:scale-105 origin-left transition-transform" id="stat-passed">--</div>
+                                <p class="text-xs text-slate-500">Mencapai Passing Grade SNBT</p>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </div>
+                    </div>
+
+                    <!-- Other Pathways -->
+                    <div class="animate-fade-in" style="animation-delay: 0.2s;">
+                        <div class="rounded-xl relative overflow-hidden transition-all duration-300 group bg-white border border-slate-100 shadow-sm h-full flex flex-col">
+                            <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300 bg-amber-500"></div>
+                            <div class="p-6 flex flex-row items-center justify-between pb-3">
+                                <h3 class="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Jalur Lain / Gagal</h3>
+                                <div class="p-2 rounded-lg bg-amber-50 group-hover:bg-amber-100 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                                </div>
+                            </div>
+                            <div class="p-6 pt-0 flex-1">
+                                <div class="text-3xl font-bold text-slate-900 mb-1 group-hover:scale-105 origin-left transition-transform" id="stat-failed">--</div>
+                                <p class="text-xs text-slate-500">Gagal SNBT / Jalur Mandiri dll.</p>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pass Rate -->
+                    <div class="animate-fade-in" style="animation-delay: 0.3s;">
+                        <div class="rounded-xl relative overflow-hidden transition-all duration-300 group bg-white border border-slate-100 shadow-sm h-full flex flex-col">
+                            <div class="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-300 bg-blue-600"></div>
+                            <div class="p-6 flex flex-row items-center justify-between pb-3">
+                                <h3 class="text-sm font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Tingkat Kelulusan</h3>
+                                <div class="p-2 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
+                                </div>
+                            </div>
+                            <div class="p-6 pt-0 flex-1">
+                                <div class="text-3xl font-bold text-blue-600 mb-1 group-hover:scale-105 origin-left transition-transform" id="stat-rate">--%</div>
+                                <p class="text-xs text-slate-500">Persentase lolos SNBT</p>
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Map Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 animate-fade-in mb-8" style="animation-delay: 0.45s;">
+                    <div class="mb-6">
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Peta Persebaran Alumni</h2>
+                        <p class="text-slate-500 text-sm mt-1">Titik persebaran alumni berdasarkan lokasi kampus di Indonesia</p>
+                    </div>
+                    <div id="indonesiaMap" class="w-full h-[400px] rounded-xl border border-slate-200 z-0"></div>
+                </div>
+
+                <!-- University Grid & Table Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 md:p-8 animate-fade-in" style="animation-delay: 0.5s;">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 sm:mb-8">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-slate-900" id="sectionTitle">Persebaran Universitas</h2>
+                            <p class="text-slate-500 text-sm mt-1">Daftar universitas tempat penerimaan alumni</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                            <!-- Toggle View Mode -->
+                            <div class="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 shrink-0">
+                                <button id="btnGrid" onclick="setViewMode('grid')" class="px-3 py-1.5 text-sm font-medium rounded-md shadow-sm bg-white text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                    Grid
+                                </button>
+                                <button id="btnList" onclick="setViewMode('list')" class="px-3 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                                    List
+                                </button>
+                            </div>
+                            <div class="relative w-full sm:w-72">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <input id="searchInput" onkeyup="filterData()" class="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow bg-slate-50 focus:bg-white" placeholder="Cari...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="gridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                        <!-- Dynamic University Cards will be populated here by JS -->
+                    </div>
+
+                    <div id="listContainer" class="hidden overflow-x-auto rounded-lg border border-slate-200">
+                        <table class="min-w-full divide-y divide-slate-200 text-sm">
+                            <thead class="bg-slate-50 uppercase text-slate-500 text-xs font-semibold">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 text-left cursor-pointer hover:bg-slate-100 group" onclick="sortTable('name')">
+                                        <div class="flex items-center gap-1">Nama Siswa <span id="sort-icon-name" class="opacity-0 group-hover:opacity-50">&uarr;</span></div>
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left cursor-pointer hover:bg-slate-100 group" onclick="sortTable('ptn')">
+                                        <div class="flex items-center gap-1">Universitas <span id="sort-icon-ptn" class="opacity-0 group-hover:opacity-50">&uarr;</span></div>
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left cursor-pointer hover:bg-slate-100 group" onclick="sortTable('prodi')">
+                                        <div class="flex items-center gap-1">Program Studi <span id="sort-icon-prodi" class="opacity-0 group-hover:opacity-50">&uarr;</span></div>
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 text-left cursor-pointer hover:bg-slate-100 group" onclick="sortTable('jalur')">
+                                        <div class="flex items-center gap-1">Jalur <span id="sort-icon-jalur" class="opacity-0 group-hover:opacity-50">&uarr;</span></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="bg-white divide-y divide-slate-200">
+                                <!-- Dynamic Table Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-auto border-t border-slate-200 bg-white py-6">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col items-center justify-between md:flex-row">
+                        <p class="text-sm text-slate-500">© 2026 Alumni Ercava UTBK Tracker. Modeled after Hanif Dwy Putra S.</p>
+                        <p class="text-sm text-slate-400 mt-2 md:mt-0">ESTRELLA LUXAMERTA CLAVISANTARA</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- University Details Modal -->
+    <div id="uniModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-100">
+                    <!-- Modal Header -->
+                    <div class="bg-slate-50 px-4 py-5 sm:px-6 border-b border-slate-200 flex items-center justify-between sticky top-0 z-20">
+                        <div class="flex items-center gap-4">
+                            <div id="modalLogo" class="w-12 h-12 rounded-lg shadow-sm flex items-center justify-center text-white font-bold text-lg"></div>
+                            <div>
+                                <h3 id="modalTitle" class="text-xl font-bold text-slate-900 leading-tight">University</h3>
+                                <p class="text-sm text-slate-500 mt-1"><span id="modalCount" class="font-medium text-slate-700">0</span> Alumni Terdaftar</p>
+                            </div>
+                        </div>
+                        <button onclick="closeModal()" class="p-2 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Modal Search & Content -->
+                    <div class="bg-white px-4 pt-5 pb-6 sm:p-6 sm:pb-8">
+                        <div class="mb-5 relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <input id="modalSearch" onkeyup="debouncedFilterModal()" type="text" placeholder="Cari Nama atau Program Studi..." class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-slate-50 focus:bg-white text-slate-700">
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm max-h-[60vh] overflow-y-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                <thead class="bg-slate-50 uppercase text-slate-500 text-xs font-semibold sticky top-0 z-10 shadow-sm">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3.5 text-left cursor-pointer hover:bg-slate-100 group transition-colors" onclick="sortModal('name')">
+                                            <div class="flex items-center gap-1">Nama Siswa <span id="modal-sort-icon-name" class="text-blue-500">&uarr;</span></div>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3.5 text-left cursor-pointer hover:bg-slate-100 group transition-colors" onclick="sortModal('prodi')">
+                                            <div class="flex items-center gap-1">Program Studi <span id="modal-sort-icon-prodi" class="opacity-0 group-hover:opacity-50 transition-opacity">&uarr;</span></div>
+                                        </th>
+                                        <th scope="col" class="px-6 py-3.5 text-left cursor-pointer hover:bg-slate-100 group transition-colors" onclick="sortModal('jalur')">
+                                            <div class="flex items-center gap-1">Jalur <span id="modal-sort-icon-jalur" class="opacity-0 group-hover:opacity-50 transition-opacity">&uarr;</span></div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modalBody" class="bg-white divide-y divide-slate-100">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Processing Overlay -->
+    <div id="processingOverlay" class="fixed inset-0 z-[100] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-fade-in">
+            <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="text-slate-800 font-bold" id="processingText">Memproses Permintaan...</p>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-slate-900 bg-opacity-50 backdrop-blur-sm" onclick="closeSettings()"></div>
+        <div class="fixed inset-0 z-10 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-xl bg-slate-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><circle cx="12" cy="12" r="3" /></svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-900">Pengaturan</h2>
+                    </div>
+                    <button onclick="closeSettings()" class="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+
+                <div class="px-6 py-5 space-y-6">
+                    <!-- Privacy Section -->
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Privasi</p>
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-800">Tampilkan Statistik Kelulusan SNBT</p>
+                                <p class="text-xs text-slate-400 mt-0.5">Lolos SNBT, Gagal, dan Tingkat Kelulusan</p>
+                            </div>
+                            <button id="snbtToggle" onclick="toggleSNBT()" role="switch" class="relative flex-shrink-0 flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors duration-200 focus:outline-none" style="margin-top:2px;">
+                                <span id="snbtThumb" class="inline-block h-4 w-4 rounded-full bg-white shadow translate-x-1 transition-transform duration-200"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Theme Section -->
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Tema Warna</p>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button onclick="setTheme('blue')" id="theme-btn-blue" class="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-blue-500 bg-blue-50 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-blue-500"></div>
+                                <span class="text-xs font-semibold text-blue-700">Biru</span>
+                            </button>
+                            <button onclick="setTheme('yellow')" id="theme-btn-yellow" class="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-amber-50 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-amber-500"></div>
+                                <span class="text-xs font-semibold text-slate-500">Kuning</span>
+                            </button>
+                            <button onclick="setTheme('emerald')" id="theme-btn-emerald" class="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-emerald-50 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-emerald-500"></div>
+                                <span class="text-xs font-semibold text-slate-500">Hijau</span>
+                            </button>
+                            <button onclick="setTheme('rose')" id="theme-btn-rose" class="flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-rose-50 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-rose-500"></div>
+                                <span class="text-xs font-semibold text-slate-500">Merah</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Export Section -->
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Ekspor Data (PDF)</p>
+                        <div class="flex flex-col gap-2">
+                            <button id="btn-export-all" onclick="exportPDF('all')" class="w-full py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200">Unduh PDF (Semua Data)</button>
+                            <button id="btn-export-lsc" onclick="exportPDF('lsc')" class="w-full py-2 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">Unduh PDF (Angkatan A27)</button>
+                            <button id="btn-export-cls" onclick="exportPDF('cls')" class="w-full py-2 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">Unduh PDF (Angkatan A28)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-4 bg-slate-50 rounded-b-2xl text-xs text-slate-400 text-center">
+                    Pengaturan disimpan secara lokal di browser ini.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let globalData = null;
+        let activeCohort = 'all';
+        let viewMode = 'grid';
+        let currentSort = { field: 'name', dir: 'asc' };
+        
+        let map = null;
+        let mapMarkers = [];
+        let featureGroup = null;
+
+        let activeModalPtn = null;
+        let modalSort = { field: 'name', dir: 'asc' };
+
+        // ---- Settings State ----
+        let settings = { theme: 'blue', showSNBT: false };
+
+        const THEME_COLORS = {
+            blue:    { border: 'border-blue-500',   bg: 'bg-blue-50',    text: 'text-blue-700' },
+            yellow:  { border: 'border-amber-500',  bg: 'bg-amber-50',   text: 'text-amber-700' },
+            emerald: { border: 'border-emerald-500',bg: 'bg-emerald-50', text: 'text-emerald-700' },
+            rose:    { border: 'border-rose-500',   bg: 'bg-rose-50',    text: 'text-rose-700' },
+        };
+
+        function openSettings() {
+            const el = document.getElementById('settingsModal');
+            el.classList.remove('hidden');
+            el.classList.add('animate-fade-in');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettings() {
+            const el = document.getElementById('settingsModal');
+            el.classList.remove('animate-fade-in');
+            el.classList.add('animate-fade-out');
+            setTimeout(() => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-fade-out');
+            }, 290);
+            document.body.style.overflow = '';
+        }
+
+        function setTheme(theme) {
+            settings.theme = theme;
+            saveSettings();
+            applySettings();
+        }
+
+        function toggleSNBT() {
+            settings.showSNBT = !settings.showSNBT;
+            saveSettings();
+            applySettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('alumniSettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('alumniSettings');
+                if (saved) settings = { ...settings, ...JSON.parse(saved) };
+            } catch(e) {}
+        }
+
+        function applySettings() {
+            // --- Apply Theme ---
+            const html = document.documentElement;
+            ['theme-blue','theme-yellow','theme-emerald','theme-rose'].forEach(c => html.classList.remove(c));
+            html.classList.add('theme-' + settings.theme);
+
+            // Update theme button UI
+            ['blue','yellow','emerald','rose'].forEach(t => {
+                const btn = document.getElementById('theme-btn-' + t);
+                if (!btn) return;
+                // Reset
+                btn.className = 'flex flex-col items-center gap-2 p-3 rounded-xl border-2 border-transparent bg-slate-50 hover:bg-slate-100 transition-all';
+                btn.querySelector('span').className = 'text-xs font-semibold text-slate-500';
+            });
+            // Activate selected
+            const active = document.getElementById('theme-btn-' + settings.theme);
+            const c = THEME_COLORS[settings.theme];
+            if (active) {
+                active.className = `flex flex-col items-center gap-2 p-3 rounded-xl border-2 ${c.border} ${c.bg} transition-all`;
+                active.querySelector('span').className = `text-xs font-semibold ${c.text}`;
+            }
+
+            // --- Apply SNBT Visibility ---
+            const container = document.getElementById('snbtStatsContainer');
+            if (container) {
+                if (settings.showSNBT) container.classList.remove('hidden');
+                else container.classList.add('hidden');
+            }
+
+            // Update toggle button UI
+            const toggle = document.getElementById('snbtToggle');
+            const thumb  = document.getElementById('snbtThumb');
+            if (toggle && thumb) {
+                if (settings.showSNBT) {
+                    toggle.style.backgroundColor = 'var(--clr-primary)';
+                    thumb.style.transform = 'translateX(1.375rem)';
+                } else {
+                    toggle.style.backgroundColor = '';
+                    toggle.classList.add('bg-slate-200');
+                    thumb.style.transform = 'translateX(0.25rem)';
+                }
+            }
+
+            // --- Update active tab color (CSS vars already handle it) ---
+        }
+        
+        const PTN_COORDINATES = {
+            "Institut Teknologi Bandung": [-6.8915, 107.6106],
+            "Universitas Indonesia": [-6.3600, 106.8200],
+            "Universitas Gadjah Mada": [-7.7669, 110.3775],
+            "Universitas Brawijaya": [-7.9526, 112.6145],
+            "Institut Pertanian Bogor": [-6.5583, 106.7214],
+            "IPB University": [-6.5583, 106.7214],
+            "UIN Jakarta": [-6.3079, 106.7583],
+            "Universitas Diponegoro": [-7.0515, 110.4355],
+            "Universitas Padjadjaran": [-6.9250, 107.7738],
+            "Institut Teknologi Sepuluh Nopember": [-7.2800, 112.7950],
+            "Universitas Pendidikan Indonesia": [-6.8623, 107.5900],
+            "Universitas Airlangga": [-7.2699, 112.7562],
+            "Universitas Hasanuddin": [-5.1326, 119.4883],
+            "Universitas Negeri Makassar": [-5.1783, 119.4320],
+            "Universitas Negeri Surabaya": [-7.3000, 112.6710],
+            "Trisakti School of Management": [-6.1685, 106.7905],
+            "Universitas Lampung": [-5.3822, 105.2573],
+            "Universitas Jenderal Soedirman": [-7.4049, 109.2562],
+            "Universitas Negeri Malang": [-7.9627, 112.6186],
+            "Universitas Negeri Sebelas Maret": [-7.5583, 110.8564],
+            "UPN Veteran Yogyakarta": [-7.7601, 110.4079],
+            "Universitas Bina Sarana Informatika": [-6.2307, 106.8643],
+            "Universitas Tarumanagara": [-6.1687, 106.7869],
+            // International
+            "Ritsumeikan APU - Jepang": [33.3215, 131.4729],
+            "Universiti Malaya - Malaysia": [3.1209, 101.6538],
+            "University of Toronto St. George Kanada": [43.6629, -79.3957],
+            "The Hong Kong University of Science and Technology - Hong Kong": [22.3364, 114.2655],
+            "Medipol University - Turki": [41.0664, 28.9056],
+            "Australian National University - Australia": [-35.2777, 149.1185],
+            "Korea Advance Institute of Science and Technology (KAIST)": [36.3721, 127.3604]
+        };
+
+        // Utility to clean up string (UI) or (UGM) artifacts logically
+        function normalizePtn(name) {
+            if (!name) return 'Unknown University';
+            return name.replace(/\s\([A-Z]+\)$/, '').trim();
+        }
+
+        // Abstract colorful placeholder generator for Universities without an exact logo mapping
+        function getInitials(name) {
+            return name.split(' ').map(n => n.charAt(0)).join('').substring(0, 2).toUpperCase();
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch('data.json');
+                const rawData = await response.json();
+                
+                // Pre-process and normalize data
+                globalData = {
+                    lsc: processCohortData(rawData.lsc),
+                    cls: processCohortData(rawData.cls),
+                };
+                
+                // Construct the "all" cohort dynamically
+                globalData.all = {
+                    total_students: globalData.lsc.total_students + globalData.cls.total_students,
+                    snbt_passed: globalData.lsc.snbt_passed + globalData.cls.snbt_passed,
+                    snbt_failed: globalData.lsc.snbt_failed + globalData.cls.snbt_failed,
+                    spread: [ ...globalData.lsc.spread, ...globalData.cls.spread ]
+                };
+
+                // Remove duplicate names if present (edge cases)
+                // Filter only valid snbt_passed folks in spread or just aggregate
+                
+                setCohort('all'); // Initially load global
+            } catch(e) {
+                console.error("Error loading data:", e);
+                document.getElementById('gridContainer').innerHTML = "<p class='text-red-500 col-span-full'>Failed to load data.json. Ensure it's served via a web server.</p>";
+            }
+        }
+        
+        function processCohortData(data) {
+            if (!data) return;
+            data.spread.forEach(item => {
+                // Normalize UI/UGM/ITB suffixes to merge properly
+                item.ptn = normalizePtn(item.ptn);
+            });
+            return data;
+        }
+
+        const cohortOrder = ['all', 'lsc', 'cls'];
+        function setCohort(cohort) {
+            const prevIdx = cohortOrder.indexOf(activeCohort);
+            const nextIdx = cohortOrder.indexOf(cohort);
+            const direction = nextIdx > prevIdx ? 'right' : 'left';
+            activeCohort = cohort;
+            
+            // Update tabs UI
+            const tabs = ['all', 'lsc', 'cls'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (!el) return;
+                el.className = t === activeCohort
+                    ? "tab-active px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors focus:outline-none flex items-center gap-2"
+                    : "tab-inactive px-4 py-3 whitespace-nowrap text-sm font-medium border-b-2 transition-colors focus:outline-none flex items-center gap-2";
+            });
+
+            // Slide animation on main content
+            const content = document.getElementById('mainContent');
+            if (content) {
+                content.classList.remove('cohort-slide-right', 'cohort-slide-left');
+                void content.offsetWidth; // force reflow
+                content.classList.add(direction === 'right' ? 'cohort-slide-right' : 'cohort-slide-left');
+            }
+            
+            document.getElementById('searchInput').value = "";
+            renderDashboard();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            
+            // Update Toggle UI
+            const btnGrid = document.getElementById('btnGrid');
+            const btnList = document.getElementById('btnList');
+            
+            if (mode === 'grid') {
+                btnGrid.className = "px-3 py-1.5 text-sm font-medium rounded-md shadow-sm bg-white text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none";
+                btnList.className = "px-3 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none";
+                document.getElementById('gridContainer').classList.remove('hidden');
+                document.getElementById('listContainer').classList.add('hidden');
+            } else {
+                btnList.className = "px-3 py-1.5 text-sm font-medium rounded-md shadow-sm bg-white text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none";
+                btnGrid.className = "px-3 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-800 transition-all flex items-center gap-2 flex-1 justify-center sm:flex-none";
+                document.getElementById('gridContainer').classList.add('hidden');
+                document.getElementById('listContainer').classList.remove('hidden');
+            }
+            
+            renderViewData();
+        }
+
+        // Known PTN list for classification
+        const PTN_LIST = [
+            'universitas indonesia','institut teknologi bandung','universitas gadjah mada',
+            'universitas brawijaya','ipb university','itera','itb','ui','ugm','its',
+            'universitas diponegoro','universitas padjadjaran','universitas airlangga',
+            'universitas hasanuddin','universitas negeri','universitas pendidikan','uin',
+            'iain','uin jakarta','uin syarif hidayatullah','universitas sriwijaya',
+            'universitas andalas','universitas lampung','universitas jenderal soedirman',
+            'universitas syiah kuala','universitas udayana','universitas mataram',
+            'universitas khairun','universitas bengkulu','universitas mulawarman',
+            'universitas pattimura','universitas haluoleo','institut seni','itn','itenas',
+            'universitas sebelas maret','uns','upn veteran','universitas siliwangi',
+            'politeknik','universitas trisakti',
+            'instituto','institu','kaist','anu'
+        ];
+        function isPTN(ptnName) {
+            if (!ptnName) return false;
+            const low = ptnName.toLowerCase();
+            return PTN_LIST.some(p => low.includes(p));
+        }
+
+        function renderDashboard() {
+            if (!globalData) return;
+            const data = globalData[activeCohort];
+            
+            // Total students
+            document.getElementById('stat-total').innerText = data.total_students;
+
+            // SNBT stats
+            document.getElementById('stat-passed').innerText = data.snbt_passed;
+            document.getElementById('stat-failed').innerText = data.snbt_failed;
+            const rate = Math.round((data.snbt_passed / data.total_students) * 100) || 0;
+            document.getElementById('stat-rate').innerText = rate + "%";
+
+            // PTN vs Non-PTN from spread — consistent across all angkatan
+            const withDest = data.spread.filter(s => s.ptn && s.ptn.trim() !== '');
+            const ptnCount = withDest.filter(s => isPTN(s.ptn)).length;
+            const nonPtnCount = withDest.length - ptnCount;
+
+            document.getElementById('stat-accepted').innerText = withDest.length;
+            document.getElementById('stat-ptn').innerText = ptnCount;
+            document.getElementById('stat-ptln').innerText = nonPtnCount;
+            setTimeout(() => {
+                const total = withDest.length || 1;
+                document.getElementById('bar-ptn').style.width = (ptnCount / total * 100) + '%';
+                document.getElementById('bar-ptln').style.width = (nonPtnCount / total * 100) + '%';
+            }, 100);
+
+            renderViewData();
+            renderMap();
+            renderPieChart(data.spread);
+        }
+        
+        let univChart = null;
+        function renderPieChart(spreadData) {
+            const counts = {};
+            let totalValid = 0;
+            spreadData.forEach(s => {
+                if (!s.ptn || s.ptn.trim() === '') return;
+                counts[s.ptn] = (counts[s.ptn] || 0) + 1;
+                totalValid++;
+            });
+            const sortedPtns = Object.keys(counts).map(k => ({name: k, count: counts[k]})).sort((a,b) => b.count - a.count);
+            
+            let labels = [];
+            let dataArr = [];
+            let others = 0;
+            
+            sortedPtns.forEach((p, idx) => {
+                if (idx < 5) { 
+                    let perc = totalValid > 0 ? ((p.count / totalValid) * 100).toFixed(1) : 0;
+                    labels.push(`${p.name} (${perc}%)`); 
+                    dataArr.push(p.count); 
+                }
+                else { others += p.count; }
+            });
+            
+            // Only add 'Lainnya' if it exists.
+            if (others > 0) {
+                let percOthers = totalValid > 0 ? ((others / totalValid) * 100).toFixed(1) : 0;
+                labels.push(`Lainnya (${percOthers}%)`); 
+                dataArr.push(others);
+            }
+
+            // Fix canvas sizing bug across cohorts: replace the element entirely
+            const wrapper = document.getElementById('univPieChart').parentNode;
+            const oldCanvas = document.getElementById('univPieChart');
+            oldCanvas.remove();
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = 'univPieChart';
+            wrapper.appendChild(newCanvas);
+
+            if (univChart) {
+                univChart.destroy();
+                univChart = null;
+            }
+            const ctx = newCanvas.getContext('2d');
+            univChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataArr,
+                        backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#94a3b8'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '45%',
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 10, font: {size: 11} } }
+                    }
+                }
+            });
+        }
+        
+        // --- Data Views ---
+        
+        function renderViewData() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const data = globalData[activeCohort].spread;
+            
+            if (viewMode === 'grid') {
+                renderGridView(data, query);
+            } else {
+                renderTableView(data, query);
+            }
+        }
+
+        function renderGridView(data, query) {
+            const groups = {};
+            data.forEach(item => {
+                const ptn = item.ptn || 'Unknown';
+                if (!groups[ptn]) groups[ptn] = [];
+                groups[ptn].push(item);
+            });
+
+            // Filter
+            const filteredPtns = Object.keys(groups).filter(ptn => ptn.toLowerCase().includes(query) || groups[ptn].some(s => s.name.toLowerCase().includes(query) || (s.prodi && s.prodi.toLowerCase().includes(query))) );
+
+            const sortedPtns = filteredPtns.sort((a,b) => groups[b].length - groups[a].length);
+            const gridContainer = document.getElementById('gridContainer');
+            
+            let html = '';
+            sortedPtns.forEach((ptn, index) => {
+                const students = groups[ptn];
+                const gradients = [
+                    'from-blue-500 to-cyan-400', 
+                    'from-emerald-500 to-teal-400', 
+                    'from-indigo-500 to-violet-400',
+                    'from-amber-500 to-orange-400',
+                    'from-rose-500 to-pink-400'
+                ];
+                const bgGradient = gradients[ptn.length % gradients.length];
+                
+                // Escape quotes for data attribute
+                const safePtn = ptn.replace(/"/g, '&quot;');
+                const animateClass = 'animate-fade-in';
+
+                html += `
+                    <div onclick="openModal(this.dataset.ptn, this.dataset.bg)" data-ptn="${safePtn}" data-bg="${bgGradient}" class="uni-card ${animateClass} rounded-xl text-slate-900 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group bg-white border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full" style="animation-delay: ${index * 0.05}s">
+                        <div class="p-5 flex-1 flex flex-col">
+                            <div class="flex items-start gap-4">
+                                <div class="relative flex-shrink-0">
+                                    <div class="w-14 h-14 rounded-xl shadow-sm flex items-center justify-center bg-gradient-to-br ${bgGradient} text-white font-bold text-xl group-hover:scale-105 transition-transform duration-300">
+                                        ${getInitials(ptn)}
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-bold text-sm text-slate-900 group-hover:text-blue-600 transition-colors duration-200 mb-1 leading-snug">${ptn}</h3>
+                                    <div class="flex items-start gap-1 text-slate-500 mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        <p class="text-[10px] text-slate-400">${PTN_COORDINATES[ptn] && PTN_COORDINATES[ptn][0] > 10 ? 'Internasional' : 'Indonesia'}</p>
+                                    </div>
+                                    
+                                    <div class="mt-auto pt-2">
+                                        <div class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-50 group-hover:bg-emerald-100 transition-colors border border-emerald-100/80">
+                                            <div class="text-emerald-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                            </div>
+                                            <div class="font-bold text-emerald-700 text-sm">${students.length} <span class="font-medium text-xs">Alumni</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Expandable or truncated list of prodi maybe? Just show the names softly -->
+                            <div class="mt-4 pt-4 border-t border-slate-100 pb-2">
+                                <p class="text-[10px] font-bold tracking-wide text-slate-400 uppercase mb-2">Pratinjau Siswa</p>
+                                <div class="max-h-20 overflow-hidden relative">
+                                    <ul class="text-xs space-y-2">
+                                        ${students.slice(0, 3).map(s => `
+                                            <li class="flex flex-col border-b border-slate-50 pb-1 last:border-0 last:pb-0">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-slate-700 font-medium truncate">${s.name}</span>
+                                                    ${s.jalur ? `<span class="text-[9px] px-1 py-0.5 rounded-sm bg-blue-50 text-blue-600 font-medium border border-blue-100">${s.jalur}</span>` : ''}
+                                                </div>
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                    ${students.length > 3 ? `<div class="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent"></div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-1 w-full bg-gradient-to-r opacity-0 group-hover:opacity-100 ${bgGradient} transition-opacity duration-300"></div>
+                    </div>
+                `;
+            });
+
+            if(sortedPtns.length === 0) {
+                html = `<div class="col-span-full py-8 text-center text-slate-500">Tidak ada universitas yang sesuai dengan pencarian.</div>`;
+            }
+
+            gridContainer.innerHTML = html;
+        }
+
+        function sortTable(field) {
+            // Toggle Sorting Direction
+            if (currentSort.field === field) {
+                currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.dir = 'asc';
+            }
+            
+            // UI Indicators
+            ['name', 'ptn', 'prodi', 'jalur'].forEach(f => {
+                const el = document.getElementById(`sort-icon-${f}`);
+                if (el) {
+                    el.innerHTML = f === currentSort.field ? (currentSort.dir === 'asc' ? '&uarr;' : '&darr;') : '&uarr;';
+                    el.className = f === currentSort.field ? 'opacity-100 text-blue-500' : 'opacity-0 group-hover:opacity-50';
+                }
+            });
+
+            renderViewData();
+        }
+
+        function renderTableView(data, query) {
+            let sortedData = [...data];
+            
+            // Search Data
+            if (query) {
+                sortedData = sortedData.filter(s => 
+                    s.name.toLowerCase().includes(query) || 
+                    s.ptn.toLowerCase().includes(query) || 
+                    (s.prodi && s.prodi.toLowerCase().includes(query)) ||
+                    (s.jalur && s.jalur.toLowerCase().includes(query))
+                );
+            }
+            
+            // Sort Data
+            sortedData.sort((a,b) => {
+                const valA = (a[currentSort.field] || '').toLowerCase();
+                const valB = (b[currentSort.field] || '').toLowerCase();
+                if (valA < valB) return currentSort.dir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            const tbody = document.getElementById('tableBody');
+            
+            if (sortedData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Data tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = sortedData.map((s, index) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="font-medium text-slate-900">${s.name}</div>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="text-slate-600 px-2.5 py-1 bg-slate-100 rounded-md inline-flex text-xs font-semibold">${s.ptn}</div>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        <div class="text-slate-500 text-xs">${s.prodi || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap">
+                        ${s.jalur ? `<span class="px-2 py-1 text-[10px] font-semibold rounded bg-blue-50 text-blue-600 border border-blue-100">${s.jalur}</span>` : `<span class="text-slate-400 text-xs">-</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // --- Modal Logic ---
+        
+        function openModal(ptn, bgGradient) {
+            activeModalPtn = ptn;
+            document.getElementById('uniModal').classList.remove('hidden');
+            
+            // Set Headers
+            document.getElementById('modalLogo').className = `w-12 h-12 rounded-lg shadow-sm flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br ${bgGradient}`;
+            document.getElementById('modalLogo').innerText = getInitials(ptn);
+            document.getElementById('modalTitle').innerText = ptn;
+            document.getElementById('modalSearch').value = '';
+            
+            renderModalData();
+            document.body.style.overflow = 'hidden'; // prevent background scroll
+        }
+        
+        function closeModal() {
+            document.getElementById('uniModal').classList.add('hidden');
+            activeModalPtn = null;
+            document.body.style.overflow = ''; 
+        }
+        
+        function sortModal(field) {
+            if (modalSort.field === field) {
+                modalSort.dir = modalSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                modalSort.field = field;
+                modalSort.dir = 'asc';
+            }
+            
+            // Update UI Sort Icons
+            ['name', 'prodi', 'jalur'].forEach(f => {
+                const el = document.getElementById(`modal-sort-icon-${f}`);
+                if (el) {
+                    el.innerHTML = f === modalSort.field ? (modalSort.dir === 'asc' ? '&uarr;' : '&darr;') : '&uarr;';
+                    el.className = f === modalSort.field ? 'text-blue-500 opacity-100 transition-opacity' : 'opacity-0 group-hover:opacity-50 transition-opacity';
+                }
+            });
+
+            renderModalData();
+        }
+        
+        let modalSearchTimeout = null;
+        function debouncedFilterModal() {
+            clearTimeout(modalSearchTimeout);
+            modalSearchTimeout = setTimeout(() => {
+                filterModal();
+            }, 300);
+        }
+
+        function filterModal() {
+            renderModalData();
+        }
+
+        function renderModalData() {
+            if (!activeModalPtn) return;
+            
+            const query = document.getElementById('modalSearch').value.toLowerCase();
+            const allStudents = globalData[activeCohort].spread.filter(s => s.ptn === activeModalPtn);
+            document.getElementById('modalCount').innerText = allStudents.length;
+
+            let filtered = allStudents.filter(s => 
+                s.name.toLowerCase().includes(query) || 
+                (s.prodi && s.prodi.toLowerCase().includes(query)) ||
+                (s.jalur && s.jalur.toLowerCase().includes(query))
+            );
+            
+            filtered.sort((a,b) => {
+                const valA = (a[modalSort.field] || '').toLowerCase();
+                const valB = (b[modalSort.field] || '').toLowerCase();
+                if (valA < valB) return modalSort.dir === 'asc' ? -1 : 1;
+                if (valA > valB) return modalSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            const tbody = document.getElementById('modalBody');
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-slate-500">Siswa tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-3 whitespace-nowrap font-medium text-slate-800">${s.name}</td>
+                    <td class="px-6 py-3 whitespace-nowrap text-slate-500">${s.prodi || 'Program Tidak Diketahui'}</td>
+                    <td class="px-6 py-3 whitespace-nowrap">
+                        ${s.jalur ? `<span class="px-2 py-1 text-[10px] font-semibold rounded bg-blue-50 text-blue-600 border border-blue-100">${s.jalur}</span>` : `<span class="text-slate-400 text-xs">-</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        let searchTimeout = null;
+        function filterData() {
+            // Entry point for main search bar
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                renderViewData();
+            }, 300);
+        }
+
+        // --- Map Logic ---
+
+        function renderMap() {
+            if (!map) {
+                map = L.map('indonesiaMap').setView([-2.5489, 118.0149], 5);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+            }
+            
+            // Clear existing markers
+            if (featureGroup) {
+                map.removeLayer(featureGroup);
+            }
+            
+            const groups = {};
+            globalData[activeCohort].spread.forEach(item => {
+                const ptn = item.ptn || 'Unknown';
+                if (!groups[ptn]) groups[ptn] = [];
+                groups[ptn].push(item);
+            });
+
+            const markers = [];
+
+            Object.keys(groups).forEach(ptn => {
+                const len = groups[ptn].length;
+                let coords = PTN_COORDINATES[ptn];
+                
+                // Fallback heuristic for unrecognized PTNs to cluster around Java/Sumatra
+                if (!coords) {
+                    if (ptn.toLowerCase().includes('lampung')) coords = [-5.3822, 105.2573];
+                    else if (ptn.toLowerCase().includes('sebelas')) coords = [-7.5583, 110.8564];
+                    else coords = [-7.0 + (Math.random()*2 - 1), 110.0 + (Math.random()*4 - 2)];
+                }
+                
+                const marker = L.circleMarker(coords, {
+                    radius: Math.min(Math.max(len * 2, 8), 24),
+                    fillColor: '#3b82f6',
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+                
+                marker.bindPopup(`<b>${ptn}</b><br>${len} Alumni Enrolled`);
+                markers.push(marker);
+            });
+            
+            featureGroup = L.featureGroup(markers).addTo(map);
+            
+            // Dynamically fit map bounds to include international variants neatly
+            if (markers.length > 0) {
+                map.fitBounds(featureGroup.getBounds(), { padding: [30, 30], maxZoom: 6 });
+            }
+        }
+
+        function exportPDF(cohortKey) {
+            if (!globalData || !window.jspdf) {
+                alert("Data belum siap atau modul PDF gagal dimuat.");
+                return;
+            }
+            
+            const overlay = document.getElementById('processingOverlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                document.getElementById('processingText').innerText = "Menyiapkan PDF...";
+            }
+            
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    
+                    let dataToExport = [];
+                    let title = "Data Sebaran Alumni MAN Insan Cendekia Serpong";
+
+                    if (cohortKey === 'all') {
+                        dataToExport = globalData.all.spread;
+                        title += " - Semua Angkatan";
+                    } else if (cohortKey === 'lsc') {
+                        dataToExport = globalData.lsc.spread;
+                        title += " - Angkatan A27 (Lascaren)";
+                    } else if (cohortKey === 'cls') {
+                        dataToExport = globalData.cls.spread;
+                        title += " - Angkatan A28 (Calastra)";
+                    }
+
+                    dataToExport = [...dataToExport].sort((a, b) => a.name.localeCompare(b.name));
+
+                    const body = dataToExport.map((s, index) => [
+                        index + 1,
+                        s.name,
+                        s.ptn,
+                        s.prodi || '-'
+                    ]);
+
+                    const dt = new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'long' });
+                    const loc = window.location.href.split('?')[0];
+
+                    doc.setFontSize(13);
+                    doc.text(title, 14, 15);
+                    doc.setFontSize(9);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Dihasilkan melalui Erc-Tracker pada ${dt}`, 14, 21);
+                    doc.setTextColor(37, 99, 235);
+                    doc.text(loc, 14, 26);
+                    doc.setTextColor(0, 0, 0);
+
+                    doc.autoTable({
+                        startY: 30,
+                        head: [['No', 'Nama Siswa', 'Universitas / PTN', 'Program Studi']],
+                        body: body,
+                        theme: 'striped',
+                        headStyles: { fillColor: [37, 99, 235] }
+                    });
+
+                    doc.save(`Alumni_Sebaran_${cohortKey.toUpperCase()}.pdf`);
+                    
+                    document.getElementById('processingText').innerText = "Selesai!";
+                    setTimeout(() => overlay.classList.add('hidden'), 800);
+                } catch(e) {
+                    console.error("PDF Export Error:", e);
+                    alert("Gagal mengunduh PDF.");
+                    overlay.classList.add('hidden');
+                }
+            }, 100);
+        }
+
+        // Initialize
+        window.onload = function() {
+            loadSettings();
+            applySettings();
+            loadData();
+        };
+    </script>
+</body>
+</html>

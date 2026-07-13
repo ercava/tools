@@ -1,0 +1,12 @@
+{
+  "name": "twibbon-pesta-merta",
+  "version": "1.0.0",
+  "description": "Twibbon generator for Pesta Merta",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

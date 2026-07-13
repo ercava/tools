@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twibbon Pestamerta</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Generate your Pesta Merta twibbon easily. Upload your photo, adjust, and share!">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <header>
+            <img src="logo.png" alt="Pesta Merta Logo" class="app-logo">
+            <p>Beli soto di perempatan, 
+Makannye pake emping ame acar. 
+Makasih udah dateng ke ini hajatan, 
+Moga rejeki lu makin lancar!!</p>
+        </header>
+
+        <main>
+            <div class="editor-section">
+                <div class="canvas-container" id="canvasContainer">
+                    <canvas id="twibbonCanvas"></canvas>
+                    <div class="upload-overlay" id="uploadOverlay">
+                        <div class="upload-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 16L12 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M9 11L12 8 15 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M8 16H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <p>Klik atau drop foto di sini</p>
+                    </div>
+                </div>
+
+                <input type="file" id="imageInput" accept="image/*" hidden>
+
+                <div class="controls hide" id="controls">
+                    <div class="slider-group">
+                        <label>Zoom</label>
+                        <input type="range" id="zoomSlider" min="0.1" max="3" step="0.1" value="1">
+                    </div>
+                    <p class="instruction">Geser foto pada twibbon untuk menyesuaikan posisi</p>
+                    <button id="downloadBtn" class="btn primary-btn">
+                        Unduh Twibbon
+                    </button>
+                </div>
+            </div>
+
+            <div class="caption-section hide" id="captionSection">
+                <h2>Siap Posting?</h2>
+                <div class="caption-box">
+                    <textarea id="captionText" readonly> Duo ICONS RT29 akan mengadakan pesta untuk merayakan anniversary RT 29 Ke-2, mereka mengundang semesta untuk datang berbahagia dan tertawa bersama. 
+					Mereka menamainya: 🎉 PESTAMERTA 🎉
+					
+					16.02.26 
+					Satu malam. Satu kenangan abadi. Pestamerta, oleh Ercava. 🪩🌟
+					
+					Sampai Jumpa 🪄
+
+#pestamerta #2ndercaversary #ercava</textarea>
+                    <button id="copyBtn" class="btn secondary-btn">
+                        <span class="icon">📋</span> Salin Caption
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+        </footer>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">Menyiapkan Twibbon...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

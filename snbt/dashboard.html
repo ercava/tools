@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ERCAVIAN PTN/PTLN</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+        .main-content {
+            padding: 3rem;
+            background: var(--bg-light);
+        }
+
+        .bento-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .dua-arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: var(--primary-navy);
+            line-height: 1.6;
+        }
+
+        .calendar-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-navy);
+            font-weight: bold;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand-text" style="padding: 2.5rem 2rem 0;">ERCAVIAN<br>PTN/PTLN 100%</div>
+            <nav class="nav-links">
+                <a href="dashboard" class="nav-item active"><i class="fas fa-home"></i> Beranda</a>
+                <a href="todo" class="nav-item"><i class="fas fa-list-check"></i> Daftar Tugas</a>
+                <a href="materials" class="nav-item"><i class="fas fa-book"></i> Materi Belajar</a>
+                <a href="spiritual" class="nav-item"><i class="fas fa-pray"></i> Jalur Langit</a>
+
+                <div class="nav-dropdown" id="moreDropdown">
+                    <div class="nav-item dropdown-trigger" onclick="toggleDropdown()">
+                        <i class="fas fa-ellipsis-h"></i> Lainnya <i class="fas fa-chevron-down"
+                            style="margin-left: auto; font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="rankings" class="dropdown-item"><i class="fas fa-trophy"></i> Peringkat TO</a>
+                        <a href="campus" class="dropdown-item"><i class="fas fa-university"></i> Target Kampus</a>
+                        <a href="streak" class="dropdown-item"><i class="fas fa-fire"></i> Statistik Streak</a>
+                    </div>
+                </div>
+
+                <div class="logout-container">
+                    <a href="index" class="nav-item" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i>
+                        Keluar</a>
+                </div>
+            </nav>
+        </aside>
+
+        <script>
+            function toggleDropdown() {
+                document.getElementById('moreDropdown').classList.toggle('active');
+            }
+        </script>
+
+        <main class="main-content">
+            <header
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                <div>
+                    <h2 id="userName"
+                        style="font-size: 2rem; font-weight: 900; color: var(--primary-navy); margin-bottom: 0.2rem;">
+                        Halo, Ercavian!</h2>
+                    <p id="randomQuote"
+                        style="color: var(--text-gray); font-style: italic; font-size: 0.8rem; max-width: 600px;">
+                        "Pendidikan adalah paspor ke masa depan."</p>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem;">
+                    <div id="userBadge"
+                        style="padding: 0.4rem 1.2rem; background: var(--primary-navy); color: white; border-radius: 50px; font-weight: 700; font-size: 0.7rem; letter-spacing: 1px;">
+                        TARGET 2026</div>
+                </div>
+            </header>
+
+            <div class="bento-grid">
+                <!-- Column 1: Time & Streak -->
+                <div class="glass-card"
+                    style="grid-column: 1; grid-row: 1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div class="bento-title">Waktu Tersisa</div>
+                    <div id="timerVal"
+                        style="font-size:3rem; font-weight:900; color:var(--primary-navy); line-height:1;">0</div>
+                    <p
+                        style="font-weight:700; color:var(--text-gray); margin-top:0.3rem; font-size: 0.65rem; text-transform:uppercase;">
+                        Hari SNBT</p>
+                </div>
+
+                <div class="glass-card"
+                    style="grid-column: 1; grid-row: 2; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background: linear-gradient(135deg, #fff 0%, #fff5f2 100%);">
+                    <div class="bento-title">Streak Belajar</div>
+                    <div
+                        style="position:relative; display:flex; align-items:center; justify-content:center; margin: 0.5rem 0;">
+                        <i class="fas fa-fire"
+                            style="font-size: 3rem; color: #ff4b2b; filter: drop-shadow(0 0 8px rgba(255,75,43,0.3));"></i>
+                        <span id="streakCountMain"
+                            style="position:absolute; bottom:-5px; right:-10px; background:var(--primary-navy); color:white; padding:2px 8px; border-radius:10px; font-size:1rem; font-weight:900; border:2px solid white;">0</span>
+                    </div>
+                    <button class="btn-primary" onclick="window.location.href='materials'"
+                        style="width: 100%; padding:0.5rem; font-size:0.65rem; background:#ff4b2b; border:none; margin-top:0.5rem;">LANJUTKAN
+                        STREAK</button>
+                </div>
+
+                <!-- Column 2: Scores -->
+                <div class="glass-card"
+                    style="grid-column: 2; grid-row: 1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div class="bento-title">Skor Terakhir</div>
+                    <div id="scoreVal"
+                        style="font-size:3rem; font-weight:900; color:var(--accent-gold); line-height:1;">0</div>
+                    <p id="scoreSource"
+                        style="font-size:0.6rem; color:var(--text-gray); font-weight:700; margin-top:0.4rem; text-transform:uppercase;">
+                        Memuat data...</p>
+                </div>
+
+                <div class="glass-card"
+                    style="grid-column: 2; grid-row: 2; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+                    <div class="bento-title">Ambang Batas</div>
+                    <div style="display:flex; align-items:baseline; gap:5px;">
+                        <span id="passGrade"
+                            style="font-size:2.5rem; font-weight:900; color:var(--primary-navy);">0</span>
+                        <span style="font-size:0.8rem; color:var(--text-gray); font-weight:800;">(-<span
+                                id="scoreDiff">0</span>)</span>
+                    </div>
+                    <p style="font-size:0.6rem; color:var(--text-gray); font-weight:700; text-transform:uppercase;">
+                        Target Jurusan</p>
+                </div>
+
+                <!-- Column 3 & 4: Target Campus -->
+                <div class="glass-card"
+                    style="grid-column: 3 / span 2; grid-row: 1 / span 2; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                    <div class="bento-title">Target Kampus</div>
+                    <div
+                        style="width:100px; height:100px; background:#f1f5f9; border-radius:15px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem;">
+                        <img id="targetLogo" src="" style="width:80px; height:80px; object-fit:contain; display:none;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <i class="fas fa-university fa-3x" style="color:var(--primary-navy); display:block;"></i>
+                    </div>
+                    <h4 id="targetProgram"
+                        style="font-size:1.1rem; font-weight:800; color:var(--primary-navy); line-height: 1.2;">-</h4>
+                    <p id="targetUniv"
+                        style="font-size:0.9rem; color:var(--text-gray); font-weight:600; margin-top:0.3rem;">-</p>
+                </div>
+
+                <!-- Row 3: Agenda & Ayat -->
+                <div class="glass-card"
+                    style="grid-column: 1 / span 2; grid-row: 3; display: flex; flex-direction: column; gap: 0.8rem;">
+                    <div class="bento-title">Agenda PTN/PTLN</div>
+                    <div id="agendaList" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="font-size: 0.8rem; color: var(--text-gray);">Memuat agenda...</div>
+                    </div>
+                </div>
+
+                <div class="glass-card"
+                    style="grid-column: 3 / span 2; grid-row: 3; display:flex; flex-direction:column; justify-content:center; overflow: hidden;">
+                    <div class="bento-title">Ayat Hari Ini</div>
+                    <div id="ayatWait" style="font-size:0.8rem; color:var(--text-gray);">Memuat...</div>
+                    <div id="ayatContainer" style="display:none; overflow-y: auto;">
+                        <p id="ayatAr" class="dua-arabic"
+                            style="text-align:right; margin-bottom:0.4rem; font-size: 1.1rem;"></p>
+                        <p id="ayatTrans" style="font-size:0.75rem; color:var(--text-gray); line-height: 1.3;"></p>
+                    </div>
+                </div>
+
+                <!-- Row 4: Calendar & Notes -->
+                <div class="glass-card" style="grid-column: 1 / span 2; grid-row: 4 / span 3;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                        <button class="calendar-btn" id="calPrev"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calMonth"
+                            style="font-size:1rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;">
+                            Januari 2026</h3>
+                        <button class="calendar-btn" id="calNext"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="calGrid" style="flex: 1;"></div>
+                    <div id="datePreview"
+                        style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--glass-border); font-size:0.75rem; color:var(--text-gray);">
+                        Klik tanggal untuk agenda detail.</div>
+                </div>
+
+                <div class="glass-card"
+                    style="grid-column: 3 / span 2; grid-row: 4 / span 3; display:flex; flex-direction:column;">
+                    <div class="bento-title">Catatan Strategi</div>
+                    <textarea id="studyNotes"
+                        style="flex:1; background:#f8fafc; border:none; border-radius:1rem; padding:1.2rem; resize:none; font-size:0.9rem; line-height:1.6; color:var(--text-dark);"
+                        placeholder="Tulis rencana taklukamu di sini..."></textarea>
+                    <button id="saveStudyNotes" class="btn-primary"
+                        style="margin-top:1rem; align-self:flex-end; padding:0.6rem 1.2rem; font-size:0.7rem;">Simpan
+                        Perubahan</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (!user) window.location.href = 'index';
+
+        document.getElementById('userName').innerText = `Halo, ${user.name.split(' ')[0]}!`;
+        document.getElementById('userBadge').innerText = `TARGET ${user.status || 'PTN'} 2026`;
+
+        // Streak Logic: Auto-add streak when opening dashboard
+        function updateStreak() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const lastActive = localStorage.getItem(`lastActive_${user.nisn}`);
+            let streak = parseInt(localStorage.getItem(`streak_${user.nisn}`)) || 0;
+
+            if (lastActive !== todayStr) {
+                if (lastActive) {
+                    const lastDate = new Date(lastActive);
+                    const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 1) {
+                        streak++;
+                    } else if (diffDays > 1) {
+                        streak = 1; // Streak broken, restart
+                    } else if (streak === 0) {
+                        streak = 1; // Initial streak
+                    }
+                } else {
+                    streak = 1; // First time
+                }
+                localStorage.setItem(`lastActive_${user.nisn}`, todayStr);
+                localStorage.setItem(`streak_${user.nisn}`, streak);
+
+                // Track historical activity for stats
+                let activity = JSON.parse(localStorage.getItem(`activity_${user.nisn}`)) || {};
+                activity[todayStr] = true;
+                localStorage.setItem(`activity_${user.nisn}`, JSON.stringify(activity));
+            }
+            return streak;
+        }
+
+        const currentStreak = updateStreak();
+        document.getElementById('streakCountMain').innerText = currentStreak;
+
+        // Ayat API
+        async function fetchAyat() {
+            try {
+                // Today's specific seed (date-based random)
+                const today = new Date();
+                const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+                const ayahNumber = (dayOfYear % 6236) + 1;
+
+                const [ar, id] = await Promise.all([
+                    fetch(`https://api.alquran.cloud/v1/ayah/${ayahNumber}/ar.alafasy`),
+                    fetch(`https://api.alquran.cloud/v1/ayah/${ayahNumber}/id.indonesian`)
+                ]);
+
+                const dataAr = await ar.json();
+                const dataId = await id.json();
+
+                document.getElementById('ayatWait').style.display = 'none';
+                document.getElementById('ayatContainer').style.display = 'block';
+                document.getElementById('ayatAr').innerText = dataAr.data.text;
+                document.getElementById('ayatTrans').innerText = `"${dataId.data.text}" (${dataId.data.surah.englishName}: ${dataId.data.numberInSurah})`;
+            } catch (e) {
+                document.getElementById('ayatWait').innerText = "Gagal memuat ayat. Tetap semangat!";
+            }
+        }
+        fetchAyat();
+
+        // Data Loading
+        Papa.parse('data/quotes.csv?v=' + Date.now(), {
+            download: true, header: true, complete: (r) => {
+                const q = r.data[Math.floor(Math.random() * r.data.length)];
+                document.getElementById('randomQuote').innerText = `"${q.quote}" — ${q.author}`;
+            }
+        });
+
+        // Initialize targets from user data first
+        document.getElementById('targetProgram').innerText = user.program1 || '-';
+        document.getElementById('targetUniv').innerText = user.univ1 || '-';
+
+        // 1. Fetch Threshold (Ambang Batas)
+        Papa.parse('data/jurusan.csv?v=' + Date.now(), {
+            download: true, header: true, skipEmptyLines: true,
+            complete: (r) => {
+                const j = r.data.find(row => {
+                    if (!row.univ || !row.program) return false;
+                    const uMatch = user.univ1.toLowerCase().includes(row.univ.toLowerCase()) ||
+                        row.univ.toLowerCase().includes(user.univ1.toLowerCase());
+                    const pMatch = user.program1.toLowerCase().includes(row.program.toLowerCase()) ||
+                        row.program.toLowerCase().includes(user.program1.toLowerCase());
+                    return uMatch && pMatch;
+                });
+
+                if (j) {
+                    document.getElementById('passGrade').innerText = j.passing_grade;
+                    const logo = document.getElementById('targetLogo');
+                    if (j.logo_univ) {
+                        logo.src = j.logo_univ;
+                        logo.style.display = 'block';
+                        logo.nextElementSibling.style.display = 'none';
+                    }
+                    // Refresh diff if score already loaded
+                    const currentScore = document.getElementById('scoreVal').innerText;
+                    if (currentScore !== '0') {
+                        const diff = parseInt(j.passing_grade) - parseInt(currentScore);
+                        document.getElementById('scoreDiff').innerText = Math.max(0, Math.round(diff));
+                    }
+                } else {
+                    document.getElementById('scoreSource').innerText = 'Data ambang batas program ini belum tersedia.';
+                }
+            }
+        });
+
+        // 2. Fetch Tryout Scores (Skor Terakhir)
+        Papa.parse('data/tryout_records.csv?v=' + Date.now(), {
+            download: true, header: true, skipEmptyLines: true,
+            complete: (t) => {
+                const mine = t.data.filter(s => {
+                    if (!s.nisn) return false;
+                    const nStr = s.nisn.toString().trim();
+                    const uStr = user.nisn.toString().trim();
+                    return nStr === uStr || nStr.replace(/^0+/, '') === uStr.replace(/^0+/, '');
+                });
+
+                if (mine.length) {
+                    const last = mine[mine.length - 1];
+                    const score = Math.round(parseFloat(last.score));
+                    document.getElementById('scoreVal').innerText = score;
+                    document.getElementById('scoreSource').innerText = `Hasil Try Out ${last.provider} #${last.to_number}`;
+
+                    // Update diff if passGrade already loaded
+                    const passGrade = document.getElementById('passGrade').innerText;
+                    if (passGrade !== '0') {
+                        const diff = parseInt(passGrade) - score;
+                        document.getElementById('scoreDiff').innerText = Math.max(0, Math.round(diff));
+                    }
+                } else {
+                    document.getElementById('scoreSource').innerText = 'Data Try Out belum tersedia.';
+                }
+            }
+        });
+
+        // Notes Persistence
+        const saved = localStorage.getItem(`notes_${user.nisn}`);
+        if (saved) document.getElementById('studyNotes').value = saved;
+        document.getElementById('saveStudyNotes').onclick = () => {
+            localStorage.setItem(`notes_${user.nisn}`, document.getElementById('studyNotes').value);
+            alert('Strategi tersimpan!');
+        };
+
+        // Timer
+        const target = new Date('2026-04-30').getTime();
+        document.getElementById('timerVal').innerText = Math.floor((target - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
+        // Calendar & Agenda Logic
+        let calDate = new Date(2026, 0, 1);
+        let offEv = [], usrEv = JSON.parse(localStorage.getItem(`events_${user.nisn}`)) || {};
+
+        function renderAgendaList() {
+            const list = document.getElementById('agendaList');
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            // Combine Official and User events
+            const allEvents = [...offEv.map(e => ({ date: new Date(e.date), name: e.event_name, type: 'off' }))];
+            Object.keys(usrEv).forEach(d => allEvents.push({ date: new Date(d), name: usrEv[d], type: 'usr' }));
+
+            // Filter future/today & sort
+            const upcoming = allEvents
+                .filter(e => e.date >= now)
+                .sort((a, b) => a.date - b.date)
+                .slice(0, 4);
+
+            if (upcoming.length === 0) {
+                list.innerHTML = `<p style="font-size:0.8rem; color:var(--text-gray);">Tidak ada agenda mendatang.</p>`;
+                return;
+            }
+
+            list.innerHTML = upcoming.map(e => `
+                <div style="padding-bottom: 0.5rem; border-bottom: 1px solid #f1f5f9;">
+                    <div style="font-size: 0.6rem; color: var(--text-gray); font-weight: 800; text-transform: uppercase;">
+                        ${new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short' }).format(e.date)}
+                    </div>
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${e.type === 'off' ? '<span style="color:var(--accent-gold)">●</span> ' : ''}${e.name}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function drawCal() {
+            const g = document.getElementById('calGrid'), m = calDate.getMonth(), y = calDate.getFullYear();
+            document.getElementById('calMonth').innerText = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(calDate);
+            g.innerHTML = '';
+            ['M', 'S', 'S', 'R', 'K', 'J', 'S'].forEach(d => g.innerHTML += `<div style="text-align:center;font-weight:900;font-size:0.6rem;color:var(--text-gray);">${d}</div>`);
+            for (let i = 0; i < new Date(y, m, 1).getDay(); i++) g.innerHTML += '<div></div>';
+            for (let d = 1; d <= new Date(y, m + 1, 0).getDate(); d++) {
+                const ds = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const has = offEv.some(e => e.date === ds) || usrEv[ds];
+                const day = document.createElement('div');
+                day.className = `calendar-day ${has ? 'has-event' : ''} ${d == new Date().getDate() && m == new Date().getMonth() ? 'today' : ''}`;
+                day.innerText = d;
+                day.onclick = () => showDetail(ds);
+                g.appendChild(day);
+            }
+        }
+
+        window.changeMonth = (dir) => {
+            const n = calDate.getMonth() + dir;
+            if (n >= 0 && n <= 3) { calDate = new Date(2026, n, 1); drawCal(); }
+        };
+        document.getElementById('calPrev').onclick = () => changeMonth(-1);
+        document.getElementById('calNext').onclick = () => changeMonth(1);
+
+        function showDetail(date) {
+            const off = offEv.find(e => e.date === date), usr = usrEv[date];
+            document.getElementById('datePreview').innerHTML = `
+                <strong>${date}</strong>
+                <p style="margin-top:5px;">${off ? `● ${off.event_name} (Official)` : ''}</p>
+                <p>${usr ? `● ${usr} <button onclick="delE('${date}')" style="background:none;border:none;color:red;cursor:pointer;">[x]</button>` : `<input id="newE" placeholder="Memo..." style="font-size:0.7rem;"> <button onclick="addE('${date}')" style="font-size:0.7rem;">+</button>`}</p>
+            `;
+        }
+        window.addE = (d) => { const v = document.getElementById('newE').value; if (!v) return; usrEv[d] = v; localStorage.setItem(`events_${user.nisn}`, JSON.stringify(usrEv)); drawCal(); showDetail(d); };
+        window.delE = (d) => { delete usrEv[d]; localStorage.setItem(`events_${user.nisn}`, JSON.stringify(usrEv)); drawCal(); showDetail(d); };
+
+        Papa.parse('data/events.csv?v=' + Date.now(), { download: true, header: true, complete: (r) => { offEv = r.data; drawCal(); renderAgendaList(); } });
+    </script>
+</body>
+
+</html>

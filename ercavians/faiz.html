@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>faiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            position: relative;
+        }
+
+        .top-dots {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #fff;
+            transform: scale(1.3);
+        }
+
+.viewer {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 60px;
+            position: relative;
+            margin-bottom: 200px;
+        }
+
+        .img-wrapper {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(0) scale(0.65);
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .img-wrapper.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            z-index: 10;
+        }
+
+        .img-wrapper.left-1 {
+            transform: translateX(-85%) scale(0.65);
+            opacity: 0.15;
+            z-index: 5;
+        }
+
+        .img-wrapper.left-2 {
+            transform: translateX(-150%) scale(0.5);
+            opacity: 0.08;
+            z-index: 4;
+        }
+
+        .img-wrapper.right-1 {
+            transform: translateX(85%) scale(0.65);
+            opacity: 0.15;
+            z-index: 5;
+        }
+
+        .img-wrapper.right-2 {
+            transform: translateX(150%) scale(0.5);
+            opacity: 0.08;
+            z-index: 4;
+        }
+
+        .img-wrapper img {
+            max-height: 70vh;
+            max-width: 35vw;
+            object-fit: contain;
+        }
+
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 50;
+            transition: background 0.2s;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .nav-arrow.prev { left: 20px; }
+        .nav-arrow.next { right: 20px; }
+        
+        .nav-arrow.disabled {
+            opacity: 0.2;
+            cursor: default;
+        }
+
+        .nav-arrow svg {
+            width: 20px;
+            height: 20px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            text-decoration: none;
+            z-index: 51;
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .bio-section {
+            padding: 24px 24px 60px;
+            text-align: center;
+        }
+
+        .bio-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #555;
+            margin-bottom: 14px;
+        }
+
+        .bio-text {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #888;
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn" title="Back">
+        <svg viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </a>
+
+    <div class="top-dots" id="dots"></div>
+
+    <div class="nav-arrow prev disabled" id="prev-btn">
+        <svg viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </div>
+    <div class="nav-arrow next" id="next-btn">
+        <svg viewBox="0 0 24 24">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </div>
+
+    <div class="viewer">
+        <div class="img-wrapper active" data-index="0"><img src="people/faiz/1.webp" alt="1"></div>
+        <div class="img-wrapper right-1" data-index="1"><img src="people/faiz/2.webp" alt="2"></div>
+        <div class="img-wrapper right-2" data-index="2"><img src="people/faiz/3.webp" alt="3"></div>
+    </div>
+
+    <div class="bio-section">
+        <div class="bio-label">About</div>
+        <p class="bio-text">Faiz Haydar Akmal lahir di Semarang pada 18 Agustus 2007. Sejak kecil, ia dikenal sebagai sosok yang haus ilmu dan selalu bersenang belajar terutama pada pelajaran favoritnya astronomi, computer dan fisika. Hiburan yang selalu menemaninya disaat stress belajar adalah menonton anime dan hal ini lah yang membuatnya jatuh cinta pada Jepang. Impian terbesarnya adalah bisa kuliah dan tinggal di Jepang suatu hari nanti. Dengan tekad kuat, ia terus berusaha mewujudkan cita-citanya. Penasaran dengan kisah hidupnya? Yuk, intip Instagramnya di @faizakmml!</p>
+    </div>
+
+    <div class="hint">← →</div>
+
+    <script>
+        const wrappers = document.querySelectorAll('.img-wrapper');
+        const dotsContainer = document.getElementById('dots');
+        const total = wrappers.length;
+        let current = 0;
+
+        for (let i = 0; i < total; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goTo(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function updateArrows() {
+            document.getElementById('prev-btn').classList.toggle('disabled', current === 0);
+            document.getElementById('next-btn').classList.toggle('disabled', current === total - 1);
+        }
+
+        function goTo(index) {
+            current = index;
+            wrappers.forEach((w, i) => {
+                const offset = i - current;
+                w.className = 'img-wrapper';
+                
+                if (offset === 0) {
+                    w.classList.add('active');
+                } else if (offset === 1) {
+                    w.classList.add('right-1');
+                } else if (offset === 2) {
+                    w.classList.add('right-2');
+                } else if (offset === -1) {
+                    w.classList.add('left-1');
+                } else if (offset === -2) {
+                    w.classList.add('left-2');
+                }
+            });
+            
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === current);
+            });
+            updateArrows();
+        }
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (current < total - 1) goTo(current + 1);
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (current > 0) goTo(current - 1);
+        });
+
+        wrappers.forEach((w, i) => {
+            w.addEventListener('click', () => goTo(i));
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && current < total - 1) goTo(current + 1);
+            if (e.key === 'ArrowLeft' && current > 0) goTo(current - 1);
+        });
+
+        goTo(0);
+    </script>
+</body>
+</html>

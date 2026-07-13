@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Molly</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.imgbb.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"></noscript>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="gallery-container">
+        <div id="gallery" class="masonry">
+            <!-- Images -->
+            <div class="item"><img loading="eager" fetchpriority="high" src="./images/molly1.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly2.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly3.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly4.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly6.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly7.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly8.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly9.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly11.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly12.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly17.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly18.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly20.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly21.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly24.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly28.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly29.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly31.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly32.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly34.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly35.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly36.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly40.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly41.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly42.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly43.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly45.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly47.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly48.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly49.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly50.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly51.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly52.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly53.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly54.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly56.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly57.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly58.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly59.webp" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/molly60.webp" onclick="openModal(this)"></div>
+            <!-- Videos -->
+            <div class="item"><video loading="lazy" src="./images/molly61.mp4" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
+            <div class="item"><video loading="lazy" src="./images/molly62.mp4" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
+        </div>
+    </div>
+
+    <!-- Minimal Lightbox -->
+    <div id="modal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-wrapper" id="modal-wrapper">
+            <img id="modalImg" class="modal-content" draggable="false" ondragstart="return false;">
+            <video id="modalVideo" class="modal-content" controls loop></video>
+        </div>
+    </div>
+    
+    <!-- Input Dialog -->
+    <div id="comment-dialog">
+        <input type="text" id="comment-name" placeholder="Your Name" required>
+        <textarea id="comment-text" placeholder="Your Comment" required></textarea>
+        <div class="dialog-buttons">
+            <button class="btn-cancel" onclick="app.cancelComment()">Cancel</button>
+            <button class="btn-save" onclick="app.saveComment()">Save</button>
+        </div>
+    </div>
+
+    <!-- Admin Delete Dialog -->
+    <div id="admin-dialog">
+        <p>Enter admin password:</p>
+        <input type="password" id="admin-password" placeholder="Password">
+        <div class="dialog-buttons">
+            <button class="btn-cancel" onclick="app.closeAdminDialog()">Cancel</button>
+            <button class="btn-login" onclick="app.login()">Login</button>
+        </div>
+    </div>
+
+    <!-- Upload Dialog -->
+    <div id="upload-dialog">
+        <p>Upload a picture:</p>
+        <input type="file" id="upload-input" accept="image/*" onchange="app.previewUpload(this)">
+        <img id="upload-preview" style="max-width: 100%; max-height: 200px; margin: 10px 0; display: none;">
+        <input type="text" id="upload-caption" placeholder="Caption (optional)">
+        <input type="text" id="upload-name" placeholder="Your Name" required>
+        <div class="dialog-buttons">
+            <button class="btn-cancel" onclick="app.closeUploadDialog()">Cancel</button>
+            <button class="btn-save" onclick="app.submitUpload()">Submit</button>
+        </div>
+    </div>
+
+    <!-- Pending Uploads Panel (Admin) -->
+    <div id="pending-panel" class="pending-panel" style="display: none;">
+        <div class="panel-header">
+            <h3>Admin</h3>
+            <div class="panel-tabs">
+                <button class="panel-tab active" onclick="app.switchTab('uploads')">Uploads</button>
+                <button class="panel-tab" onclick="app.switchTab('messages')">Messages <span id="msg-count"></span></button>
+            </div>
+            <button class="panel-collapse" onclick="app.togglePanel()">&#9660;</button>
+        </div>
+        <div id="panel-content">
+            <div id="pending-list"></div>
+            <div id="messages-list" style="display:none"></div>
+        </div>
+        <button class="btn-cancel" onclick="app.closePendingPanel()">Close</button>
+    </div>
+
+    <!-- Contact Admin Dialog -->
+    <div id="contact-dialog">
+        <p>Send message to admin:</p>
+        <input type="text" id="contact-name" placeholder="Your Name" required>
+        <textarea id="contact-message" placeholder="Your message..." required></textarea>
+        <div class="dialog-buttons">
+            <button class="btn-cancel" onclick="app.closeContactDialog()">Cancel</button>
+            <button class="btn-save" onclick="app.sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div class="attribution">
+        original showcase pics by rehan, upload yours!
+        <div class="action-links">
+            <a href="#" id="admin-toggle" onclick="app.toggleLogin(event)">login as me</a>
+            <span class="separator">&#9675; </span>
+            <a href="#" id="contact-toggle" onclick="app.toggleContact(event)">leave me a msg </a>
+            <span class="separator">&#9675; </span>
+            <a href="#" id="upload-toggle" onclick="app.toggleUpload(event)">post a pic of moli!</a>
+        </div>
+    </div>
+
+
+
+    <!-- Firebase SDK (Compat version for local file:// execution without CORS issues) -->
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script>
+        function openModal(el) {
+            const modal = document.getElementById('modal');
+            const modalImg = document.getElementById('modalImg');
+            const modalVideo = document.getElementById('modalVideo');
+            
+            modal.style.display = 'flex';
+            if (el.tagName === 'VIDEO') {
+                modalImg.style.display = 'none';
+                modalVideo.style.display = 'block';
+                modalVideo.src = el.src;
+                modalVideo.play();
+            } else {
+                modalVideo.style.display = 'none';
+                modalImg.style.display = 'block';
+                modalImg.src = el.src;
+            }
+
+            // Expose current element to app.js for commenting logic
+            window.currentModalMedia = el.src.split('/').pop();
+            const event = new CustomEvent('mediaOpened', { detail: window.currentModalMedia });
+            window.dispatchEvent(event);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            const modalVideo = document.getElementById('modalVideo');
+            // Only close if clicking outside the wrapper or pressing close
+            if(event && event.target.closest('.modal-wrapper') && !event.target.classList.contains('close')) return;
+            
+            modal.style.display = 'none';
+            modalVideo.pause();
+            
+            window.dispatchEvent(new Event('mediaClosed'));
+        }
+
+        // Make modal background close the modal
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if(e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

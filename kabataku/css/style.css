@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --headingColor: #fffffe;
+  --textColor: #b7c1ec;
+  --buttonColor: #eebbc3;
+  --buttonTextColor: #232946;
+  --backgroundColor: #232946;
+  --correctColor: #00ebc7;
+  --wrongColor: #ff5470;
+  --font: 'Nunito', sans-serif;
+  --transition: all 0.3s linear;
+  --radius: 2rem;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --footerHeight: 80px;
+}
+
+body {
+  background-color: var(--backgroundColor);
+  font-family: var(--font);
+  letter-spacing: 0.5rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--headingColor);
+  text-align: center;
+}
+
+p {
+  color: var(--textColor);
+  text-align: center;
+  letter-spacing: 0.125rem;
+}
+
+.main-paragraph {
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.main-container {
+  max-width: 1170px;
+  width: 80vw;
+  margin: 0 auto;
+}
+
+.underline {
+  width: 16rem;
+  height: 0.25rem;
+  background: var(--buttonColor);
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.hero {
+  width: 100vw;
+  min-height: calc(100vh - var(--footerHeight));
+  display: grid;
+  place-items: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.btn-main {
+    display: inline-block;      
+    text-decoration: none;       
+    background-color: #ffc107;   
+    color: #333;                 
+    padding: 15px 30px;          
+    border-radius: 50px;         
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 10px;
+}
+
+.btn-main:hover {
+    transform: translateY(-3px); 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    background-color: #ffca2c;
+}
+
+.btn-secondary {
+    padding: 15px 30px;
+    border-radius: 50px;
+    border: 2px solid #007bff;
+    background: transparent;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 10px;
+}
+.btn-secondary:hover {
+    background-color: #007bff;
+    color: white;
+}
+.btn-container {
+  display: grid;
+  place-items: center;
+  row-gap: 1rem;
+  padding: 1rem 0;
+}
+
+.btn {
+  width: 240px;
+  padding: 1rem 2rem;
+  background-color: var(--buttonColor);
+  border: transparent;
+  color: var(--buttonTextColor);
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.075rem;
+  transition: var(--transition);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+@media screen and (min-width: 576px) {
+  .btn {
+    width: 360px;
+  }
+}
+
+.footer {
+  height: var(--footerHeight);
+  background-color: #111;
+  display: grid;
+  place-items: center;
+}
+
+.answer-text {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.correct {
+  opacity: 1;
+  color: var(--correctColor);
+}
+
+.wrong {
+  opacity: 1;
+  color: var(--wrongColor);
+}
+
+.stats {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.stat {
+  background-color: var(--buttonColor);
+  padding: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat p {
+  color: var(--buttonTextColor);
+  font-weight: bold;
+  font-size: 1rem;
+  letter-spacing: 0.125rem;
+}
+
+.stat .correct-count {
+  font-size: 2rem;
+}
+
+.stat .wrong-count {
+  font-size: 2rem;
+}
+
+/* sound */
+.btn-sound {
+  margin: 0 0.5rem;
+  width: 3rem;
+  padding: 0.5rem 0.5rem;
+  background-color: var(--buttonColor);
+  border: transparent;
+  color: var(--buttonTextColor);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+
+.btn-sound:hover {
+  transform: scale(1.2);
+}
+
+.sound-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.sound-container p {
+  margin-right: 0.5rem;
+}
+
+.btn-sound {
+  margin-left: 0.5rem;
+}

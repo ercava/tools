@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Tugas | ERCAVIAN PTN/PTLN</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+        .main-content {
+            padding: 3rem;
+            background: var(--bg-light);
+        }
+
+        .todo-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .todo-item:hover {
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            margin-right: 1rem;
+            border-radius: 5px;
+            accent-color: var(--accent-gold);
+        }
+
+        .delete-btn {
+            color: #f87171;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand-text" style="padding: 2.5rem 2rem 0;">ERCAVIAN<br>PTN/PTLN 100%</div>
+            <nav class="nav-links">
+                <a href="dashboard" class="nav-item"><i class="fas fa-home"></i> Beranda</a>
+                <a href="todo" class="nav-item active"><i class="fas fa-list-check"></i> Daftar Tugas</a>
+                <a href="materials" class="nav-item"><i class="fas fa-book"></i> Materi Belajar</a>
+                <a href="spiritual" class="nav-item"><i class="fas fa-pray"></i> Jalur Langit</a>
+
+                <div class="nav-dropdown" id="moreDropdown">
+                    <div class="nav-item dropdown-trigger" onclick="toggleDropdown()">
+                        <i class="fas fa-ellipsis-h"></i> Lainnya <i class="fas fa-chevron-down"
+                            style="margin-left: auto; font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="rankings" class="dropdown-item"><i class="fas fa-trophy"></i> Peringkat TO</a>
+                        <a href="campus" class="dropdown-item"><i class="fas fa-university"></i> Target Kampus</a>
+                        <a href="streak" class="dropdown-item"><i class="fas fa-fire"></i> Statistik Streak</a>
+                    </div>
+                </div>
+
+                <div class="logout-container">
+                    <a href="index" class="nav-item" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i>
+                        Keluar</a>
+                </div>
+            </nav>
+        </aside>
+
+        <script>
+            function toggleDropdown() {
+                document.getElementById('moreDropdown').classList.toggle('active');
+            }
+        </script>
+
+        <main class="main-content">
+            <header style="margin-bottom: 3rem;">
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary-navy);">Daftar Tugas</h2>
+                <p style="color: var(--text-gray);">Atur jadwal dan tugas belajarmu di sini.</p>
+            </header>
+
+            <div class="glass-card" style="margin-bottom: 2rem;">
+                <div class="todo-input-group">
+                    <input type="text" id="todoInput" placeholder="Tambah tugas baru..."
+                        style="flex: 1; border: 2px solid var(--glass-border);">
+                    <button id="addBtn" class="btn-primary">Tambah</button>
+                </div>
+
+                <ul class="todo-list" id="todoList">
+                    <!-- Todos will be injected here -->
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (!user) window.location.href = 'index';
+
+        const todoInput = document.getElementById('todoInput');
+        const addBtn = document.getElementById('addBtn');
+        const todoList = document.getElementById('todoList');
+
+        let todos = JSON.parse(localStorage.getItem(`todos_${user.nisn}`)) || [];
+
+        function saveTodos() {
+            localStorage.setItem(`todos_${user.nisn}`, JSON.stringify(todos));
+        }
+
+        function renderTodos() {
+            todoList.innerHTML = '';
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" class="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${index})">
+                        <span style="font-weight: 600; color: var(--primary-navy);">${todo.text}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteTodo(${index})"><i class="fas fa-trash-can"></i></button>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (text) {
+                todos.push({ text, completed: false });
+                todoInput.value = '';
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        window.toggleTodo = (index) => {
+            todos[index].completed = !todos[index].completed;
+            saveTodos();
+            renderTodos();
+        };
+
+        window.deleteTodo = (index) => {
+            todos.splice(index, 1);
+            saveTodos();
+            renderTodos();
+        };
+
+        addBtn.onclick = addTodo;
+        todoInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTodo(); });
+
+        renderTodos();
+    </script>
+</body>
+
+</html>

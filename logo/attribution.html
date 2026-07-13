@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attributions - Authors & Creators</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:italic,wght@700&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ercava-dark': '#152638',
+                        'ercava-charcoal': '#263B4C',
+                        'ercava-soft': '#F8FAFC',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --mario-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --mario-blue: #152638;
+            --mario-charcoal: #263B4C;
+        }
+
+        /* Stylized Scrollbar - Match Directory */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--mario-charcoal);
+            border-radius: 10px;
+            border: 2px solid #f8fafc;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--mario-blue);
+        }
+
+        .mario-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-color: #f8fafc;
+        }
+
+        .mario-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(38, 59, 76, 0.03) 20px,
+                    rgba(38, 59, 76, 0.03) 40px);
+            background-size: 56.57px 56.57px;
+            animation: panPattern 10s linear infinite;
+        }
+
+        @keyframes panPattern {
+            from {
+                background-position: 0 0;
+            }
+
+            to {
+                background-position: 56.57px 0;
+            }
+        }
+
+        .mario-gradient-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(248, 250, 252, 0.8) 100%);
+        }
+
+        .squishy {
+            transition: transform 0.4s var(--mario-squish);
+        }
+
+        .squishy:hover {
+            transform: scale(1.02) rotate(0.5deg);
+        }
+
+        .squishy:active {
+            transform: scale(0.98);
+        }
+
+        .author-card {
+            background: white;
+            border-radius: 3rem;
+            padding: 3rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.4s var(--mario-squish);
+        }
+
+        .author-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .works-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .works-dropdown.active {
+            max-height: 2000px;
+        }
+
+        .rotate-icon {
+            transition: transform 0.4s var(--mario-squish);
+        }
+
+        .active .rotate-icon {
+            transform: rotate(180deg);
+        }
+
+        .work-thumb {
+            aspect-ratio: 1/1;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s var(--mario-squish);
+            width: 100%;
+        }
+
+        .work-thumb:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed">
+    <div class="mario-bg-container">
+        <div class="mario-pattern"></div>
+        <div class="mario-gradient-overlay"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-20 relative z-10">
+        <nav class="mb-16">
+            <a href="index.html"
+                class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-ercava-dark transition squishy">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Back to Portal
+            </a>
+        </nav>
+
+        <header class="mb-20">
+            <h1 class="font-mono text-5xl font-bold tracking-tight uppercase mb-6">Attributions</h1>
+            <p class="text-slate-500 font-medium leading-relaxed max-w-2xl">
+                The authors of published artworks.
+            </p>
+        </header>
+
+        <div class="space-y-12">
+            <!-- Author: Zulfan -->
+            <div class="author-card">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div
+                        class="w-48 aspect-[9/16] rounded-2xl bg-ercava-dark flex items-center justify-center shrink-0 shadow-2xl overflow-hidden">
+                        <img src="assets/Zulfan.JPG"
+                            class="w-full h-full object-cover transition-transform duration-700"
+                            onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Zulfan'">
+                    </div>
+                    <div class="flex-grow pt-4">
+                        <div class="mb-6">
+                            <h2 class="text-3xl font-bold mb-2">M. Zulfan Muwaffiq</h2>
+                                 <p class="text-xs font-bold uppercase tracking-widest text-slate-400">    AKA Zulmuw </p>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed max-w-2xl">
+                            BIO TBA </p>
+                        <div class="flex gap-4 mb-12 items-center">
+                            <a href="https://instagram.com/@zulmuw"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy">@zulmuw</a>
+                         
+                            <button onclick="toggleWorks('worksZulfan', this)"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy flex items-center gap-2">
+                                Artworks
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div id="worksZulfan" class="works-dropdown">
+                            <div class="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-12 gap-2 pb-8">
+                                <div class="work-thumb"><img src="assets/cover.png" class="w-full h-full object-cover">
+                                </div>
+                                <div class="work-thumb"><img src="assets/erc/Emblem.jpg"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/Logo_Base HD.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/maskot.jpg"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/Profil_Ercava.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/Jersey Basket Mockup.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/Jersey Dark Mockup.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/Jersey Light Mockup.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/Shooting Shirt Mockup.png"
+                                        class="w-full h-full object-cover"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author: Levina -->
+            <div class="author-card">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div
+                        class="w-48 aspect-[9/16] rounded-2xl bg-slate-200 flex items-center justify-center shrink-0 shadow-2xl overflow-hidden">
+                        <img src="assets/Levina.JPG"
+                            class="w-full h-full object-cover transition-transform duration-700"
+                            onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Levina'">
+                    </div>
+                    <div class="flex-grow pt-4">
+                        <div class="mb-6">
+                            <h2 class="text-3xl font-bold mb-2">Levina Ratu Neema</h2>
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-400">AKA Lepidotera</p>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed max-w-2xl">
+                            BIO TBA </p>
+                        <div class="flex gap-4 mb-12 items-center">
+                            <a href="https://instagram.com/@lll_levina" target="_blank"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy">@lll_levina</a>
+                            <button onclick="toggleWorks('worksLevina', this)"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy flex items-center gap-2">
+                                Artworks
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div id="worksLevina" class="works-dropdown">
+                            <div class="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-12 gap-2 pb-8">
+                                <div class="work-thumb"><img src="assets/erc/Kapal_Comet.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/Kucing_Comet.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/maskot birthday.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/erc/Tifo Color.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/Diorama.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/T Shirt Mockup.png"
+                                        class="w-full h-full object-cover"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author: Rilo -->
+            <div class="author-card">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div
+                        class="w-48 aspect-[9/16] rounded-2xl bg-slate-200 flex items-center justify-center shrink-0 shadow-2xl overflow-hidden">
+                        <img src="assets/Rilo.jpg" class="w-full h-full object-cover transition-transform duration-700"
+                            onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Rilo'">
+                    </div>
+                    <div class="flex-grow pt-4">
+                        <div class="mb-6">
+                            <h2 class="text-3xl font-bold mb-2">M. Rilo Pambudi</h2>
+                            <p class="text-xs font-bold uppercase tracking-widest text-slate-400">AKA Awrinko</p>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed max-w-2xl">
+                            BIO TBA
+                        </p>
+                        <div class="flex gap-4 mb-12 items-center">
+                            <a href="https://instagram.com/@awrinkoo" target="_blank"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy">@awrinkoo</a>
+                            <button onclick="toggleWorks('worksRilo', this)"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy flex items-center gap-2">
+                                Artworks
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div id="worksRilo" class="works-dropdown">
+                            <div class="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-12 gap-2 pb-8">
+                                <div class="work-thumb"><img src="assets/mockups/Work Jacket Dark Mockup.jpg"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/mockups/Work Jacket Light Mockup.jpg"
+                                        class="w-full h-full object-cover"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Author: Imtinan -->
+            <div class="author-card">
+                <div class="flex flex-col md:flex-row gap-12 items-start">
+                    <div
+                        class="w-48 aspect-[9/16] rounded-2xl bg-slate-200 flex items-center justify-center shrink-0 shadow-2xl overflow-hidden">
+                        <img src="assets/Imtinan.JPG"
+                            class="w-full h-full object-cover transition-transform duration-700"
+                            onerror="this.src='https://api.dicebear.com/7.x/avataaars/svg?seed=Imtinan'">
+                    </div>
+                    <div class="flex-grow pt-4">
+                        <div class="mb-6">
+                            <h2 class="text-3xl font-bold mb-2">Imtinan Khairunnisa</h2>
+                               <p class="text-xs font-bold uppercase tracking-widest text-slate-400">      AKA INYONG </p>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-8 leading-relaxed max-w-2xl">
+                            Just like to draw.
+                        </p>
+                        <div class="flex gap-4 mb-12 items-center">
+                            <a href="https://instagram.com/@imtinankhai" target="_blank"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy">@imtinankhai</a>
+                            <button onclick="toggleWorks('worksImtinan', this)"
+                                class="text-[10px] font-bold tracking-widest uppercase py-3 px-6 bg-slate-100 rounded-xl hover:bg-ercava-dark hover:text-white transition-all squishy flex items-center gap-2">
+                                Artworks
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 rotate-icon" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div id="worksImtinan" class="works-dropdown">
+                            <div class="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-12 gap-2 pb-8">
+                                <div class="work-thumb"><img src="assets/os/AKLI.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/BPH MPS.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/BPH OS.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/DIVLING.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/DIVOR.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/HUMAS.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/IMTAQ.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/KEDIS.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/MEDPUB.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/OS Black.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/OS White.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/PPBN.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/SASBUD.png"
+                                        class="w-full h-full object-cover"></div>
+                                <div class="work-thumb"><img src="assets/os/WIRUS.png"
+                                        class="w-full h-full object-cover"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="relative bg-ercava-dark text-white py-20 px-6 overflow-hidden shadow-2xl border-t border-white/5">
+        <div
+            class="absolute right-0 bottom-0 w-[500px] h-[500px] opacity-[0.05] pointer-events-none translate-x-1/4 translate-y-1/4">
+            <img src="assets/erc/INTI KOMET.svg" class="w-full h-full object-contain filter invert" alt="">
+        </div>
+
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
+                <div class="lg:col-span-3">
+                    <h2 class="font-mono text-3xl font-bold mb-6 italic tracking-tight">Ercava Iconography Center</h2>
+
+                    <p class="text-sm text-slate-400 max-w-2xl leading-relaxed mb-6">
+                        This center serves as a platform for the public to explore and utilize iconographies related to
+                        Ercava. Whether you are a researcher, alumni, or just a curious one, these assets are freely
+                        available for viewing and reference. <br> <br>
+
+
+                        While the archive is free to access, we uphold the rights of our contributors. All artworks
+                        provided herein remain the exclusive property of their respective authors.
+                    </p>
+                    <p class="text-[10px] font-bold tracking-[0.5em] text-slate-500 uppercase mb-4">ESTRELLA LUXAMERTA
+                        CLAVISANTARA</p>
+                    <p class="text-[11px] font-bold tracking-[0.3em] text-white/20 uppercase">Terbitkan Asa, Lintasi
+                        Dunia!</p>
+                </div>
+
+                <div class="lg:col-span-1 lg:border-l lg:border-white/10 lg:pl-12">
+                    <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-slate-500">Got questions and
+                        requests? Just hit us up!</h3>
+                    <ul class="space-y-6 text-xs font-bold tracking-widest uppercase">
+                        <li>
+                            <a href="https://instagram.com/@ercava29" target="_ercava29"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Instagram
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://x.com/" target="_ercava29"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Twitter/X
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:a29manics@gmail.com"
+                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
+                                <span
+                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
+                                Email Us
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+    </footer>
+
+    <script>
+        function toggleWorks(id, btn) {
+            const dropdown = document.getElementById(id);
+            const card = dropdown.closest('.author-card');
+
+            dropdown.classList.toggle('active');
+            card.classList.toggle('active');
+        }
+
+        // Mouse Star Trail (Reused from index)
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.05) return;
+            const star = document.createElement('div');
+            star.innerHTML = '✦';
+            star.className = 'absolute pointer-events-none opacity-100 transition-all duration-1000';
+            star.style.left = e.pageX + 'px';
+            star.style.top = e.pageY + 'px';
+            star.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            star.style.color = '#263B4C';
+            star.style.zIndex = '9999';
+            document.body.appendChild(star);
+            setTimeout(() => {
+                const angle = Math.random() * 360;
+                const dist = Math.random() * 100 + 50;
+                star.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${angle * 5}deg) scale(0)`;
+                star.style.opacity = '0';
+            }, 50);
+            setTimeout(() => star.remove(), 1000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1636 @@
+{
+    "lsc": {
+        "total_students": 137,
+        "snbt_passed": 31,
+        "snbt_failed": 106,
+        "spread": [
+            {
+                "name": "Muhammad Afif Habiburrahman",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEI K",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Muhammad Fathan Azzahran",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEI-R",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Nadhif Nur Khairi",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Rayhan Hafidz",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTSL-L",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Mulkan Fathi Muharik",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTSL-SI",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Nabilah Nur Mahdiyyah",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SBM",
+                "jalur": ""
+            },
+            {
+                "name": "Najma Maisya Muchsin",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SF",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Naufal Aisy Fadhil",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTTM",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Naufal Ijlal Malik",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEIR-",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Naura Farah Taqiya",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTTM",
+                "jalur": ""
+            },
+            {
+                "name": "Naura Rahmani Azizah",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FSRD",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Panji Mufli Zahid",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEI-R",
+                "jalur": ""
+            },
+            {
+                "name": "Roida Aribatuzzafira",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SITH-R",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Saqkhi Ferdinan Abqari",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Wanda Khairina Afifuddin",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SF",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Zahra Zahira",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FITB",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Zilva Maulia Arvianty H",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Afifah Hani",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Aflah Abdil Ghany",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FMIPA-M",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Aisyah Nur Madinah K",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FSRD",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Akmal Maulana",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTTM",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Azka Zhafran Hindradata",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEI-R",
+                "jalur": ""
+            },
+            {
+                "name": "Bani Umay Yamin",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SBM",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Cahaya Arindha",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTI-SP",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Dzaka Maghfi Ahmadinejad",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTMD",
+                "jalur": ""
+            },
+            {
+                "name": "Fatma Halimah Naila Wafi",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SBM",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Ganang Patrya Wijaya",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Gilard Ahmad Faris",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTSL-SI",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Hamid Toriq Huda",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SAPPK",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Hoshi Adha Alman",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTTM",
+                "jalur": ""
+            },
+            {
+                "name": "Imam Azkaziyan Ahmad",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "STEI-R",
+                "jalur": ""
+            },
+            {
+                "name": "Kayla Celesti",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTI-RI",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Luthfi Ghossan Dinarta",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SITH-S",
+                "jalur": ""
+            },
+            {
+                "name": "M. Faqih Akmal",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTI-SP",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Madriena Nazaha Arief",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "FTSL-L",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Syauqi Izzati R",
+                "ptn": "Institut Teknologi Bandung",
+                "prodi": "SBM",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Ady Afif Cahyafatih",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Hukum",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Alifah Safana R",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Administrasi Negara",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Alifia Nasya Fadilah",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Almas Azzahra",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Industri",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Amru Khairy Mirzata",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Geofisika",
+                "jalur": ""
+            },
+            {
+                "name": "Athirah Nurushafhah",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kesehatan Masyarakat",
+                "jalur": ""
+            },
+            {
+                "name": "Azka Safira Amorizki",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Statistika / Aktuaria",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Belvana Khairiyah",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Aktuaria",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Callista Remasya Hendy",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Danish Dhla Amani",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kedokteran Gigi",
+                "jalur": ""
+            },
+            {
+                "name": "Dimas Ahmad D",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Elektro",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Faiq Ahmad Haidar R",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Faiz Marzuq",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Hukum",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Fikri Fauzan Rahman",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Griffyn Tiryaqil Aghyari",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Komputer",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Haidar Rafif Radithya",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Industri",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Harissa Nadya Shafwa",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Lingkungan",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Jibran Nabil Adiyatma",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Administrasi Niaga",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Kishan Favian Ahmad",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Ekonomi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Lathifah Zahratul J",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kesejahteraan Sosial",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Azzam Fathurrahman",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Komputer",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammaf Fadhil Al Afifi Fajar",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Sistem Informasi",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Nafis",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Administrasi Bisnis Islam",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Muhammad Nur Asia J",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Administrasi Niaga",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ridho Amir",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Administrasi Bisnis Islam",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Salman Dzaki W",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Aktuaria",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Sholahuddin U",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Medical Science (IUP)",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Zharfan Shabri",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Industri",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Naa'ila Fairuz Adynda",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Bisnis Islam",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Najwa Azzauja",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Sastra Inggris",
+                "jalur": ""
+            },
+            {
+                "name": "Nanditha Sofya Ayu",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Antropologi Sosial",
+                "jalur": ""
+            },
+            {
+                "name": "Nisrina Azella K",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Nurafifah Inayah",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kimia",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "R. Fathi Rizaki Nugra A",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Teknik Perkapalan",
+                "jalur": ""
+            },
+            {
+                "name": "Septia Ramadhani",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kimia",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Siti Faizah Hayatun Nufus",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kedokteran",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Sofie Rizqa Wiranegara",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Ilmu Ekonomi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Syahzanan Riskia Putri",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Wira Jati Susanto",
+                "ptn": "Universitas Indonesia",
+                "prodi": "Administrasi Keuangan dan Perbankan",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Alfarel Abhipraya",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Teknologi Informasi",
+                "jalur": ""
+            },
+            {
+                "name": "Aqila Olivia Putri",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Kedokteran Gigi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Athifah Nurushafwah",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Teknik Kimia",
+                "jalur": ""
+            },
+            {
+                "name": "Auliya Rahman A",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Teknologi Informasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Firda Zafirah Fuad W",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Kedokteran",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Baihaki",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Teknik Industri",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Rifky Aryamiswari",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Ekonomi Islam",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Rouvan Akramann",
+                "ptn": "Universitas Brawijaya",
+                "prodi": "Manajemen Perhotelan",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Azka Andika Fathan",
+                "ptn": "Institut Pertanian Bogor",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Siti Zahra Muthmainnah",
+                "ptn": "Institut Pertanian Bogor",
+                "prodi": "Statistika dan Sains Data",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Daffa",
+                "ptn": "UIN Jakarta",
+                "prodi": "Kedokteran",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Reza Haikal",
+                "ptn": "UIN Jakarta",
+                "prodi": "Pendidikan Bahasa Arab",
+                "jalur": ""
+            },
+            {
+                "name": "Padly Kurnia Bahari",
+                "ptn": "UIN Jakarta",
+                "prodi": "Kedokteran",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Qori Nevi Arzeti",
+                "ptn": "UIN Jakarta",
+                "prodi": "Kedokteran",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Yunda Permata Az-Zahra",
+                "ptn": "UIN Jakarta",
+                "prodi": "Kedokteran",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Ahmada Bayakmiko A",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "Sejarah",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Bachtiar Rizki Riyadi",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Komaruddin Nursi Abdul",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "KR Sejarah",
+                "jalur": ""
+            },
+            {
+                "name": "Nikeisha Tsana Akmila",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "Sosiologi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Risalah Adisastra",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "Teknik Elektro",
+                "jalur": ""
+            },
+            {
+                "name": "Salwa At Taqiya",
+                "ptn": "Universitas Gadjah Mada",
+                "prodi": "Psikologi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Aulla Nurul Vanialdi",
+                "ptn": "Universitas Diponegoro",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Adhyaksa Pri Kuncoro J",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Ilmu Hukum",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Aurellia Ghadhidha Z",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Claora Neomia H",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Perpustakaan dan Sains Informasi",
+                "jalur": ""
+            },
+            {
+                "name": "Dafa Dhiya Ramadhan",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Farmasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Lucy Nuhaa Atha",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Mutiara Timur Baginda",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Kimia",
+                "jalur": ""
+            },
+            {
+                "name": "Nisrina Raya Anindya",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Farmasi",
+                "jalur": ""
+            },
+            {
+                "name": "Qinan Almallki Sugiarto",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Salma Aulia Mazaya",
+                "ptn": "Universitas Padjadjaran",
+                "prodi": "Kedokteran Gigi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Awanis Syadidah",
+                "ptn": "Universitas Negeri Malang",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Naifah Khairunnisa",
+                "ptn": "UPN Veteran Yogyakarta",
+                "prodi": "Teknik Lingkungan",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Afifah Nurul Ihsan",
+                "ptn": "Universitas Negeri Sebelas Maret",
+                "prodi": "Kedokteran",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Grania Naura'h Zafira",
+                "ptn": "Universitas Negeri Sebelas Maret",
+                "prodi": "Arsitektur",
+                "jalur": ""
+            },
+            {
+                "name": "Hanaamira Pramesti",
+                "ptn": "Institut Teknologi Sepuluh Nopember",
+                "prodi": "Perencanaan Wilayah dan Kota",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Hafizh Oemar",
+                "ptn": "Institut Teknologi Sepuluh Nopember",
+                "prodi": "Teknik Industri",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Nabila Ananto Putri",
+                "ptn": "Institut Teknologi Sepuluh Nopember",
+                "prodi": "Biologi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Qolbita Mulia H",
+                "ptn": "Universitas Pendidikan Indonesia",
+                "prodi": "Pendidikan Khusus",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Intan Adella Rachman",
+                "ptn": "Universitas Airlangga",
+                "prodi": "Biologi",
+                "jalur": ""
+            },
+            {
+                "name": "Krishna Satria D",
+                "ptn": "Universitas Airlangga",
+                "prodi": "Management (IUP)",
+                "jalur": ""
+            },
+            {
+                "name": "Naura Ariqa Fatina",
+                "ptn": "Universitas Airlangga",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Reisa Serina F",
+                "ptn": "Universitas Airlangga",
+                "prodi": "Hubungan Internasional",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Shellomitha Laudya Santoso",
+                "ptn": "Universitas Tarumanagara",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Rafii Ramadhan",
+                "ptn": "Trisakti School of Management",
+                "prodi": "Akuntansi",
+                "jalur": ""
+            },
+            {
+                "name": "Naurah Azka Kamila",
+                "ptn": "Universitas Bina Sarana Informatika",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Nidya Risa Camilla",
+                "ptn": "Ritsumeikan APU - Jepang",
+                "prodi": "Asia Pacific Studies",
+                "jalur": ""
+            },
+            {
+                "name": "Cita Wafa Atiah",
+                "ptn": "Universiti Malaya - Malaysia",
+                "prodi": "Computer Science - Information System",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Farras Rahima",
+                "ptn": "Universiti Malaya - Malaysia",
+                "prodi": "Chemical Engineering",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Fadil Saputra",
+                "ptn": "Universiti Malaya - Malaysia",
+                "prodi": "Computer Science - Information System",
+                "jalur": ""
+            },
+            {
+                "name": "Muthiah Khairunnisa",
+                "ptn": "Universiti Malaya - Malaysia",
+                "prodi": "Mechanical Engineering",
+                "jalur": ""
+            },
+            {
+                "name": "Sanggita Kanaya Seppa",
+                "ptn": "Universiti Malaya - Malaysia",
+                "prodi": "International and Strategic Studies",
+                "jalur": ""
+            },
+            {
+                "name": "Hafiz Fauzi",
+                "ptn": "Universitas Lampung",
+                "prodi": "Manajemen",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Kayla Luthfi Aulia",
+                "ptn": "Universitas Lampung",
+                "prodi": "Manajemen",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Zendy Zainuddin",
+                "ptn": "University of Toronto St. George Kanada",
+                "prodi": "Mathematical and Physical Sciences",
+                "jalur": ""
+            },
+            {
+                "name": "Not Specified",
+                "ptn": "The Hong Kong University of Science and Technology - Hong Kong",
+                "prodi": "Engineering with an Extended Major in Artificial Intelligence",
+                "jalur": ""
+            },
+            {
+                "name": "Sofwan Nandana",
+                "ptn": "Universitas Jenderal Soedirman",
+                "prodi": "Farmasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Muhammad Fadel M. Godal",
+                "ptn": "Medipol University - Turki",
+                "prodi": "Communication",
+                "jalur": ""
+            },
+            {
+                "name": "Luqman Abdul Wahid",
+                "ptn": "Australian National University - Australia",
+                "prodi": "Mechanical Engineering",
+                "jalur": "SNBT"
+            }
+        ]
+    },
+    "cls": {
+        "total_students": 136,
+        "snbt_passed": 84,
+        "snbt_failed": 52,
+        "spread": [
+            {
+                "name": "Ahmad Luwai Faishol",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Alya Renata Rahmadina",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Alysha Izzramirz Firmansyah",
+                "ptn": "IPB University",
+                "prodi": "Komunikasi dan Pengembangan Masyarakat",
+                "jalur": ""
+            },
+            {
+                "name": "Aqilla Hajriani Armadita",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Azka Nabilah Azzahra",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Biologi",
+                "jalur": ""
+            },
+            {
+                "name": "Deedad Maliki Rafif",
+                "ptn": "IPB University",
+                "prodi": "Kedokteran Hewan",
+                "jalur": ""
+            },
+            {
+                "name": "Fahima Syahira Santika",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Kedokteran Gigi",
+                "jalur": ""
+            },
+            {
+                "name": "Husna Khairunnisa",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Farmasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Khalishah Hilwa",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Teknologi Bioproses",
+                "jalur": ""
+            },
+            {
+                "name": "Lareina Helga Azalia Maritza",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ridhwan Azhari",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Teknik Industri",
+                "jalur": ""
+            },
+            {
+                "name": "Naila Rahma Naibaho",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Farmasi (SF)",
+                "jalur": ""
+            },
+            {
+                "name": "Najwa Kayla Salsabilla",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Gizi",
+                "jalur": ""
+            },
+            {
+                "name": "Nurul Fatthiya",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Administrasi Fiskal",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Rendy Aulia Razani",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknologi Industri-Sistem dan Proses (SP)",
+                "jalur": ""
+            },
+            {
+                "name": "Syifa Azzahra",
+                "ptn": "Universitas Padjajaran (Unpad)",
+                "prodi": "Farmasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Alfikalia Alkano",
+                "ptn": "Universitas Airlangga (UNAIR)",
+                "prodi": "Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Aura Rahmah Fadhliah",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Farmasi (SF)",
+                "jalur": ""
+            },
+            {
+                "name": "Ayla Rosaline H",
+                "ptn": "Universitas Padjajaran (Unpad)",
+                "prodi": "Kedokteran Gigi",
+                "jalur": ""
+            },
+            {
+                "name": "Banyubiru Damartha Bumi",
+                "ptn": "Korea Advance Institute of Science and Technology (KAIST)",
+                "prodi": "Biological Science",
+                "jalur": ""
+            },
+            {
+                "name": "Dhea Arya Qonita",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Farmasi",
+                "jalur": ""
+            },
+            {
+                "name": "Jalies Andien Yosepha",
+                "ptn": "Universitas Padjajaran (Unpad)",
+                "prodi": "Farmasi",
+                "jalur": ""
+            },
+            {
+                "name": "Kirana Alya Mukhbita",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Lubna Azizah Nainggolan",
+                "ptn": "IPB University",
+                "prodi": "Teknologi Pangan",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Arjuna Putra Hartanto",
+                "ptn": "IPB University",
+                "prodi": "Ilmu Gizi",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ghiyats",
+                "ptn": "Universitas Diponegoro (Undip)",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Ratu Mutia Aqila",
+                "ptn": "IPB University",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Salaysya Amani Fatikha",
+                "ptn": "IPB University",
+                "prodi": "Ilmu Gizi",
+                "jalur": ""
+            },
+            {
+                "name": "Salma Hanifah",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Farmasi (SF)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Sami Arkan Nurwaskita Zuhdi",
+                "ptn": "Universitas Sebelas Maret (UNS)",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Uadifa Cahyapropa Siswoyo",
+                "ptn": "Universitas Sebelas Maret (UNS)",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Wafa Aditya Asdiq Rosada",
+                "ptn": "Universitas Negeri Sebelas Maret (UNS)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Zia Ghania Soebandono",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Farmasi",
+                "jalur": ""
+            },
+            {
+                "name": "Agni Kertaningjagad Thomasfa",
+                "ptn": "UIN Syarif Hidayatullah Jakarta (UIN Jakarta)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Aini Nazhifah Respati",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Gizi",
+                "jalur": ""
+            },
+            {
+                "name": "Akbar Pahlevi Fauziyah",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Kedokteran Hewan",
+                "jalur": ""
+            },
+            {
+                "name": "Aliyya Faiza Wibowo",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Teknik Industri",
+                "jalur": ""
+            },
+            {
+                "name": "Hasya Amira Haikal",
+                "ptn": "University of Manchester",
+                "prodi": "Development Studies and Data Analytics",
+                "jalur": ""
+            },
+            {
+                "name": "Ihsanul Fakhri",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Ilmu dan Teknologi Kebumian (FITB)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Khairunnisa Tenri Ola Subhan",
+                "ptn": "Universitas Hasanuddin (Unhas)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Khoirunnisa Nugroho",
+                "ptn": "Universitas Sebelas Maret (UNS)",
+                "prodi": "Kedokteran",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Maulana Habibur Rahman",
+                "ptn": "Universitas Diponegoro (Undip)",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Atha Kesaka Yusel",
+                "ptn": "Gazi University -Turkiye",
+                "prodi": "Medicine",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Naufal Rizki",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknologi Industri-Sistem dan Proses (FTI-SP)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Nadya Alyssa Azzahra",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Sistem Informasi",
+                "jalur": ""
+            },
+            {
+                "name": "Neysa Ayunda Jihan Ramadhan",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Keselamatan dan Kesehatan Kerja (K3)",
+                "jalur": ""
+            },
+            {
+                "name": "Tabina Zuleikha Pulungan",
+                "ptn": "IPB University",
+                "prodi": "Kedokteran",
+                "jalur": ""
+            },
+            {
+                "name": "Tanisha Henna Betari",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Pendidikan Dokter",
+                "jalur": ""
+            },
+            {
+                "name": "Akira Raffa Rystansyah",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Bisnis Islam",
+                "jalur": ""
+            },
+            {
+                "name": "Akmal Fakhri Hafizh",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Hukum",
+                "jalur": ""
+            },
+            {
+                "name": "Alfan Hakim Arrasyid Setyahudi",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Alifah Jauza Salsabilla",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Asy Syifa Az Zahra",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Kesehatan Lingkungan",
+                "jalur": ""
+            },
+            {
+                "name": "Aurellia Mahira Zaimon",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Hukum",
+                "jalur": ""
+            },
+            {
+                "name": "Bagus Noor Rahman Hidayat",
+                "ptn": "Universitas Airlangga (UNAIR)",
+                "prodi": "Ilmu Hukum",
+                "jalur": ""
+            },
+            {
+                "name": "Gading Candra Bagaskara",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Administrasi Niaga",
+                "jalur": ""
+            },
+            {
+                "name": "Ghania Atifa",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Administrasi Fiskal",
+                "jalur": ""
+            },
+            {
+                "name": "M. Fairuz Falifasya Lubis",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Muhamad Zidan Fahrezi",
+                "ptn": "IPB University",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Fatah Dhiaulhaq",
+                "ptn": "Unversitas Gadjah Mada (UGM)",
+                "prodi": "Perencanaan Wilayah dan Kota (PWK)",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Kamil Iksir Abd Shomad",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Raihan Suryaputra",
+                "ptn": "IPB University",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Najwa Salsabil",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Sistem Informasi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Nayla Haya Adelia",
+                "ptn": "Universitas Negeri Yogyakarta (UNY)",
+                "prodi": "Ilmu Komunikasi",
+                "jalur": ""
+            },
+            {
+                "name": "Nisriyna Sheva Alhannazihah",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Antropologi Sosial",
+                "jalur": ""
+            },
+            {
+                "name": "Rakin Galang Handaru",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Hubungan Internasional",
+                "jalur": ""
+            },
+            {
+                "name": "Ratu Natalie Angelica Putri",
+                "ptn": "Ritsumeikan Asia Pacific University (APU)",
+                "prodi": "Asia Pacific Studies",
+                "jalur": ""
+            },
+            {
+                "name": "Sofia Rahmani Nabila",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Bisnis dan Manajemen (SBM)",
+                "jalur": ""
+            },
+            {
+                "name": "Vira Naura Khalisha",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Senirupa dan Desain (FSRD)",
+                "jalur": ""
+            },
+            {
+                "name": "Abdulrachman Jibran Nur Said",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Bisnis Islam",
+                "jalur": ""
+            },
+            {
+                "name": "Ahdie Fathir Rizla",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Kesejahteraan Sosial",
+                "jalur": ""
+            },
+            {
+                "name": "Ahmad Nur Afiq Ridho",
+                "ptn": "Institut Teknologi Sepuluh Nopember (ITS)",
+                "prodi": "Teknik Geomatika",
+                "jalur": ""
+            },
+            {
+                "name": "Dzikrallah Mushthafa Fawz Hassan",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Ekonomi",
+                "jalur": ""
+            },
+            {
+                "name": "Eldhiya Nazlatul Ghaits",
+                "ptn": "Universitas Padjajaran (Unpad)",
+                "prodi": "Ilmu Hukum",
+                "jalur": ""
+            },
+            {
+                "name": "Hikmah Kamila Azkiya",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Ilma Azizah Ullumul Jannah",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Komunikasi",
+                "jalur": ""
+            },
+            {
+                "name": "Latifa Aulia Rahma",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Administrasi Fiskal",
+                "jalur": ""
+            },
+            {
+                "name": "Muhamad Attiya Zain Assachroni",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Administrasi Fiskal",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Rianda Akbar",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Sastra Indonesia",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ridho Farizi",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Administrasi Keuangan dan Perbankan",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Zaidan Abdurrahman",
+                "ptn": "Universitas Negeri Yogyakarta (UNY)",
+                "prodi": "Pendidikan Akuntansi",
+                "jalur": "SNBT"
+            },
+            {
+                "name": "Naila Alifa Ahmadina",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Ilmu Teknologi Hayati Prog. Sains (SITH-S)",
+                "jalur": ""
+            },
+            {
+                "name": "Naila Nadia Nabila",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Politik",
+                "jalur": ""
+            },
+            {
+                "name": "Nya' Shaima Khansa' Azzahra",
+                "ptn": "Universitas Pendidikan Indonesia (UPI)",
+                "prodi": "Desain Komunikasi Visual",
+                "jalur": ""
+            },
+            {
+                "name": "Qolbu Pujangga Ahmad",
+                "ptn": "Unversitas Gadjah Mada (UGM)",
+                "prodi": "Hukum",
+                "jalur": ""
+            },
+            {
+                "name": "Raihanah Asil Khatimah",
+                "ptn": "Unversitas Gadjah Mada (UGM)",
+                "prodi": "Politik dan Pemerintahan",
+                "jalur": ""
+            },
+            {
+                "name": "Robby Nauval Fikri Ma'arif",
+                "ptn": "Universitas Brawijaya (UB)",
+                "prodi": "Akuntansi",
+                "jalur": ""
+            },
+            {
+                "name": "Salwa Athirotul Jannah",
+                "ptn": "Universitas Brawijaya (UB)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Shafa Aqiela Rahma",
+                "ptn": "Universitas Airlangga (UNAIR)",
+                "prodi": "Manajemen",
+                "jalur": ""
+            },
+            {
+                "name": "Aisha Rahmanika Sari",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknologi Industri-Sistem dan Proses (SP)",
+                "jalur": ""
+            },
+            {
+                "name": "Daniyal Haritz",
+                "ptn": "Universitas Islam Negeri Syarif Hidayatullah (UIN Jakarta)",
+                "prodi": "Teknik Informatika",
+                "jalur": ""
+            },
+            {
+                "name": "Fayyadh Alireza Ashadi",
+                "ptn": "Korea Advance Institute of Science and Technology (KAIST)",
+                "prodi": "Aerospace Engineering",
+                "jalur": ""
+            },
+            {
+                "name": "Ghezan Abda Faqih",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknologi\nIndustri - Sistem dan Proses (FTI-SP) \u2013 Peminatan Teknik Fisika",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Hasha Apsarini Sakhi",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Akuntansi",
+                "jalur": ""
+            },
+            {
+                "name": "Jinda Aqila Zain",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Psikologi",
+                "jalur": ""
+            },
+            {
+                "name": "Kayla Putri Nafisha",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik\nPertambangan Dan Perminyakan (FTTM)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Keira Zulaikha Mubarok",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknologi Industri-Rekayasa Industri (RI)",
+                "jalur": ""
+            },
+            {
+                "name": "Kiyasah Rayan Zikry",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Institut Teknologi Bandung - Fakultas Teknik Sipil Dan Lingkungan - Infrastruktur Sipil Dan Kelautan (FTSL-SI)",
+                "jalur": ""
+            },
+            {
+                "name": "M. Luthfi Alhaqqani",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Komunikasi",
+                "jalur": ""
+            },
+            {
+                "name": "Meutia Aulia Rahma",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Ilmu Aktuaria",
+                "jalur": ""
+            },
+            {
+                "name": "Muh. Agra Putra Davyza Chaniago",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Ilmu Komputer",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Anas Fathurrahman",
+                "ptn": "Istanbul Technical University - Turkiye",
+                "prodi": "Architecture",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Azzam Nashirullah",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik\nPertambangan Dan Perminyakan (FTTM)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Muhammad Gibran Al Ghifari",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Rekayasa (STEI-R)",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ihsan Sade",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Mesin dan Dirgantara (FTMD)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Muhammad Reffah",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Komputasi(STEI-K)",
+                "jalur": ""
+            },
+            {
+                "name": "Nabil Siraj Sugiarto",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Sipil Dan\nLingkungan - Infrastruktur Sipil dan\nKelautan (FTSL-SI)",
+                "jalur": ""
+            },
+            {
+                "name": "Rafii Zaidan Hanif",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Mesin dan Dirgantara (FTMD)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Rosail Asywaq Fillah Aruzzi",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Mesin dan Dirgantara (FTMD)",
+                "jalur": ""
+            },
+            {
+                "name": "Satria Lhasa Putra Dewanda",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Rekayasa (STEI-R)",
+                "jalur": ""
+            },
+            {
+                "name": "Trio Musthamid",
+                "ptn": "UPN Veteran Yogyakarta",
+                "prodi": "Teknik Pertambangan",
+                "jalur": ""
+            },
+            {
+                "name": "Zafran Abqary Faisal",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Komputasi (STEI-K)",
+                "jalur": ""
+            },
+            {
+                "name": "Alifsani Abifadel",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Teknik Mesin",
+                "jalur": ""
+            },
+            {
+                "name": "Alya Astadewi Luthfianzah",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Farmasi",
+                "jalur": ""
+            },
+            {
+                "name": "Aydin Hylmi Hartanto",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Mesin dan Dirgantara (FTMD)",
+                "jalur": ""
+            },
+            {
+                "name": "Azel Alfino Geovan",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Rekayasa (STEI-R)",
+                "jalur": ""
+            },
+            {
+                "name": "Bilqis Khaerunisa",
+                "ptn": "Politeknik Negeri Subang",
+                "prodi": "Sistem Informasi (D3)",
+                "jalur": ""
+            },
+            {
+                "name": "Faiz Rizki Ramadhan",
+                "ptn": "Mohamed bin Zayed University of Artificial Intelligence",
+                "prodi": "Baehelor of Science in Artificial lntelligence",
+                "jalur": ""
+            },
+            {
+                "name": "Flora Cynthia Mushlih",
+                "ptn": "Universitas Indonesia (UI)",
+                "prodi": "Arsitektur Interior",
+                "jalur": ""
+            },
+            {
+                "name": "Hayyan Ahmad Al Ghifary",
+                "ptn": "University of Toronto Mississauga",
+                "prodi": "Studies in Computer Science, Mathematics and Statistics",
+                "jalur": ""
+            },
+            {
+                "name": "Mochammad Ja'Far Siddik Gumelar",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Pertambangan dan Perminyakan (FTTM)",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Fachrie Maulana",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Pertambangan dan Perminyakan (FTTM)",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Fathan Hifdzillah",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Electrical Power Engineering",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Galuh Elfiky",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Sipil Dan Lingkungan - Infrastruktur Sipil dan Kelautan (FTSL-SI)",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Hammam Arfianda",
+                "ptn": "National Tsing Hua University (NTHU) - Taiwan",
+                "prodi": "Electrical Engineering and Computer Science",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Ilham Herawan Saputra",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Teknik Pertanian",
+                "jalur": ""
+            },
+            {
+                "name": "Muhammad Kevin Nur Zaky",
+                "ptn": "The University of Edinburgh - UK",
+                "prodi": "Mathematics and Business",
+                "jalur": ""
+            },
+            {
+                "name": "Naima Syifa Hasna Al Thory",
+                "ptn": "Universitas Diponegoro (Undip)",
+                "prodi": "Teknik Industri",
+                "jalur": ""
+            },
+            {
+                "name": "Najma Zafira Konanjaya",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Arsitektur, Perencanaan dan Pengembangan Kebijakan (SAPPK)",
+                "jalur": ""
+            },
+            {
+                "name": "Nararya Qolbu Cetta",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Sekolah Teknik Elektro dan Informatika - Rekayasa (STEI-R)",
+                "jalur": ""
+            },
+            {
+                "name": "Naura Yasmin Putranti",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Ilmu dan Teknologi Kebumian (FITB)",
+                "jalur": ""
+            },
+            {
+                "name": "Randhika Haza Dwi Handaru",
+                "ptn": "University of Toronto St. George",
+                "prodi": "Mechanical Engineering",
+                "jalur": ""
+            },
+            {
+                "name": "Tamani Ahsan Elfatta",
+                "ptn": "Korea Advanced Institute of Science and Technology (KAIST), Korea",
+                "prodi": "Industrial and System Engineering",
+                "jalur": ""
+            },
+            {
+                "name": "Taqy Abdul Hafizh",
+                "ptn": "Institut Teknologi Bandung (ITB)",
+                "prodi": "Fakultas Teknik Mesin dan Dirgantara (FTMD)",
+                "jalur": "SNBP"
+            },
+            {
+                "name": "Wahyu Rafi Hamdani",
+                "ptn": "Institut Teknologi Sepuluh Nopember (ITS)",
+                "prodi": "Teknik Sipil",
+                "jalur": ""
+            },
+            {
+                "name": "Zidna Haidar Mahbubil Hayyi",
+                "ptn": "Universitas Gadjah Mada (UGM)",
+                "prodi": "Perencanaan Wilayah dan Kota",
+                "jalur": ""
+            }
+        ]
+    }
+}

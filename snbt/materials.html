@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi | Ercavian SNBT</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--primary-navy);
+            padding: 2rem;
+            border-right: 1px solid var(--glass-border);
+            color: white;
+        }
+
+        .main-content {
+            padding: 2.5rem;
+            background: var(--bg-light);
+        }
+
+        .nav-links {
+            margin-top: 3rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 1rem;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .nav-item i {
+            margin-right: 1rem;
+        }
+
+        .nav-item.active,
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .source-group {
+            margin-bottom: 4rem;
+        }
+
+        .source-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-gold);
+            display: inline-block;
+        }
+
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="brand-text" style="padding: 2.5rem 2rem 0;">ERCAVIAN<br>PTN/PTLN 100%</div>
+            <nav class="nav-links">
+                <a href="dashboard" class="nav-item"><i class="fas fa-home"></i> Beranda</a>
+                <a href="todo" class="nav-item"><i class="fas fa-list-check"></i> Daftar Tugas</a>
+                <a href="materials" class="nav-item active"><i class="fas fa-book"></i> Materi Belajar</a>
+                <a href="spiritual" class="nav-item"><i class="fas fa-pray"></i> Jalur Langit</a>
+
+                <div class="nav-dropdown" id="moreDropdown">
+                    <div class="nav-item dropdown-trigger" onclick="toggleDropdown()">
+                        <i class="fas fa-ellipsis-h"></i> Lainnya <i class="fas fa-chevron-down"
+                            style="margin-left: auto; font-size: 0.7rem;"></i>
+                    </div>
+                    <div class="dropdown-content">
+                        <a href="rankings" class="dropdown-item"><i class="fas fa-trophy"></i> Peringkat TO</a>
+                        <a href="campus" class="dropdown-item"><i class="fas fa-university"></i> Target Kampus</a>
+                        <a href="streak" class="dropdown-item"><i class="fas fa-fire"></i> Statistik Streak</a>
+                    </div>
+                </div>
+
+                <div class="logout-container">
+                    <a href="index" class="nav-item" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i>
+                        Keluar</a>
+                </div>
+            </nav>
+        </aside>
+
+        <script>
+            function toggleDropdown() {
+                document.getElementById('moreDropdown').classList.toggle('active');
+            }
+        </script>
+
+        <main class="main-content">
+            <header
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem;">
+                <div>
+                    <h2 style="font-size: 2.2rem; font-weight: 900; color: var(--primary-navy);">Bank Materi</h2>
+                    <p style="color: var(--text-gray);">Kumpulan sumber belajar persiapan SNBT terpercaya.</p>
+                </div>
+                <div class="streak-meter" onclick="window.location.href='streak'">
+                    <i class="fas fa-fire streak-flame"></i>
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="streak-count" id="streakCount">0</span>
+                        <span
+                            style="font-size: 0.65rem; color: var(--text-gray); font-weight: 800; text-transform: uppercase; margin-top: -5px;">Hari
+                            Streak!</span>
+                    </div>
+                    <i class="fas fa-chevron-right"
+                        style="margin-left: 0.5rem; color: var(--text-gray); font-size: 0.8rem;"></i>
+                </div>
+            </header>
+
+            <div id="materialsContainer">
+                <!-- Grouped materials will be injected here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (!user) window.location.href = 'index';
+
+        // Streak Logic: Sync with dashboard
+        function updateStreak() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const lastActive = localStorage.getItem(`lastActive_${user.nisn}`);
+            let streak = parseInt(localStorage.getItem(`streak_${user.nisn}`)) || 0;
+
+            if (lastActive !== todayStr) {
+                if (lastActive) {
+                    const lastDate = new Date(lastActive);
+                    const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+
+                    if (diffDays === 1) {
+                        streak++;
+                    } else if (diffDays > 1) {
+                        streak = 1;
+                    } else if (streak === 0) {
+                        streak = 1;
+                    }
+                } else {
+                    streak = 1;
+                }
+                localStorage.setItem(`lastActive_${user.nisn}`, todayStr);
+                localStorage.setItem(`streak_${user.nisn}`, streak);
+
+                let activity = JSON.parse(localStorage.getItem(`activity_${user.nisn}`)) || {};
+                activity[todayStr] = true;
+                localStorage.setItem(`activity_${user.nisn}`, JSON.stringify(activity));
+            }
+            document.getElementById('streakCount').innerText = streak;
+        }
+        updateStreak();
+
+        Papa.parse('data/materials.csv?v=' + Date.now(), {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                const container = document.getElementById('materialsContainer');
+
+                // Dynamically get unique sources
+                const sources = [...new Set(results.data.map(item => item.source))].filter(Boolean);
+
+                sources.forEach(source => {
+                    const groupData = results.data.filter(item => item.source === source);
+                    if (groupData.length > 0) {
+                        const sourceSection = document.createElement('div');
+                        sourceSection.className = 'source-group';
+
+                        let html = `<h3 class="source-title">${source}</h3>`;
+                        html += `<div class="material-grid">`;
+
+                        groupData.forEach(item => {
+                            let icon = 'fa-file-alt';
+                            if (item.type === 'PDF') icon = 'fa-file-pdf';
+                            else if (item.type === 'Video') icon = 'fa-video';
+                            else if (item.type === 'Link') icon = 'fa-external-link-alt';
+                            else if (item.type === 'Drive') icon = 'fa-hdd';
+
+                            html += `
+                                <div class="glass-card" style="display:flex; align-items:center; justify-content:space-between; padding:1.5rem;">
+                                    <div style="display:flex; align-items:center;">
+                                        <div style="width:50px; height:50px; background:#f1f5f9; border-radius:12px; display:flex; align-items:center; justify-content:center; color:var(--primary-navy); margin-right:1rem;">
+                                            <i class="fas ${icon} fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size:1rem; margin-bottom:2px;">${item.title}</h4>
+                                            <span style="font-size:0.75rem; color:var(--text-gray); text-transform:uppercase; font-weight:700;">${item.category}</span>
+                                        </div>
+                                    </div>
+                                    <a href="${item.link}" target="_blank" class="btn-primary" style="padding:0.5rem 1rem; font-size:0.7rem;">Buka</a>
+                                </div>
+                            `;
+                        });
+
+                        html += `</div>`;
+                        sourceSection.innerHTML = html;
+                        container.appendChild(sourceSection);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

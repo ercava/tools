@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Ercavian SNBT</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: var(--primary-navy);
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+            letter-spacing: -2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box glass-card">
+            <div class="logo">ERCAVIAN PTN/PTLN 100%</div>
+            <p style="margin-bottom: 2rem; color: var(--text-gray); font-weight: 600;">Nunca Desista, Ercava!</p>
+            <form id="loginForm">
+                <div style="margin-bottom: 2rem; text-align: left;">
+                    <label
+                        style="display: block; margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 800; color: var(--primary-navy);">MASUKKAN
+                        NISN</label>
+                    <input type="text" id="nisn" placeholder="Masukkan NISN disini..."
+                        style="border: 2px solid #e2e8f0;" required>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 1.2rem;">MASUK SEKARANG</button>
+                <div id="errorMsg"
+                    style="color: #ef4444; margin-top: 1rem; font-size: 0.8rem; font-weight: 700; display: none;">NISN
+                    Tidak Terdaftar!</div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = (e) => {
+            e.preventDefault();
+            const n = document.getElementById('nisn').value;
+            Papa.parse('data/students_data.csv?v=' + Date.now(), {
+                download: true, header: true, skipEmptyLines: true,
+                complete: (r) => {
+                    const nTrimmed = n.trim();
+                    // Robust check: try exact match, then try matching after stripping leading zeros from both
+                    const s = r.data.find(row => {
+                        if (!row.nisn) return false;
+                        const rowNisn = row.nisn.toString().trim();
+                        // Direct match
+                        if (rowNisn === nTrimmed) return true;
+                        // Match with leading zeros stripped (e.g. 00123 vs 123)
+                        return rowNisn.replace(/^0+/, '') === nTrimmed.replace(/^0+/, '');
+                    });
+
+                    if (s) {
+                        localStorage.setItem('currentUser', JSON.stringify(s));
+                        window.location.href = 'dashboard';
+                    }
+                    else {
+                        console.error('Login Failed for NISN:', nTrimmed);
+                        console.log('Total students loaded:', r.data.length);
+                        if (r.data.length > 0) {
+                            console.log('First student in list:', r.data[0]);
+                        }
+                        document.getElementById('errorMsg').style.display = 'block';
+                        document.getElementById('errorMsg').innerText = `NISN mu tidak ada! Salah ketik?`;
+                    }
+                },
+                error: (err) => {
+                    console.error('PapaParse Error:', err);
+                    document.getElementById('errorMsg').style.display = 'block';
+                    document.getElementById('errorMsg').innerText = 'Gagal memuat data siswa. Pastikan server aktif.';
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>
