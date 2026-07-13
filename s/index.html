@@ -174,9 +174,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // HARDCODE CONFIG HERE FOR PRODUCTION TO BYPASS MODAL
-    // const HARDCODED_CONFIG = { apiKey: "...", projectId: "..." };
-    const HARDCODED_CONFIG = null;
+    // PASTE YOUR FIREBASE WEB CONFIG HERE
+    const firebaseConfig = {
+      apiKey: "",
+      authDomain: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: ""
+    };
 
     const views = {
       loader: document.getElementById('loader-view'),
@@ -185,33 +191,31 @@
 
     function showView(viewName) {
       Object.keys(views).forEach(k => {
-        if (k === viewName) {
-          views[k].classList.remove('hidden');
-        } else {
-          views[k].classList.add('hidden');
-        }
+        views[k].classList.toggle('hidden', k !== viewName);
       });
     }
 
     function getCode() {
       const path = window.location.pathname;
       const params = new URLSearchParams(window.location.search);
-      if (params.has('c')) {
-        return params.get('c').trim();
-      }
+      if (params.has('c')) return params.get('c').trim();
       
       const segments = path.split('/').filter(Boolean);
       if (segments.length > 0) {
         const last = segments[segments.length - 1];
-        if (last !== 's' && last !== 'index.html') {
-          return last;
-        }
+        if (last !== 's' && last !== 'index.html') return last;
       }
       return '';
     }
 
     function sanitizeCode(code) {
       return code.replace(/[^a-zA-Z0-9\-]/g, '');
+    }
+
+    function showError(title, msg) {
+      document.getElementById('error-title').textContent = title;
+      document.getElementById('error-msg').textContent = msg;
+      showView('error');
     }
 
     async function init() {
@@ -223,25 +227,8 @@
         return;
       }
 
-      let config = HARDCODED_CONFIG;
-      if (!config) {
-        const stored = localStorage.getItem('firebase_config');
-        if (stored) {
-          try {
-            config = JSON.parse(stored);
-          } catch (e) {
-            console.error("Invalid stored config", e);
-          }
-        }
-      }
-
-      if (!config) {
-        showError('Setup Required', 'Database configuration missing. Please verify GitHub Secrets deployment or HARDCODED_CONFIG setup.');
-        return;
-      }
-
       try {
-        const app = initializeApp(config);
+        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const docRef = doc(db, "shortlinks", code);
         const docSnap = await getDoc(docRef);
@@ -252,21 +239,13 @@
         }
 
         let dest = docSnap.data().url;
-        if (!/^https?:\/\//i.test(dest)) {
-          dest = 'https://' + dest;
-        }
+        if (!/^https?:\/\//i.test(dest)) dest = 'https://' + dest;
         window.location.href = dest;
 
       } catch (err) {
-        showError('System Error', 'Failed to connect to Firebase database.');
+        showError('System Error', 'Failed to connect to database.');
         console.error(err);
       }
-    }
-
-    function showError(title, msg) {
-      document.getElementById('error-title').textContent = title;
-      document.getElementById('error-msg').textContent = msg;
-      showView('error');
     }
 
     init();

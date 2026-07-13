@@ -238,31 +238,22 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const HARDCODED_CONFIG = null;
+	const firebaseConfig = {
+	  apiKey: "AIzaSyA4_Ya88eeqTfzwHpDEksmf3WZpDwfagqw",
+	  authDomain: "shortlinks-a14cb.firebaseapp.com",
+	  projectId: "shortlinks-a14cb",
+	  storageBucket: "shortlinks-a14cb.firebasestorage.app",
+	  messagingSenderId: "1035139869978",
+	  appId: "1:1035139869978:web:3629fcc6dc30e8948c50a3",
+	  measurementId: "G-4VVLMTEQWV"
+	};
 
-    function getFirebaseConfig() {
-      if (HARDCODED_CONFIG) return HARDCODED_CONFIG;
-      const stored = localStorage.getItem('firebase_config');
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (e) {
-          return null;
-        }
-      }
-      return null;
-    }
-
-    function getDB() {
-      const config = getFirebaseConfig();
-      if (!config) return null;
-      try {
-        const app = initializeApp(config);
-        return getFirestore(app);
-      } catch (e) {
-        console.error("init failed", e);
-        return null;
-      }
+    let db;
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+    } catch (e) {
+      console.error("Firebase init failed:", e);
     }
 
     function generateRandomCode() {
@@ -280,12 +271,18 @@
       box.innerHTML = text;
     }
 
+    function hideStatus() {
+      const box = document.getElementById('status-box');
+      box.className = 'status-msg';
+      box.innerHTML = '';
+    }
+
     async function generateLink(e) {
       e.preventDefault();
-      
-      const db = getDB();
+      hideStatus();
+
       if (!db) {
-        showStatus('Error: Database configuration missing.', 'error');
+        showStatus('Error: Firebase belum dikonfigurasi. Hubungi admin.', 'error');
         return;
       }
 
@@ -293,8 +290,26 @@
       const rawCode = document.getElementById('custom-code').value.trim();
       const code = rawCode.replace(/[^a-zA-Z0-9\-]/g, '');
 
-      if (!code) {
-        showStatus('Error: Link tidak boleh kosong.', 'error');
+      // Validation
+      if (!urlInput) {
+        showStatus('Error: URL tujuan tidak boleh kosong.', 'error');
+        return;
+      }
+
+      try {
+        new URL(urlInput);
+      } catch (_) {
+        showStatus('Error: URL tidak valid. Pastikan format benar (contoh: https://example.com).', 'error');
+        return;
+      }
+
+      if (!code || code.length < 3) {
+        showStatus('Error: Alias minimal 3 karakter.', 'error');
+        return;
+      }
+
+      if (code.length > 30) {
+        showStatus('Error: Alias maksimal 30 karakter.', 'error');
         return;
       }
 
@@ -303,43 +318,44 @@
       submitBtn.textContent = 'MEMVERIFIKASI...';
 
       try {
+        // Check uniqueness
         const docRef = doc(db, "shortlinks", code);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          showStatus('Error: URL ini sudah terpakai. Gunakan URL lain.', 'error');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'BUAT LINK SEKARANG';
+          showStatus('Error: Alias ini sudah terpakai. Gunakan alias lain.', 'error');
           return;
         }
 
-        // Redirect to GitHub Issue creation
-        const issueTitle = encodeURIComponent(`[Shortlink]: Request`);
-        const issueBody = encodeURIComponent(`### Destination URL\n\n${urlInput}\n\n### Custom Code / Alias (Optional)\n\n${code}`);
-        const repoUrl = "https://github.com/theonehzx/tools";
-        const issueUrl = `${repoUrl}/issues/new?title=${issueTitle}&labels=shortlink-request&body=${issueBody}`;
+        // Write
+        await setDoc(docRef, {
+          url: urlInput,
+          created_at: serverTimestamp()
+        });
 
-        showStatus(`Menghubungkan ke GitHub... Selesaikan permintaan di GitHub untuk membuat link: <a href="${issueUrl}" target="_blank" style="color: var(--primary); font-weight: 800; text-decoration: underline;">Klik Disini untuk Submit</a>`, 'success');
-        
-        window.open(issueUrl, '_blank');
+        const fullUrl = `https://erc.my.id/s/${code}`;
+        showStatus(`Sukses! Erclink dibuat: <a href="${fullUrl}" target="_blank" style="color: var(--success); font-weight: 800;">${fullUrl}</a>`, 'success');
 
-        // Reset inputs
         document.getElementById('dest-url').value = '';
         document.getElementById('custom-code').value = generateRandomCode();
 
       } catch (err) {
-        showStatus(`Database Error: ${err.message}`, 'error');
+        if (err.code === 'permission-denied') {
+          showStatus('Error: Akses ditolak. Periksa Firestore rules.', 'error');
+        } else if (err.code === 'unavailable') {
+          showStatus('Error: Database offline. Coba lagi nanti.', 'error');
+        } else {
+          showStatus(`Error: ${err.message}`, 'error');
+        }
         console.error(err);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'BUAT LINK SEKARANG';
+        submitBtn.textContent = 'BUAT ERCLINK SEKARANG';
       }
     }
 
-    // Bind event listeners
     document.getElementById('shortlink-form').addEventListener('submit', generateLink);
 
-    // Initial prefill with random string
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('custom-code').value = generateRandomCode();
     });
