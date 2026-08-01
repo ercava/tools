@@ -35,6 +35,18 @@
             --mario-charcoal: #263B4C;
         }
 
+        .bg-ercava-dark { background-color: #152638 !important; }
+        .text-ercava-dark { color: #152638 !important; }
+        .border-ercava-dark { border-color: #152638 !important; }
+        .bg-ercava-charcoal { background-color: #263B4C !important; }
+        .text-ercava-charcoal { color: #263B4C !important; }
+        .bg-ercava-soft { background-color: #F8FAFC !important; }
+
+        footer {
+            background-color: #152638 !important;
+            color: #ffffff !important;
+        }
+
         .masonry-grid {
             column-count: 1;
             column-gap: 1.5rem;
@@ -61,12 +73,18 @@
         .asset-card {
             break-inside: avoid;
             margin-bottom: 1.5rem;
-            transition: all 0.4s var(--mario-squish);
-            border-radius: 2.5rem !important;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: none !important;
+            transform: none !important;
+            transition: border-color 0.2s ease;
+            border-radius: 1.5rem;
         }
 
         .asset-card:hover {
-            box-shadow: 0 30px 40px -10px rgb(0 0 0 / 0.15) !important;
+            box-shadow: none !important;
+            transform: none !important;
+            border-color: #cbd5e1;
         }
 
         /* Mario UI Background */
@@ -298,65 +316,51 @@
 
     </script>
 
-    <footer class="relative bg-ercava-dark text-white py-20 px-6 overflow-hidden shadow-2xl border-t border-white/5">
-        <div
-            class="absolute right-0 bottom-0 w-[500px] h-[500px] opacity-[0.05] pointer-events-none translate-x-1/4 translate-y-1/4">
-            <img src="assets/erc/INTI KOMET.svg" class="w-full h-full object-contain filter invert" alt="">
-        </div>
-
-        <div class="max-w-6xl mx-auto relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
-                <div class="lg:col-span-3">
-                    <h2 class="font-mono text-3xl font-bold mb-6 italic tracking-tight">Ercava Iconography Center</h2>
-
-                    <p class="text-sm text-slate-400 max-w-2xl leading-relaxed mb-6">
-                        This center serves as a platform for the public to explore and utilize iconographies related to
-                        Ercava. Whether you are a researcher, alumni, or just a curious one, these assets are freely
-                        available for viewing and reference. <br> <br>
-
-
-                        While the archive is free to access, we uphold the rights of our contributors. All artworks
-                        provided herein remain the exclusive property of their respective authors.
+    <footer class="bg-ercava-dark text-white pt-16 pb-12 px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <!-- Footer Columns -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Col 1: About -->
+                <div class="md:col-span-2">
+                    <h3 class="font-mono text-2xl font-bold mb-4 text-white">Estrella Luxamerta Clavisantara</h3>
+                    <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+                        This center serves as a platform for the public to explore and utilize iconographies related to Ercava. All artworks remain the exclusive property of their respective authors.
                     </p>
-                    <p class="text-[10px] font-bold tracking-[0.5em] text-slate-500 uppercase mb-4">ESTRELLA LUXAMERTA
-                        CLAVISANTARA</p>
-                    <p class="text-[11px] font-bold tracking-[0.3em] text-white/20 uppercase">Terbitkan Asa, Lintasi
-                        Dunia!</p>
                 </div>
 
-                <div class="lg:col-span-1 lg:border-l lg:border-white/10 lg:pl-12">
-                    <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-slate-500">Got questions and
-                        requests? Just hit us up!</h3>
-                    <ul class="space-y-6 text-xs font-bold tracking-widest uppercase">
-                        <li>
-                            <a href="https://instagram.com/@ercava29" target="_ercava29"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Instagram
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://x.com/ercava29" target="_ercava29"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Twitter/X
-                            </a>
-                        </li>
-                        <li>
-                            <a href="mailto:a29manics@gmail.com"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Email Us
-                            </a>
-                        </li>
+                <!-- Col 2: Navigation -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Navigation</h4>
+                    <ul class="space-y-3 text-xs font-bold text-slate-300">
+                        <li><a href="index.html" class="hover:text-white transition">Home Portal</a></li>
+                        <li><a href="directory.html" class="hover:text-white transition">Asset Directory</a></li>
+                        <li><a href="attribution.html" class="hover:text-white transition">Attributions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Socials & Contact -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Connect</h4>
+                    <ul class="space-y-3 text-xs font-bold text-slate-300">
+                        <li><a href="https://instagram.com/@ercava29" target="_ercava29" class="hover:text-white transition">Instagram (@ercava29)</a></li>
+                        <li><a href="https://x.com/ercava29" target="_ercava29" class="hover:text-white transition">Twitter / X</a></li>
+                        <li><a href="mailto:a29manics@gmail.com" class="hover:text-white transition">Email Us</a></li>
                     </ul>
                 </div>
             </div>
 
+            <!-- Giant Visible & Selectable ICONOGRAPHY Watermark Typography -->
+            <div class="my-8 overflow-hidden">
+                <span class="font-mono font-black tracking-tighter text-white/10 hover:text-white/25 transition-colors leading-none block uppercase select-text cursor-text whitespace-nowrap" style="font-size: min(11.5vw, 115px);">
+                    ICONOGRAPHY
+                </span>
+            </div>
 
+            <!-- Bottom Legal Bar -->
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400 font-medium gap-4">
+                <p>&copy; 2026 Ercava Iconography Center. All rights reserved.</p>
+                <p class="font-mono text-[10px] tracking-widest text-slate-400">Terbitkan Asa, Lintasi Dunia!</p>
+            </div>
         </div>
     </footer>
 

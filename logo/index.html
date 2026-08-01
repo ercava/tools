@@ -39,16 +39,53 @@
             --mario-charcoal: #263B4C;
         }
 
-        .preview-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            transition: transform 0.4s var(--mario-squish), box-shadow 0.4s var(--mario-squish);
-            border-radius: 2.5rem;
+        /* Explicit Fallback Utility Styles */
+        .bg-ercava-dark { background-color: #152638 !important; }
+        .text-ercava-dark { color: #152638 !important; }
+        .border-ercava-dark { border-color: #152638 !important; }
+        .bg-ercava-charcoal { background-color: #263B4C !important; }
+        .text-ercava-charcoal { color: #263B4C !important; }
+        .bg-ercava-soft { background-color: #F8FAFC !important; }
+        .text-ercava-soft { color: #F8FAFC !important; }
+
+        footer {
+            background-color: #152638 !important;
+            color: #ffffff !important;
         }
 
-        .preview-card:hover {
-            box-shadow: 0 30px 40px -10px rgb(0 0 0 / 0.15);
+        #pngLink, #madrasahPng, #orgPng {
+            background-color: #152638 !important;
+            color: #ffffff !important;
+            display: block;
+        }
+
+        #pngLink:hover, #madrasahPng:hover, #orgPng:hover {
+            background-color: #000000 !important;
+        }
+
+        #svgLink {
+            border: 2px solid #152638 !important;
+            color: #152638 !important;
+            display: block;
+        }
+
+        #svgLink:hover {
+            background-color: #ffffff !important;
+        }
+
+        .preview-card, .reveal-card, .asset-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: none !important;
+            transform: none !important;
+            transition: border-color 0.2s ease;
+            border-radius: 1.5rem;
+        }
+
+        .preview-card:hover, .reveal-card:hover, .asset-card:hover {
+            box-shadow: none !important;
+            transform: none !important;
+            border-color: #cbd5e1;
         }
 
         /* Stylized Scrollbar */
@@ -90,7 +127,7 @@
         }
 
         .mario-bg-container {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -102,17 +139,14 @@
 
         .mario-pattern {
             position: absolute;
-            top: -60px;
-            left: -60px;
-            right: -60px;
-            bottom: -60px;
+            inset: 0;
             background-image: repeating-linear-gradient(45deg,
                     transparent,
-                    transparent 20px,
-                    rgba(140, 199, 255, 0.16) 20px,
-                    rgba(140, 199, 255, 0.16) 40px);
-            background-size: 56.57px 56.57px;
-            animation: panPattern 10s linear infinite;
+                    transparent 30px,
+                    rgba(140, 199, 255, 0.22) 30px,
+                    rgba(140, 199, 255, 0.22) 60px);
+            background-size: 84.85px 84.85px;
+            /* static — no animation */
         }
 
         /* Carousel Navigation Buttons */
@@ -275,7 +309,7 @@
     </script>
 </head>
 
-<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed">
+<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed relative">
     <!-- Mario UI Background -->
     <div class="mario-bg-container">
         <div class="mario-pattern"></div>
@@ -284,8 +318,8 @@
 
     <main class="max-w-6xl mx-auto px-6 py-20 relative z-10">
         <header class="text-center mb-20">
-            <p class="font-mono text-2xl text-ercava-charcoal mb-4">Welcome to,</p>
-            <h1 class="font-mono text-6xl font-bold tracking-tight uppercase mb-4">Ercava Iconography Center</h1>
+            <p class="font-mono text-sm tracking-[0.3em] uppercase text-ercava-charcoal mb-4">Welcome to</p>
+            <h1 class="font-mono text-6xl font-bold tracking-tight mb-4">Ercava Iconography Center</h1>
             <p class="max-w-2xl mx-auto text-sm text-slate-500 font-medium leading-relaxed">
                 A central platform providing access to a catalog of Ercava-related iconography and artworks.
             </p>
@@ -310,7 +344,7 @@
                             <a id="pngLink" href="#"
                                 class="block w-full text-center py-3 bg-ercava-dark text-white rounded-xl font-bold text-xs tracking-widest hover:bg-black transition squishy">DOWNLOAD
                                 PNG</a>
-                            <a id="svgLink" href="#"
+                            <a id="svgLink" href="assets/erc/Logo_Gradien.svg" download="Logo_Gradien.svg"
                                 class="block w-full text-center py-3 border-2 border-ercava-dark text-ercava-dark rounded-xl font-bold text-xs tracking-widest hover:bg-white transition squishy">DOWNLOAD
                                 SVG</a>
                         </div>
@@ -602,11 +636,11 @@
                         <div
                             class="aspect-[3/4] bg-slate-200 rounded-lg flex items-center justify-center text-ercava-dark relative overflow-hidden">
                             <img loading="lazy" src="assets/cover.png" alt="Branding Book Cover" class="w-full h-full object-cover">
-                            <div
+                            <a href="assets/Ercava Identity &amp; Branding Book.pdf" target="_blank"
                                 class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span
-                                    class="text-[10px] font-bold tracking-widest uppercase text-white bg-ercava-dark px-4 py-2 rounded-full">Preview</span>
-                            </div>
+                                    class="text-[10px] font-bold tracking-widest uppercase text-white bg-ercava-dark px-4 py-2 rounded-full">Preview PDF</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -661,87 +695,54 @@
 
     </main>
 
-    <footer class="relative bg-ercava-dark text-white py-20 px-6 overflow-hidden shadow-2xl border-t border-white/5">
-        <div
-            class="absolute right-0 bottom-0 w-[500px] h-[500px] opacity-[0.05] pointer-events-none translate-x-1/4 translate-y-1/4">
-            <img loading="lazy" src="assets/erc/INTI KOMET.svg" class="w-full h-full object-contain filter invert" alt="">
-        </div>
-
-        <div class="max-w-6xl mx-auto relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-16">
-                <div class="lg:col-span-3">
-                    <h2 class="font-mono text-3xl font-bold mb-6 italic tracking-tight">Ercava Iconography Center</h2>
-
-                    <p class="text-sm text-slate-400 max-w-2xl leading-relaxed mb-6">
-                        This center serves as a platform for the public to explore and utilize iconographies related to
-                        Ercava. Whether you are a researcher, alumni, or just a curious one, these assets are freely
-                        available for viewing and reference. <br> <br>
-
-
-                        While the archive is free to access, we uphold the rights of our contributors. All artworks
-                        provided herein remain the exclusive property of their respective authors.
+    <footer class="bg-ercava-dark text-white pt-16 pb-12 px-6 overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <!-- Footer Columns -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Col 1: About -->
+                <div class="md:col-span-2">
+                    <h3 class="font-mono text-2xl font-bold mb-4 text-white">Estrella Luxamerta Clavisantara</h3>
+                    <p class="text-xs text-slate-400 max-w-md leading-relaxed">
+                        This center serves as a platform for the public to explore and utilize iconographies related to Ercava. All artworks remain the exclusive property of their respective authors.
                     </p>
-                    <div class="flex gap-8 mb-12">
-                        <a href="directory.html"
-                            class="text-xs font-bold uppercase tracking-widest text-white hover:text-slate-300 transition-colors flex items-center gap-2">
-                            Asset Directory
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                        </a>
-                        <a href="attribution.html"
-                            class="text-xs font-bold uppercase tracking-widest text-white hover:text-slate-300 transition-colors flex items-center gap-2">
-                            Attributions
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                        </a>
-                    </div>
-                    <p class="text-[10px] font-bold tracking-[0.5em] text-slate-500 uppercase mb-4">ESTRELLA LUXAMERTA
-                        CLAVISANTARA</p>
-                    <p class="text-[11px] font-bold tracking-[0.3em] text-white/20 uppercase">Terbitkan Asa, Lintasi
-                        Dunia!</p>
                 </div>
 
-                <div class="lg:col-span-1 lg:border-l lg:border-white/10 lg:pl-12">
-                    <h3 class="text-xs font-bold uppercase tracking-[0.2em] mb-8 text-slate-500">Got questions and
-                        requests? Just hit us up!</h3>
-                    <ul class="space-y-6 text-xs font-bold tracking-widest uppercase">
-                        <li>
-                            <a href="https://instagram.com/@ercava29" target="_ercava29"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Instagram
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://x.com/ercava29" target="_ercava29"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Twitter/X
-                            </a>
-                        </li>
-                        <li>
-                            <a href="mailto:a29manics@gmail.com"
-                                class="text-slate-400 hover:text-white transition-colors flex items-center gap-3 group">
-                                <span
-                                    class="w-1 h-1 bg-ercava-charcoal rounded-full group-hover:bg-white transition-colors"></span>
-                                Email Us
-                            </a>
-                        </li>
+                <!-- Col 2: Navigation -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Navigation</h4>
+                    <ul class="space-y-3 text-xs font-bold text-slate-300">
+                        <li><a href="index.html" class="hover:text-white transition">Home Portal</a></li>
+                        <li><a href="directory.html" class="hover:text-white transition">Asset Directory</a></li>
+                        <li><a href="attribution.html" class="hover:text-white transition">Attributions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Socials & Contact -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Connect</h4>
+                    <ul class="space-y-3 text-xs font-bold text-slate-300">
+                        <li><a href="https://instagram.com/@ercava29" target="_ercava29" class="hover:text-white transition">Instagram (@ercava29)</a></li>
+                        <li><a href="https://x.com/ercava29" target="_ercava29" class="hover:text-white transition">Twitter / X</a></li>
+                        <li><a href="mailto:a29manics@gmail.com" class="hover:text-white transition">Email Us</a></li>
                     </ul>
                 </div>
             </div>
 
+            <!-- Giant Visible & Selectable ICONOGRAPHY Watermark Typography -->
+            <div class="my-8 overflow-hidden">
+                <span class="font-mono font-black tracking-tighter text-white/10 hover:text-white/25 transition-colors leading-none block uppercase select-text cursor-text whitespace-nowrap" style="font-size: min(11.5vw, 115px);">
+                    ICONOGRAPHY
+                </span>
+            </div>
 
+            <!-- Bottom Legal Bar -->
+            <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-xs text-slate-400 font-medium gap-4">
+                <p>&copy; 2026 Ercava Iconography Center. All rights reserved.</p>
+                <p class="font-mono text-[10px] tracking-widest text-slate-400">Terbitkan Asa, Lintasi Dunia!</p>
+            </div>
         </div>
     </footer>
+
     <script>
         async function forceDownload(url, filename) {
             try {
@@ -757,12 +758,47 @@
                 window.URL.revokeObjectURL(blobUrl);
             } catch (error) {
                 console.error('Download failed:', error);
-                // Fallback for cross-origin or other issues
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = filename || url.split('/').pop();
                 link.target = '_blank';
                 link.click();
+            }
+        }
+
+        async function downloadSvgAsset(imgUrl, filename) {
+            if (imgUrl.endsWith('.svg')) {
+                return forceDownload(imgUrl, filename);
+            }
+            try {
+                const response = await fetch(imgUrl);
+                const blob = await response.blob();
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    const dataUri = reader.result;
+                    const tempImg = new Image();
+                    tempImg.onload = function () {
+                        const w = tempImg.naturalWidth || 800;
+                        const h = tempImg.naturalHeight || 600;
+                        const svgXml = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <image width="${w}" height="${h}" href="${dataUri}"/>
+</svg>`;
+                        const svgBlob = new Blob([svgXml], { type: 'image/svg+xml;charset=utf-8' });
+                        const blobUrl = URL.createObjectURL(svgBlob);
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = filename || (imgUrl.split('/').pop().replace(/\.[^/.]+$/, '') + '.svg');
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(blobUrl);
+                    };
+                    tempImg.src = dataUri;
+                };
+                reader.readAsDataURL(blob);
+            } catch (e) {
+                console.error('SVG Generation fallback:', e);
+                forceDownload(imgUrl);
             }
         }
 
@@ -774,15 +810,14 @@
             document.getElementById('assetTitle').innerText = title.replace('_', ' ');
             document.getElementById('assetDesc').innerText = desc;
 
-            // Set up immediate download buttons
             const pngBtn = document.getElementById('pngLink');
             const svgBtn = document.getElementById('svgLink');
 
             pngBtn.onclick = (e) => { e.preventDefault(); forceDownload(img); };
-
-            // Assuming SVG follows a pattern or is specifically updated
-            const svgUrl = img.replace('.png', '.svg').replace('.jpg', '.svg');
-            svgBtn.onclick = (e) => { e.preventDefault(); forceDownload(svgUrl); };
+            const svgPath = img.replace('.png', '.svg');
+            svgBtn.href = svgPath;
+            svgBtn.download = baseName + '.svg';
+            svgBtn.onclick = null;
         }
 
         function scrollCarousel(id, amount) {
