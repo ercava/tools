@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ERCode Generator</title>
+  <!-- Google Fonts: Montserrat & Roboto Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- QRCode.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --success: #16a34a;
+      --error: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .type-nav {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .type-btn {
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .type-btn.active, .type-btn:hover {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .prefilled-wrapper {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .prefilled-wrapper:focus-within {
+      border-color: var(--primary);
+    }
+
+    .prefilled-prefix {
+      padding: 0.8rem 0 0.8rem 0.8rem;
+      color: var(--muted);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.85rem;
+      user-select: none;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .prefilled-prefix svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--muted);
+    }
+
+    .prefilled-input {
+      border: none;
+      background: transparent;
+      padding: 0.8rem 0.8rem 0.8rem 0.4rem;
+      color: var(--text);
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+    }
+
+    input[type="file"],
+    textarea {
+      background: var(--bg);
+      border: 2px solid var(--line);
+      color: var(--text);
+      padding: 0.8rem;
+      border-radius: 8px;
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-group input {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+
+    .submit-btn:hover {
+      background: var(--primary);
+    }
+
+    .qr-result {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed var(--line);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #qrcode-container {
+      padding: 1rem;
+      background: #ffffff;
+      border: 2px solid var(--line);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: box-shadow 0.3s;
+    }
+
+    @keyframes qrPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.7) translateY(15px);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.05) translateY(-4px);
+      }
+      100% {
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .qr-animate {
+      animation: qrPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      box-shadow: 0 10px 25px -5px rgba(38, 86, 140, 0.15);
+    }
+
+    #qrcode-raw {
+      display: none;
+    }
+
+    #final-canvas {
+      display: block;
+      max-width: 220px;
+      max-height: 220px;
+      border-radius: 4px;
+    }
+
+    .dl-btn {
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .dl-btn:hover {
+      background: var(--line);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>ERCode Generator</h1>
+    </div>
+
+    <div class="type-nav">
+      <button type="button" class="type-btn active" data-type="url">URL</button>
+      <button type="button" class="type-btn" data-type="maps">Gmaps</button>
+      <button type="button" class="type-btn" data-type="image">Image</button>
+      <button type="button" class="type-btn" data-type="text">Text</button>
+    </div>
+
+    <form id="qr-form">
+      <div id="input-container"></div>
+
+      <label class="checkbox-group">
+        <input type="checkbox" id="add-logo" checked>
+        Tambahkan WM ERC
+      </label>
+
+      <label class="checkbox-group">
+        <input type="checkbox" id="add-border">
+        Tambahkan Padding Putih
+      </label>
+
+      <button type="submit" class="submit-btn">Buat QR Code</button>
+    </form>
+
+    <div class="qr-result" id="result-box" style="display: none;">
+      <div id="qrcode-container">
+        <div id="qrcode-raw"></div>
+        <canvas id="final-canvas" width="280" height="280" style="max-width:220px;max-height:220px;"></canvas>
+      </div>
+      <button type="button" class="dl-btn" id="dl-btn">Download QR Code</button>
+    </div>
+  </div>
+
+  <script>
+    let currentType = 'url';
+    const typeNav = document.querySelectorAll('.type-btn');
+    const inputContainer = document.getElementById('input-container');
+    const resultBox = document.getElementById('result-box');
+    const qrcodeContainer = document.getElementById('qrcode-container');
+    const qrcodeRaw = document.getElementById('qrcode-raw');
+    const finalCanvas = document.getElementById('final-canvas');
+    const dlBtn = document.getElementById('dl-btn');
+
+    // Load local copied PNG logo
+    const ercLogo = new Image();
+    ercLogo.src = 'logo.png';
+
+    typeNav.forEach(btn => {
+      btn.addEventListener('click', () => {
+        typeNav.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentType = btn.dataset.type;
+        renderInputs();
+      });
+    });
+
+    function renderInputs() {
+      if (currentType === 'url') {
+        inputContainer.innerHTML = `
+          <div class="form-group">
+            <label>URL Link</label>
+            <div class="prefilled-wrapper">
+              <span class="prefilled-prefix">
+                <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                https://
+              </span>
+              <input type="text" id="main-input" class="prefilled-input" placeholder="example.com" required autocomplete="off">
+            </div>
+          </div>
+        `;
+      } else if (currentType === 'maps') {
+        inputContainer.innerHTML = `
+          <div class="form-group">
+            <label>Lokasi / Alamat Google Maps</label>
+            <div class="prefilled-wrapper">
+              <span class="prefilled-prefix">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                maps.google.com/?q=
+              </span>
+              <input type="text" id="main-input" class="prefilled-input" placeholder="Monas Jakarta" required autocomplete="off">
+            </div>
+          </div>
+        `;
+      } else if (currentType === 'image') {
+        inputContainer.innerHTML = `
+          <div class="form-group">
+            <label>URL Gambar atau Upload</label>
+            <div class="prefilled-wrapper" style="margin-bottom: 0.6rem;">
+              <span class="prefilled-prefix">
+                <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+              </span>
+              <input type="text" id="main-input" class="prefilled-input" placeholder="https://example.com/image.jpg" autocomplete="off">
+            </div>
+            <input type="file" id="file-input" accept="image/*">
+          </div>
+        `;
+        document.getElementById('file-input').addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              document.getElementById('main-input').value = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      } else if (currentType === 'text') {
+        inputContainer.innerHTML = `
+          <div class="form-group">
+            <label>Teks / Pesan</label>
+            <textarea id="main-input" rows="3" placeholder="Masukkan pesan atau teks..." required></textarea>
+          </div>
+        `;
+      }
+    }
+
+    renderInputs();
+
+    function renderQR(qrText) {
+      qrcodeRaw.innerHTML = '';
+      new QRCode(qrcodeRaw, {
+        text: qrText,
+        width: 240,
+        height: 240,
+        colorDark: "#152638",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      const processCanvas = () => {
+        const rawCanvas = qrcodeRaw.querySelector('canvas');
+        const rawImg = qrcodeRaw.querySelector('img');
+        const sourceImg = rawCanvas || rawImg;
+
+        if (!sourceImg) { setTimeout(processCanvas, 50); return; }
+
+        const addBorder = document.getElementById('add-border').checked;
+        const shouldAddLogo = document.getElementById('add-logo').checked;
+        const border = addBorder ? 20 : 0;
+        const canvasW = 240 + border * 2;
+        const canvasH = 240 + border * 2;
+
+        finalCanvas.width = canvasW;
+        finalCanvas.height = canvasH;
+
+        const ctx = finalCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvasW, canvasH);
+        ctx.drawImage(sourceImg, border, border, 240, 240);
+
+        if (shouldAddLogo) {
+          const drawLogo = () => {
+            const r = 26;
+            const cx = border + 240 - r - 8;
+            const cy = border + 240 - r - 8;
+            const boxX = cx - r;
+            const boxY = cy - r;
+            const boxS = r * 2;
+
+            // White fill box
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(boxX, boxY, boxS, boxS);
+
+            // Draw logo
+            ctx.drawImage(ercLogo, boxX, boxY, boxS, boxS);
+
+            // Tint: screen composite turns black→#152638, white stays white
+            ctx.globalCompositeOperation = 'screen';
+            ctx.fillStyle = '#152638';
+            ctx.fillRect(boxX, boxY, boxS, boxS);
+            ctx.globalCompositeOperation = 'source-over';
+
+            // Border
+            ctx.strokeStyle = '#152638';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(boxX, boxY, boxS, boxS);
+          };
+          if (ercLogo.complete && ercLogo.naturalWidth !== 0) drawLogo();
+          else ercLogo.onload = drawLogo;
+        }
+
+        resultBox.style.display = 'flex';
+        qrcodeContainer.classList.remove('qr-animate');
+        void qrcodeContainer.offsetWidth;
+        qrcodeContainer.classList.add('qr-animate');
+      };
+
+      setTimeout(processCanvas, 80);
+    }
+
+
+    document.getElementById('qr-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const valInput = document.getElementById('main-input');
+      let qrText = valInput ? valInput.value.trim() : '';
+
+      if (!qrText) return;
+
+      if (currentType === 'url') {
+        if (!/^https?:\/\//i.test(qrText)) {
+          qrText = 'https://' + qrText;
+        }
+      } else if (currentType === 'maps') {
+        if (!/^https?:\/\//i.test(qrText)) {
+          qrText = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(qrText)}`;
+        }
+      }
+
+      renderQR(qrText);
+    });
+
+    dlBtn.addEventListener('click', () => {
+      const dataUrl = finalCanvas.toDataURL("image/png");
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'erc-qrcode.png';
+      a.click();
+    });
+  </script>
+</body>
+</html>

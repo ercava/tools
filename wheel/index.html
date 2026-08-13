@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wheel of Names - Spin the Wheel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(38, 86, 140, 0.1);
+    }
+
+    .header {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .wheel-box {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas#wheel {
+      max-width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+
+    .pointer {
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 25px solid var(--accent);
+      z-index: 10;
+      filter: drop-shadow(-2px 0 2px rgba(0,0,0,0.2));
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .type-nav {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .type-btn {
+      flex: 1;
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .type-btn.active, .type-btn:hover {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .tab-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    textarea, .removed-list {
+      background: var(--bg);
+      border: 2px solid var(--line);
+      color: var(--text);
+      padding: 0.8rem;
+      border-radius: 8px;
+      width: 100%;
+      height: 220px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    .removed-list {
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+    }
+
+    .removed-list li {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px dashed var(--line);
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .removed-list li button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      flex: 1;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+    }
+
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: var(--line);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(21, 38, 56, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      border: 2px solid var(--accent);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+    }
+
+    .modal h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .modal .winner-name {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>ERC Wheel of Names</h1>
+    </div>
+
+    <div class="grid">
+      <div class="wheel-box">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="440" height="440"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="type-nav">
+          <button type="button" class="type-btn active" id="tab-entries-btn">Entries</button>
+          <button type="button" class="type-btn" id="tab-removed-btn">Removed (<span id="removed-count">0</span>)</button>
+        </div>
+
+        <div class="tab-content" id="tab-entries">
+          <div class="form-group">
+            <textarea id="names-input" placeholder="Paste names or paragraph here...">Ali&#10;Budi&#10;Citra&#10;Dewi&#10;Eko&#10;Fani</textarea>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="spin-btn">Spin Wheel</button>
+            <button class="btn btn-secondary" id="shuffle-btn">Shuffle</button>
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-removed" style="display: none;">
+          <ul class="removed-list" id="removed-ul"></ul>
+          <button class="btn btn-secondary" id="restore-all-btn">Restore All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="winner-modal">
+    <div class="modal">
+      <h2>We have a winner!</h2>
+      <div class="winner-name" id="winner-display"></div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="remove-btn">Remove Name</button>
+        <button class="btn" id="close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const textarea = document.getElementById('names-input');
+    const spinBtn = document.getElementById('spin-btn');
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    const modal = document.getElementById('winner-modal');
+    const winnerDisplay = document.getElementById('winner-display');
+    const removeBtn = document.getElementById('remove-btn');
+    const closeBtn = document.getElementById('close-btn');
+
+    const tabEntriesBtn = document.getElementById('tab-entries-btn');
+    const tabRemovedBtn = document.getElementById('tab-removed-btn');
+    const tabEntries = document.getElementById('tab-entries');
+    const tabRemoved = document.getElementById('tab-removed');
+    const removedUl = document.getElementById('removed-ul');
+    const removedCountEl = document.getElementById('removed-count');
+    const restoreAllBtn = document.getElementById('restore-all-btn');
+
+    const COLORS = ['#26568c', '#152638', '#3b82f6', '#0f172a', '#1e40af', '#475569', '#2563eb', '#334155'];
+
+    let currentAngle = 0;
+    let isSpinning = false;
+    let currentWinner = '';
+    let removedNames = [];
+
+    // Web Audio API Synth for Tick & Fanfare
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTickSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    function playFanfareSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.1 + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + i * 0.1);
+        osc.stop(audioCtx.currentTime + i * 0.1 + 0.3);
+      });
+    }
+
+    // Auto Parse pasted paragraph or long string into entries list
+    textarea.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+      // Split by newline, comma, semicolon, bullet points or multiple spaces
+      const parsed = pasteText
+        .split(/[\n,;\t•\d+\.]+/g)
+        .map(s => s.trim())
+        .filter(Boolean);
+      
+      const current = getNames();
+      const updated = [...current, ...parsed];
+      textarea.value = updated.join('\n');
+      drawWheel();
+    });
+
+    function getNames() {
+      return textarea.value.split('\n').map(s => s.trim()).filter(Boolean);
+    }
+
+    let lastTickSlice = -1;
+
+    function drawWheel() {
+      const names = getNames();
+      const numSlices = names.length;
+      const width = canvas.width;
+      const center = width / 2;
+      const radius = center - 10;
+
+      ctx.clearRect(0, 0, width, width);
+
+      if (numSlices === 0) {
+        ctx.fillStyle = '#64748b';
+        ctx.font = '700 16px Montserrat';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Add names to spin!', center, center);
+        return;
+      }
+
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      // Calculate current slice under pointer for tick sound
+      if (isSpinning) {
+        let normalizedAngle = (currentAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+        let activeIndex = Math.floor((2 * Math.PI - normalizedAngle) / sliceAngle) % numSlices;
+        if (activeIndex !== lastTickSlice) {
+          playTickSound();
+          lastTickSlice = activeIndex;
+        }
+      }
+
+      names.forEach((name, i) => {
+        const start = currentAngle + i * sliceAngle;
+        const end = start + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, start, end);
+        ctx.closePath();
+        ctx.fillStyle = COLORS[i % COLORS.length];
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(start + sliceAngle / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 14px Montserrat';
+        ctx.fillText(name, radius - 20, 0);
+        ctx.restore();
+      });
+
+      // Center cap
+      ctx.beginPath();
+      ctx.arc(center, center, 25, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#152638';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    }
+
+    function spin() {
+      if (isSpinning) return;
+      const names = getNames();
+      if (names.length === 0) return;
+
+      isSpinning = true;
+      spinBtn.disabled = true;
+      lastTickSlice = -1;
+
+      const duration = 4000;
+      const start = performance.now();
+      const extraRotations = (5 + Math.random() * 5) * 2 * Math.PI;
+      const initialAngle = currentAngle;
+      const targetAngle = initialAngle + extraRotations;
+
+      function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+
+        currentAngle = initialAngle + (targetAngle - initialAngle) * easeOut;
+        drawWheel();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          isSpinning = false;
+          spinBtn.disabled = false;
+          calculateWinner();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function calculateWinner() {
+      const names = getNames();
+      if (names.length === 0) return;
+
+      const sliceAngle = (2 * Math.PI) / names.length;
+      let normalizedAngle = (currentAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      
+      let index = Math.floor((2 * Math.PI - normalizedAngle) / sliceAngle) % names.length;
+      if (index < 0) index += names.length;
+
+      currentWinner = names[index];
+      winnerDisplay.textContent = currentWinner;
+      modal.classList.add('active');
+
+      // Audio & Confetti Effect
+      playFanfareSound();
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+    textarea.addEventListener('input', drawWheel);
+    canvas.addEventListener('click', spin);
+    spinBtn.addEventListener('click', spin);
+
+    shuffleBtn.addEventListener('click', () => {
+      const names = getNames();
+      for (let i = names.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [names[i], names[j]] = [names[j], names[i]];
+      }
+      textarea.value = names.join('\n');
+      drawWheel();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    removeBtn.addEventListener('click', () => {
+      const names = getNames();
+      const idx = names.indexOf(currentWinner);
+      if (idx !== -1) {
+        names.splice(idx, 1);
+        removedNames.push(currentWinner);
+        textarea.value = names.join('\n');
+        renderRemovedTab();
+        drawWheel();
+      }
+      modal.classList.remove('active');
+    });
+
+    // Tab switching
+    tabEntriesBtn.addEventListener('click', () => {
+      tabEntriesBtn.classList.add('active');
+      tabRemovedBtn.classList.remove('active');
+      tabEntries.style.display = 'flex';
+      tabRemoved.style.display = 'none';
+    });
+
+    tabRemovedBtn.addEventListener('click', () => {
+      tabRemovedBtn.classList.add('active');
+      tabEntriesBtn.classList.remove('active');
+      tabRemoved.style.display = 'flex';
+      tabEntries.style.display = 'none';
+    });
+
+    function renderRemovedTab() {
+      removedCountEl.textContent = removedNames.length;
+      removedUl.innerHTML = '';
+      removedNames.forEach((name, i) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${name}</span> <button onclick="restoreName(${i})">Restore</button>`;
+        removedUl.appendChild(li);
+      });
+    }
+
+    window.restoreName = function(index) {
+      const restored = removedNames.splice(index, 1)[0];
+      const names = getNames();
+      names.push(restored);
+      textarea.value = names.join('\n');
+      renderRemovedTab();
+      drawWheel();
+    };
+
+    restoreAllBtn.addEventListener('click', () => {
+      const names = getNames();
+      textarea.value = [...names, ...removedNames].join('\n');
+      removedNames = [];
+      renderRemovedTab();
+      drawWheel();
+    });
+
+    drawWheel();
+  </script>
+</body>
+</html>
