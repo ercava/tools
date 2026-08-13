@@ -1,0 +1,19 @@
+name: Trigger Main Site Archive
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  notify-main-archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger ercava.github.io Archive Workflow
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          repository: ercava/ercava.github.io
+          event-type: tools_updated

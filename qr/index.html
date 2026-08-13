@@ -300,6 +300,14 @@
         Tambahkan Padding Putih
       </label>
 
+      <label class="checkbox-group">
+        <input type="checkbox" id="add-caption">
+        Tambahkan Teks Caption
+      </label>
+      <div id="caption-wrap" style="display:none;">
+        <input type="text" id="caption-text" placeholder="Contoh: Scan untuk info lebih lanjut" autocomplete="off" style="margin-top:0.4rem;">
+      </div>
+
       <button type="submit" class="submit-btn">Buat QR Code</button>
     </form>
 
@@ -397,6 +405,9 @@
 
     renderInputs();
 
+    document.getElementById('add-caption').addEventListener('change', function() {
+      document.getElementById('caption-wrap').style.display = this.checked ? 'block' : 'none';
+    });
     function renderQR(qrText) {
       qrcodeRaw.innerHTML = '';
       new QRCode(qrcodeRaw, {
@@ -417,9 +428,13 @@
 
         const addBorder = document.getElementById('add-border').checked;
         const shouldAddLogo = document.getElementById('add-logo').checked;
+        const addCaption = document.getElementById('add-caption').checked;
+        const captionText = addCaption ? (document.getElementById('caption-text').value.trim() || '') : '';
         const border = addBorder ? 20 : 0;
+        const fontSize = 14;
+        const captionH = captionText ? fontSize + 20 : 0;
         const canvasW = 240 + border * 2;
-        const canvasH = 240 + border * 2;
+        const canvasH = 240 + border * 2 + captionH;
 
         finalCanvas.width = canvasW;
         finalCanvas.height = canvasH;
@@ -458,6 +473,16 @@
           };
           if (ercLogo.complete && ercLogo.naturalWidth !== 0) drawLogo();
           else ercLogo.onload = drawLogo;
+        }
+
+        if (captionText) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, border + 240 + border, canvasW, captionH);
+          ctx.fillStyle = '#152638';
+          ctx.font = `600 ${fontSize}px 'Inter', sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(captionText, canvasW / 2, border + 240 + border + captionH / 2);
         }
 
         resultBox.style.display = 'flex';

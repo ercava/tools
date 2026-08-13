@@ -28,20 +28,32 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
       color: var(--text);
     }
-    .wrap { max-width: 700px; margin: 0 auto; padding: 1.5rem; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
     .spacer { height: 7rem; }
     
     .logo { text-align: center; padding: 0.5rem 0; margin-bottom: -15px; }
     .logo img { height: 140px; object-fit: contain; }
     .title { text-align: center; font-size: 2rem; font-weight: 600; color: var(--accent); margin: 0.25rem 0; letter-spacing: -0.02em; }
     .desc { text-align: center; color: var(--muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; font-weight: 400; }
+
+    .featured-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
     
     .article {
       position: relative;
       display: flex;
       align-items: center;
       width: 100%;
-      margin: 0.75rem auto;
       padding: 1.25rem 1.5rem;
       border-radius: 10px;
       color: var(--text) !important;
@@ -63,11 +75,23 @@
     .article.main .item-url { color: rgba(255,255,255,0.6); }
     .article.main .status { background: rgba(255,255,255,0.2); color: white; }
     .article.main .status .dot { background: #22c55e; }
+
+    .tools-grid .article {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+    .tools-grid .article .status {
+      margin-left: 0;
+      margin-top: 0.75rem;
+      align-self: flex-start;
+    }
     
-    .item-content { flex: 1; z-index: 1; }
+    .item-content { flex: 1; z-index: 1; width: 100%; }
     .item-title { font-weight: 600; font-size: 1rem; margin-bottom: 0.25rem; }
-    .item-url { font-family: 'Roboto Mono', monospace; font-size: 0.55rem; color: var(--primary); opacity: 0.7; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.3rem; }
-    .item-url img { width: 12px; height: 12px; }
+    .item-url { font-family: 'Roboto Mono', monospace; font-size: 0.55rem; color: var(--primary); opacity: 0.7; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.3rem; word-break: break-all; }
+    .item-url img { width: 12px; height: 12px; flex-shrink: 0; }
     .item-sub { color: var(--muted); font-size: 0.85rem; }
     
     .status {
@@ -107,6 +131,7 @@
       opacity: 1;
       transform: scale(1);
     }
+    .tools-grid .preview-img { display: none; }
     
     .attribution { text-align: center; padding: 2.5rem 0 1.5rem; color: var(--muted); font-size: 0.8rem; }
     .social-links { display: flex; justify-content: center; gap: 0.75rem; }
@@ -121,17 +146,21 @@
     }
     .social-links a:hover { background: #eff6ff; }
     
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 500px) {
       .wrap { padding: 0.75rem; }
       .logo img { height: 100px; }
       .title { font-size: 1.4rem; }
       .desc { font-size: 0.85rem; margin-bottom: 1.5rem; }
       .spacer { height: 1.5rem; }
+      .tools-grid { grid-template-columns: 1fr; }
       .article { 
         padding: 1rem; 
         flex-direction: column;
         align-items: flex-start;
-        margin: 0.5rem 0;
         border-radius: 8px;
       }
       .item-content { width: 100%; }
@@ -160,116 +189,156 @@
     <h1 class="title" style="font-weight:900">Ercava Development Program</h1>
     <p class="desc">Portal to all programs that are in development and accessible to Ercavians.</p>
     
-	   <a href="https://erc.my.id/tools/PEGASUS" class="article main" target="_blank">
-      <div class="item-content">
-        <div class="item-title">PEGASUS</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/PEGASUS</div>
-        <div class="item-sub">The ultimate CV tracker</div>
-      </div>
-      <span class="status live"><span class="dot"></span> Live</span>
-      <img src="ss/PEGASUS.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-	
-    <a href="https://erc.my.id/tools/logo" class="article main" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Iconography Center</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/logo</div>
-        <div class="item-sub">Catalog of Ercava iconography and artworks</div>
-      </div>
-      <span class="status live"><span class="dot"></span> Live</span>
-      <img src="ss/logo.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-	
-	<a href="https://erc.my.id/tools/alumni" class="article main" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Alumni Tracker</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/alumni</div>
-        <div class="item-sub">A search and track tool for MANICS alumni</div>
-      </div>
-      <span class="status live"><span class="dot"></span> Live</span>
-      <img src="ss/alumni.webp" alt="" class="preview-img" loading="lazy">
-    </a>
+    <div class="featured-list">
+      <a href="https://erc.my.id/tools/PEGASUS" class="article main" target="_blank">
+        <div class="item-content">
+          <div class="item-title">PEGASUS</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/PEGASUS</div>
+          <div class="item-sub">The ultimate CV tracker</div>
+        </div>
+        <span class="status live"><span class="dot"></span> Live</span>
+        <img src="ss/PEGASUS.webp" alt="" class="preview-img" loading="lazy">
+      </a>
+      
+      <a href="https://erc.my.id/tools/logo" class="article main" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Iconography Center</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/logo</div>
+          <div class="item-sub">Catalog of Ercava iconography and artworks</div>
+        </div>
+        <span class="status live"><span class="dot"></span> Live</span>
+        <img src="ss/logo.webp" alt="" class="preview-img" loading="lazy">
+      </a>
+      
+      <a href="https://erc.my.id/tools/alumni" class="article main" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Alumni Tracker</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/alumni</div>
+          <div class="item-sub">A search and track tool for MANICS alumni</div>
+        </div>
+        <span class="status live"><span class="dot"></span> Live</span>
+        <img src="ss/alumni.webp" alt="" class="preview-img" loading="lazy">
+      </a>
+    </div>
 
-    <a href="https://erc.my.id/tools/ercavians" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Ercavians</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/ercavians</div>
-        <div class="item-sub">The gallery of Ercavians containing profile details</div>
-      </div>
-      <span class="status checking" id="status-gopin"><span class="dot"></span> Checking...</span>
-      <img src="ss/ercavians.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-	
-    <a href="https://erc.my.id/tools/gopin" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">GoPin</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/gopin</div>
-        <div class="item-sub">Kopinma online shopping & delivery services</div>
-      </div>
-      <span class="status checking" id="status-gopin"><span class="dot"></span> Checking...</span>
-      <img src="ss/gopin.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <a href="https://erc.my.id/tools/harian-pestamerta" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Harian Pestamerta</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/harian-pestamerta/favicon.ico">erc.my.id/tools/harian-pestamerta</div>
-        <div class="item-sub">Daily newspaper archive pertaining to Pestamerta</div>
-      </div>
-      <span class="status checking" id="status-harian"><span class="dot"></span> Checking...</span>
-      <img src="ss/harian-pestamerta.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <a href="https://erc.my.id/tools/twibbon-pestamerta" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Twibbon Generator</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/twibbon-pestamerta/favicon.ico">erc.my.id/tools/twibbon-pestamerta</div>
-        <div class="item-sub">Twibbon generator for Pestamerta on social medias</div>
-      </div>
-      <span class="status checking" id="status-twibbon"><span class="dot"></span> Checking...</span>
-      <img src="ss/twibbon-pestamerta.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <a href="https://erc.my.id/tools/kabataku/" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Kabataku</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/kabataku</div>
-        <div class="item-sub">A site to study kata baku, adapted from acomarcho</div>
-      </div>
-      <span class="status checking" id="status-kabataku"><span class="dot"></span> Checking...</span>
-      <img src="ss/kabataku.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <a href="https://erc.my.id/tools/molly" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Molly</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/molly</div>
-        <div class="item-sub">A gallery of our most loved friend</div>
-      </div>
-      <span class="status checking" id="status-molly"><span class="dot"></span> Checking...</span>
-      <img src="ss/molly.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <!-- 6. SNBT Prep -->
-    <a href="https://erc.my.id/tools/snbt" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">SNBT Prep</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/snbt/favicon.ico">erc.my.id/tools/snbt</div>
-        <div class="item-sub">SNBT preparation portals</div>
-      </div>
-      <span class="status checking" id="status-snbt"><span class="dot"></span> Checking...</span>
-      <img src="ss/snbt.webp" alt="" class="preview-img" loading="lazy">
-    </a>
-    
-    <a href="https://erc.my.id/tools/cek-tka" class="article" target="_blank">
-      <div class="item-content">
-        <div class="item-title">Cek TKA</div>
-        <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/cek-tka</div>
-        <div class="item-sub">TKA results checking tool</div>
-      </div>
-      <span class="status checking" id="status-cek-tka"><span class="dot"></span> Checking...</span>
-      <img src="ss/cek-tka.webp" alt="" class="preview-img" loading="lazy">
-    </a>
+    <div class="tools-grid">
+      <a href="https://erc.my.id/tools/ercavians" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Ercavians</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/ercavians</div>
+          <div class="item-sub">Gallery of Ercavians profile details</div>
+        </div>
+        <span class="status checking" id="status-ercavians"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/gopin" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">GoPin</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/gopin</div>
+          <div class="item-sub">Kopinma online shopping & delivery</div>
+        </div>
+        <span class="status checking" id="status-gopin"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/harian-pestamerta" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Harian Pestamerta</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/harian-pestamerta/favicon.ico">erc.my.id/tools/harian-pestamerta</div>
+          <div class="item-sub">Daily newspaper archive of Pestamerta</div>
+        </div>
+        <span class="status checking" id="status-harian"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/twibbon-pestamerta" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Twibbon Generator</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/twibbon-pestamerta/favicon.ico">erc.my.id/tools/twibbon-pestamerta</div>
+          <div class="item-sub">Social media twibbon generator</div>
+        </div>
+        <span class="status checking" id="status-twibbon"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/kabataku/" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Kabataku</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/kabataku</div>
+          <div class="item-sub">Study kata baku tool</div>
+        </div>
+        <span class="status checking" id="status-kabataku"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/molly" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Molly</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/molly</div>
+          <div class="item-sub">Gallery of our most loved friend</div>
+        </div>
+        <span class="status checking" id="status-molly"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/snbt" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">SNBT Prep</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/snbt/favicon.ico">erc.my.id/tools/snbt</div>
+          <div class="item-sub">SNBT preparation portals</div>
+        </div>
+        <span class="status checking" id="status-snbt"><span class="dot"></span> Checking...</span>
+      </a>
+      
+      <a href="https://erc.my.id/tools/cek-tka" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Cek TKA</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/cek-tka</div>
+          <div class="item-sub">TKA results checking tool</div>
+        </div>
+        <span class="status checking" id="status-cek-tka"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/qr" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">ERCode Generator</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/qr</div>
+          <div class="item-sub">QR Code generator with watermark</div>
+        </div>
+        <span class="status checking" id="status-qr"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/wheel" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Spinning Wheel</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/wheel</div>
+          <div class="item-sub">Random picker wheel tool</div>
+        </div>
+        <span class="status checking" id="status-wheel"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/shortlink" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Shortlink</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/shortlink</div>
+          <div class="item-sub">URL shortener service</div>
+        </div>
+        <span class="status checking" id="status-shortlink"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/search" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">Search</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/search</div>
+          <div class="item-sub">Custom search tool</div>
+        </div>
+        <span class="status checking" id="status-search"><span class="dot"></span> Checking...</span>
+      </a>
+
+      <a href="https://erc.my.id/tools/utbk2025" class="article" target="_blank">
+        <div class="item-content">
+          <div class="item-title">UTBK 2025</div>
+          <div class="item-url"><img src="https://erc.my.id/tools/logo/favicon.ico">erc.my.id/tools/utbk2025</div>
+          <div class="item-sub">UTBK 2025 resource portal</div>
+        </div>
+        <span class="status checking" id="status-utbk2025"><span class="dot"></span> Checking...</span>
+      </a>
+    </div>
   </div>
 
   <div class="attribution">
@@ -277,24 +346,30 @@
       <a href="https://www.youtube.com/@ercava29" target="_blank" rel="noopener">YouTube</a>
       <a href="https://www.instagram.com/ercava29/" target="_blank" rel="noopener">Instagram</a>
       <a href="https://twitter.com/Ercava29" target="_blank" rel="noopener">Twitter/X</a>
-	  <a href="https://www.tiktok.com/@ercava29" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://www.tiktok.com/@ercava29" target="_blank" rel="noopener">TikTok</a>
     </div>
   </div>
 
   <script>
     const pages = [
-      { id: 'gopin', url: 'https://erc.my.id/tools/GoPin' },
+      { id: 'ercavians', url: 'https://erc.my.id/tools/ercavians' },
+      { id: 'gopin', url: 'https://erc.my.id/tools/gopin' },
       { id: 'harian', url: 'https://erc.my.id/tools/harian-pestamerta' },
       { id: 'twibbon', url: 'https://erc.my.id/tools/twibbon-pestamerta' },
       { id: 'kabataku', url: 'https://erc.my.id/tools/kabataku/' },
       { id: 'molly', url: 'https://erc.my.id/tools/molly' },
       { id: 'snbt', url: 'https://erc.my.id/tools/snbt' },
       { id: 'cek-tka', url: 'https://erc.my.id/tools/cek-tka' },
-	  { id: 'ercavians', url: 'https://erc.my.id/tools/ercavians' }
+      { id: 'qr', url: 'https://erc.my.id/tools/qr' },
+      { id: 'wheel', url: 'https://erc.my.id/tools/wheel' },
+      { id: 'shortlink', url: 'https://erc.my.id/tools/shortlink' },
+      { id: 'search', url: 'https://erc.my.id/tools/search' },
+      { id: 'utbk2025', url: 'https://erc.my.id/tools/utbk2025' }
     ];
 
     async function checkStatus(id, url) {
       const el = document.getElementById('status-' + id);
+      if (!el) return;
       try {
         const res = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
         el.className = 'status live';
