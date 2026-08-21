@@ -6,7 +6,7 @@
   <title>Texts Archive - Viewer & Index</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Mammoth.js for docx rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <style>
@@ -149,24 +149,29 @@
       padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--line);
       background: var(--bg-light);
+      gap: 1rem;
     }
 
     .preview-title {
       font-weight: 800;
       color: var(--accent);
       font-size: 1rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .preview-actions {
       display: flex;
       gap: 0.5rem;
+      flex-shrink: 0;
     }
 
     .btn-action {
       background: var(--accent);
       color: white;
       text-decoration: none;
-      padding: 0.4rem 0.8rem;
+      padding: 0.45rem 0.9rem;
       border-radius: 6px;
       font-size: 0.75rem;
       font-weight: 700;
@@ -175,6 +180,7 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      transition: background 0.15s;
     }
 
     .btn-action:hover {
@@ -274,16 +280,22 @@
     const previewActions = document.getElementById('previewActions');
     const downloadBtn = document.getElementById('downloadBtn');
 
+    function getRelativeUrl(filename) {
+      // Relative to current page (works both on local filesystem and web server with /CERPEN%20ERCAVA/texts/archive/)
+      return encodeURIComponent(filename);
+    }
+
     function renderList() {
       fileList.innerHTML = '';
       files.forEach((f, idx) => {
+        const fileUrl = getRelativeUrl(f.name);
         const li = document.createElement('li');
         li.className = 'file-item';
         li.innerHTML = `
           <div class="file-title">${f.name}</div>
           <div class="file-meta">
             <span class="file-size">${f.size}</span>
-            <a class="btn-download" href="${encodeURIComponent(f.name)}" download onclick="event.stopPropagation();">Save</a>
+            <a class="btn-download" href="${fileUrl}" download onclick="event.stopPropagation();">Save</a>
           </div>
         `;
         li.onclick = () => loadPreview(f, li);
@@ -295,8 +307,9 @@
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
       if (element) element.classList.add('active');
 
+      const fileUrl = getRelativeUrl(file.name);
       currentDocTitle.textContent = file.name;
-      downloadBtn.href = encodeURIComponent(file.name);
+      downloadBtn.href = fileUrl;
       downloadBtn.setAttribute('download', file.name);
       previewActions.style.display = 'flex';
 
@@ -308,8 +321,8 @@
       `;
 
       try {
-        const res = await fetch(encodeURIComponent(file.name));
-        if (!res.ok) throw new Error('File fetch failed: ' + res.statusText);
+        const res = await fetch(fileUrl);
+        if (!res.ok) throw new Error('File fetch failed (HTTP ' + res.status + ')');
         const arrayBuffer = await res.arrayBuffer();
 
         const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
@@ -323,7 +336,7 @@
           <div class="placeholder">
             <p style="color: #dc2626; font-weight: 600;">Failed to render preview</p>
             <p style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">(${err.message})</p>
-            <p style="margin-top: 12px;"><a href="${encodeURIComponent(file.name)}" class="btn-action" download>Download File Directly</a></p>
+            <p style="margin-top: 12px;"><a href="${fileUrl}" class="btn-action" download>Download File Directly</a></p>
           </div>
         `;
       }
