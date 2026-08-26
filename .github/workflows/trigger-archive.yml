@@ -5,15 +5,14 @@ on:
     branches:
       - main
       - master
-  workflow_dispatch:
 
 jobs:
   notify-main-archive:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger ercava.github.io Archive Workflow
+      - name: Trigger repository_dispatch in main site repo
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.MAIN_REPO_TOKEN }}
           repository: ercava/ercava.github.io
           event-type: tools_updated
