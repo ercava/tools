@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Molly</title>
+    <title>Molly — In Loving Memory</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://api.imgbb.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"></noscript>
     <link rel="stylesheet" href="styles.css">
@@ -124,32 +123,58 @@
         </div>
     </div>
 
-    <!-- Upload Dialog -->
-    <div id="upload-dialog">
-        <p>Upload a picture:</p>
-        <input type="file" id="upload-input" accept="image/*" onchange="app.previewUpload(this)">
-        <img id="upload-preview" style="max-width: 100%; max-height: 200px; margin: 10px 0; display: none;">
-        <input type="text" id="upload-caption" placeholder="Caption (optional)">
-        <input type="text" id="upload-name" placeholder="Your Name" required>
+    <!-- RIP / In Loving Memory Section -->
+    <section class="rip-section">
+        <div class="rip-container">
+            <div class="rip-card">
+                <div class="rip-image-wrapper">
+                    <img src="./rip/WhatsApp Image 2026-08-30 at 19.51.26.jpeg" alt="Molly - Rest in Peace" class="rip-image" onclick="openModal(this)">
+                </div>
+                <div class="rip-content">
+                    <div class="rip-badge">Forever in Our Hearts</div>
+                    <h1 class="rip-title">Rest in Peace, Molly 🕊️</h1>
+                    <p class="rip-subtitle">You brought so much joy, love, and warmth into our lives. Always remembered, never forgotten.</p>
+                    <button class="rip-condolence-btn" onclick="app.openCondolenceDialog()">
+                        <span class="heart-icon">🤍</span> Leave a Condolence
+                    </button>
+                </div>
+            </div>
+
+            <div class="condolences-container">
+                <div class="condolences-header">
+                    <h2>Messages & Condolences</h2>
+                    <span id="condolences-count" class="condolences-badge">0 messages</span>
+                </div>
+                <div id="condolences-list" class="condolences-grid">
+                    <p class="empty-condolences">Loading condolences...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Condolence Input Dialog -->
+    <div id="condolence-dialog">
+        <h3>Pay Your Respects</h3>
+        <p>Leave a tribute or condolence message for Molly</p>
+        <input type="text" id="condolence-name" placeholder="Your Name" required maxlength="50">
+        <textarea id="condolence-text" placeholder="Write your condolences / memory here..." required maxlength="1000"></textarea>
         <div class="dialog-buttons">
-            <button class="btn-cancel" onclick="app.closeUploadDialog()">Cancel</button>
-            <button class="btn-save" onclick="app.submitUpload()">Submit</button>
+            <button class="btn-cancel" onclick="app.closeCondolenceDialog()">Cancel</button>
+            <button class="btn-save" onclick="app.submitCondolence()">Post Condolence</button>
         </div>
     </div>
 
-    <!-- Pending Uploads Panel (Admin) -->
+    <!-- Admin Panel -->
     <div id="pending-panel" class="pending-panel" style="display: none;">
         <div class="panel-header">
-            <h3>Admin</h3>
+            <h3>Admin Panel</h3>
             <div class="panel-tabs">
-                <button class="panel-tab active" onclick="app.switchTab('uploads')">Uploads</button>
-                <button class="panel-tab" onclick="app.switchTab('messages')">Messages <span id="msg-count"></span></button>
+                <button class="panel-tab active" onclick="app.switchTab('messages')">Messages <span id="msg-count"></span></button>
             </div>
             <button class="panel-collapse" onclick="app.togglePanel()">&#9660;</button>
         </div>
         <div id="panel-content">
-            <div id="pending-list"></div>
-            <div id="messages-list" style="display:none"></div>
+            <div id="messages-list"></div>
         </div>
         <button class="btn-cancel" onclick="app.closePendingPanel()">Close</button>
     </div>
@@ -166,13 +191,13 @@
     </div>
 
     <div class="attribution">
-        original showcase pics by rehan, upload yours!
+        original showcase pics by rehan
         <div class="action-links">
             <a href="#" id="admin-toggle" onclick="app.toggleLogin(event)">login as me</a>
             <span class="separator">&#9675; </span>
             <a href="#" id="contact-toggle" onclick="app.toggleContact(event)">leave me a msg </a>
             <span class="separator">&#9675; </span>
-            <a href="#" id="upload-toggle" onclick="app.toggleUpload(event)">post a pic of moli!</a>
+            <a href="#" id="condolence-toggle" onclick="app.openCondolenceDialog(event)">leave a condolence</a>
         </div>
     </div>
 

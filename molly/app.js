@@ -14,8 +14,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const IMGBB_API_KEY = "46762a5e6eda82914445ffc478d66ca5";
-
 const modalWrapper = document.getElementById('modal-wrapper');
 const dialog = document.getElementById('comment-dialog');
 const SelectionBox = document.createElement('div');
@@ -26,13 +24,13 @@ let startX, startY;
 let currentRect = null; // {x, y, w, h} in percentages
 let currentMedia = null;
 let unsubscribe = null; // Firebase listener
+let condolencesUnsubscribe = null;
 let pendingDeleteId = null;
 let isAdmin = false;
-let pendingFile = null;
 
 const BAD_WORDS = ['badword1', 'badword2', 'fuck', 'shit', 'ass', 'bitch', 'damn', 'crap', 'bastard', 'hell', 'dick', 'porn', 'xxx', 'nude', 'nsfw'];
 
-// --- Firebase Fetch and Render --- //
+// --- Firebase Fetch and Render for In-Image Comments --- //
 
 window.addEventListener('mediaOpened', (e) => {
     currentMedia = e.detail;
@@ -51,61 +49,10 @@ window.addEventListener('mediaOpened', (e) => {
         });
 });
 
-// --- Load Approved Uploads to Gallery --- //
-
-function loadApprovedUploads() {
-    db.collection("approved_uploads")
-        .orderBy("createdAt", "desc")
-        .get()
-        .then((snapshot) => {
-            if (snapshot.empty) {
-                console.log("No approved uploads found");
-                return;
-            }
-            snapshot.forEach((doc) => {
-                addToGallery(doc.data().url, doc.id);
-            });
-        })
-        .catch((e) => {
-            console.error("Error loading approved uploads:", e);
-        });
-    
-    db.collection("approved_uploads")
-        .orderBy("createdAt", "desc")
-        .onSnapshot((snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    addToGallery(change.doc.data().url, change.doc.id);
-                }
-            });
-        }, (e) => {
-            console.error("Snapshot error:", e);
-        });
-}
-
-function addToGallery(url, id) {
-    if (document.querySelector(`[data-upload-id="${id}"]`)) return;
-    
-    const gallery = document.getElementById('gallery');
-    const item = document.createElement('div');
-    item.className = 'item';
-    item.setAttribute('data-upload-id', id);
-    
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.src = url;
-    img.onclick = () => openModal(img);
-    
-    item.appendChild(img);
-    gallery.appendChild(item);
-}
-
-loadApprovedUploads();
-
 window.addEventListener('mediaClosed', () => {
     if (unsubscribe) unsubscribe();
     currentMedia = null;
-    dialog.style.display = 'none';
+    if (dialog) dialog.style.display = 'none';
     if(SelectionBox.parentNode) SelectionBox.parentNode.removeChild(SelectionBox);
 });
 
@@ -147,12 +94,10 @@ function renderComment(data, id) {
 // --- Drawing UI logic --- //
 
 modalWrapper.addEventListener('mousedown', (e) => {
-    // Only draw if target is the image/video or the wrapper itself
     if (e.target.closest('.comment-box')) return;
-    if (dialog.style.display === 'flex') return;
+    if (dialog && dialog.style.display === 'flex') return;
     if (e.target.tagName !== 'IMG' && e.target.tagName !== 'VIDEO') return;
 
-    // Prevent default drag behaviors natively
     e.preventDefault();
 
     const rect = modalWrapper.getBoundingClientRect();
@@ -190,7 +135,6 @@ modalWrapper.addEventListener('mouseup', (e) => {
     isDrawing = false;
 
     const rect = modalWrapper.getBoundingClientRect();
-    // Convert to percentages so it scales properly
     const pixelLeft = parseFloat(SelectionBox.style.left);
     const pixelTop = parseFloat(SelectionBox.style.top);
     const pixelWidth = parseFloat(SelectionBox.style.width);
@@ -203,25 +147,86 @@ modalWrapper.addEventListener('mouseup', (e) => {
             width: (pixelWidth / rect.width) * 100,
             height: (pixelHeight / rect.height) * 100
         };
-        // Show dialog
-        dialog.style.display = 'flex';
-        document.getElementById('comment-name').focus();
+        if (dialog) {
+            dialog.style.display = 'flex';
+            document.getElementById('comment-name').focus();
+        }
     } else {
-        // Too small, ignore
         if (SelectionBox.parentNode) SelectionBox.parentNode.removeChild(SelectionBox);
     }
 });
 
-// --- Saving Logic (Global window.app) --- //
+// --- Condolences Section Logic --- //
+
+function initCondolences() {
+    const listEl = document.getElementById('condolences-list');
+    const countBadge = document.getElementById('condolences-count');
+    if (!listEl) return;
+
+    if (condolencesUnsubscribe) condolencesUnsubscribe();
+
+    condolencesUnsubscribe = db.collection("condolences")
+        .orderBy("createdAt", "desc")
+        .onSnapshot((snapshot) => {
+            const count = snapshot.size;
+            if (countBadge) {
+                countBadge.textContent = `${count} ${count === 1 ? 'message' : 'messages'}`;
+            }
+
+            if (snapshot.empty) {
+                listEl.innerHTML = `
+                    <div class="empty-condolences">
+                        <p>No condolence messages yet.</p>
+                        <p style="font-size: 0.85em; margin-top: 6px; color: #64748b;">Be the first to share a warm memory or tribute for Molly.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const item = document.createElement('div');
+                item.className = 'condolence-card';
+                item.id = `condolence-${doc.id}`;
+
+                const dateStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                }) : 'Recently';
+
+                item.innerHTML = `
+                    <div class="condolence-card-header">
+                        <div class="condolence-author">
+                            <span class="condolence-avatar">🕯️</span>
+                            <span class="condolence-author-name">${escapeHtml(data.name || 'Anonymous')}</span>
+                        </div>
+                        <span class="condolence-date">${dateStr}</span>
+                    </div>
+                    <p class="condolence-text">${escapeHtml(data.message || '')}</p>
+                    ${isAdmin ? `<button class="condolence-delete-btn" onclick="app.deleteCondolence('${doc.id}')">&times; Delete</button>` : ''}
+                `;
+                listEl.appendChild(item);
+            });
+        }, (error) => {
+            console.error("Error loading condolences:", error);
+            if (listEl) {
+                listEl.innerHTML = '<p class="empty-condolences" style="color:#ef4444;">Failed to load condolences.</p>';
+            }
+        });
+}
+
+// --- Global window.app actions --- //
 
 window.app = {
     toggleLogin: (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         if (isAdmin) {
             isAdmin = false;
-            document.getElementById('admin-toggle').textContent = '● Login';
+            document.getElementById('admin-toggle').textContent = 'login as me';
             document.getElementById('pending-panel').style.display = 'none';
-            updateDeleteButtonsVisibility();
+            updateAdminButtonsVisibility();
         } else {
             document.getElementById('admin-dialog').style.display = 'flex';
             document.getElementById('admin-password').value = '';
@@ -236,105 +241,13 @@ window.app = {
         }
         isAdmin = true;
         document.getElementById('admin-dialog').style.display = 'none';
-        document.getElementById('admin-toggle').textContent = '● Logout';
-        updateDeleteButtonsVisibility();
-        loadPendingUploads();
+        document.getElementById('admin-toggle').textContent = 'logout';
+        updateAdminButtonsVisibility();
         loadMessages();
     },
     closeAdminDialog: () => {
         document.getElementById('admin-dialog').style.display = 'none';
         pendingDeleteId = null;
-    },
-    confirmDelete: async () => {
-        if (!pendingDeleteId) return;
-        
-        const commentId = pendingDeleteId;
-        document.getElementById('admin-dialog').style.display = 'none';
-        
-        try {
-            await db.collection("comments").doc(commentId).delete();
-            const el = document.getElementById(`comment-${commentId}`);
-            if (el) el.remove();
-        } catch (e) {
-            console.error("Error deleting document: ", e);
-            alert("Failed to delete comment: " + e.message);
-        }
-        
-        pendingDeleteId = null;
-    },
-    toggleUpload: (e) => {
-        e.preventDefault();
-        document.getElementById('upload-dialog').style.display = 'flex';
-        document.getElementById('upload-name').value = '';
-        document.getElementById('upload-caption').value = '';
-        document.getElementById('upload-input').value = '';
-        document.getElementById('upload-preview').style.display = 'none';
-        pendingFile = null;
-    },
-    closeUploadDialog: () => {
-        document.getElementById('upload-dialog').style.display = 'none';
-        pendingFile = null;
-    },
-    previewUpload: (input) => {
-        if (input.files && input.files[0]) {
-            pendingFile = input.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const preview = document.getElementById('upload-preview');
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(pendingFile);
-        }
-    },
-    submitUpload: async () => {
-        if (!pendingFile) {
-            alert('Please select an image');
-            return;
-        }
-        
-        const name = document.getElementById('upload-name').value.trim();
-        if (!name) {
-            alert('Please enter your name');
-            return;
-        }
-        
-        const caption = document.getElementById('upload-caption').value.trim();
-        
-        document.getElementById('upload-dialog').style.display = 'none';
-        
-        try {
-            const formData = new FormData();
-            formData.append('image', pendingFile);
-            formData.append('key', IMGBB_API_KEY);
-            
-            const response = await fetch('https://api.imgbb.com/1/upload', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (!result.success) {
-                throw new Error(result.error?.message || 'Upload failed');
-            }
-            
-            const url = result.data.url;
-            
-            await db.collection("pending_uploads").add({
-                url: url,
-                name: name,
-                caption: caption,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            alert('Upload submitted for moderation. It will appear after admin approval.');
-        } catch (e) {
-            console.error("Error uploading: ", e);
-            alert("Failed to upload: " + e.message);
-        }
-        
-        pendingFile = null;
     },
     togglePendingPanel: () => {
         const panel = document.getElementById('pending-panel');
@@ -342,7 +255,6 @@ window.app = {
             panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
             if (panel.style.display === 'flex') {
                 panel.classList.remove('collapsed');
-                loadPendingUploads();
                 loadMessages();
             }
         }
@@ -352,26 +264,13 @@ window.app = {
         panel.classList.toggle('collapsed');
     },
     switchTab: (tab) => {
-        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        
-        const uploadsList = document.getElementById('pending-list');
-        const messagesList = document.getElementById('messages-list');
-        
-        if (tab === 'uploads') {
-            uploadsList.style.display = 'block';
-            messagesList.style.display = 'none';
-        } else {
-            uploadsList.style.display = 'none';
-            messagesList.style.display = 'block';
-            loadMessages();
-        }
+        loadMessages();
     },
     closePendingPanel: () => {
         document.getElementById('pending-panel').style.display = 'none';
     },
     toggleContact: (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         document.getElementById('contact-dialog').style.display = 'flex';
         document.getElementById('contact-name').value = '';
         document.getElementById('contact-message').value = '';
@@ -409,10 +308,12 @@ window.app = {
         }
     },
     cancelComment: () => {
-        dialog.style.display = 'none';
+        if (dialog) dialog.style.display = 'none';
         if (SelectionBox.parentNode) SelectionBox.parentNode.removeChild(SelectionBox);
-        document.getElementById('comment-name').value = '';
-        document.getElementById('comment-text').value = '';
+        const nameEl = document.getElementById('comment-name');
+        const textEl = document.getElementById('comment-text');
+        if (nameEl) nameEl.value = '';
+        if (textEl) textEl.value = '';
         currentRect = null;
     },
     saveComment: async () => {
@@ -429,7 +330,7 @@ window.app = {
             return;
         }
 
-        dialog.style.display = 'none';
+        if (dialog) dialog.style.display = 'none';
 
         try {
             await db.collection("comments").add({
@@ -442,92 +343,102 @@ window.app = {
                 height: currentRect.height,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            document.getElementById('comment-name').value = '';
-            document.getElementById('comment-text').value = '';
+            nameNode.value = '';
+            textNode.value = '';
             if (SelectionBox.parentNode) SelectionBox.parentNode.removeChild(SelectionBox);
             currentRect = null;
         } catch (e) {
-            console.error("Error adding document: ", e);
+            console.error("Error adding comment: ", e);
             alert("Failed to save comment. Reason: " + e.message);
-            dialog.style.display = 'flex';
+            if (dialog) dialog.style.display = 'flex';
+        }
+    },
+    openCondolenceDialog: (e) => {
+        if (e) e.preventDefault();
+        const condolenceDialog = document.getElementById('condolence-dialog');
+        if (condolenceDialog) {
+            condolenceDialog.style.display = 'flex';
+            document.getElementById('condolence-name').value = '';
+            document.getElementById('condolence-text').value = '';
+            document.getElementById('condolence-name').focus();
+        }
+    },
+    closeCondolenceDialog: () => {
+        const condolenceDialog = document.getElementById('condolence-dialog');
+        if (condolenceDialog) {
+            condolenceDialog.style.display = 'none';
+        }
+    },
+    submitCondolence: async () => {
+        const nameInput = document.getElementById('condolence-name');
+        const textInput = document.getElementById('condolence-text');
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+
+        if (!name) {
+            alert('Please enter your name.');
+            nameInput.focus();
+            return;
+        }
+        if (!text) {
+            alert('Please enter your condolence message.');
+            textInput.focus();
+            return;
+        }
+
+        if (containsBadWords(name) || containsBadWords(text)) {
+            alert('Please use appropriate language.');
+            return;
+        }
+
+        const condolenceDialog = document.getElementById('condolence-dialog');
+        condolenceDialog.style.display = 'none';
+
+        try {
+            await db.collection("condolences").add({
+                name: name,
+                message: text,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            nameInput.value = '';
+            textInput.value = '';
+        } catch (e) {
+            console.error("Error posting condolence:", e);
+            alert("Failed to post condolence: " + e.message);
+            condolenceDialog.style.display = 'flex';
+        }
+    },
+    deleteCondolence: async (docId) => {
+        if (!isAdmin) return;
+        if (!confirm("Are you sure you want to delete this condolence message?")) return;
+        try {
+            await db.collection("condolences").doc(docId).delete();
+        } catch (e) {
+            console.error("Error deleting condolence:", e);
+            alert("Failed to delete: " + e.message);
         }
     }
 };
 
-function updateDeleteButtonsVisibility() {
+function updateAdminButtonsVisibility() {
     document.querySelectorAll('.admin-delete-btn').forEach(btn => {
-        btn.style.display = isAdmin ? 'block' : '';
+        btn.style.display = isAdmin ? 'block' : 'none';
     });
+    // Re-render condolences to show/hide delete buttons
+    initCondolences();
 }
-
-function loadPendingUploads() {
-    if (!isAdmin) return;
-    
-    document.getElementById('pending-panel').style.display = 'block';
-    const list = document.getElementById('pending-list');
-    list.innerHTML = '<p style="color: #94a3b8;">Loading...</p>';
-    
-    db.collection("pending_uploads")
-        .orderBy("createdAt", "desc")
-        .get()
-        .then((snapshot) => {
-            if (snapshot.empty) {
-                list.innerHTML = '<p style="color: #94a3b8;">No pending uploads</p>';
-                return;
-            }
-            
-            list.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const item = document.createElement('div');
-                item.className = 'pending-item';
-                item.innerHTML = `
-                    <img src="${escapeHtml(data.url)}" alt="Pending upload">
-                    <p><strong>${escapeHtml(data.name)}</strong></p>
-                    <p>${escapeHtml(data.caption || '(no caption)')}</p>
-                    <div class="pending-actions">
-                        <button style="background: #22c55e; color: white;" onclick="app.approveUpload('${doc.id}', '${escapeHtml(data.url)}')">Approve</button>
-                        <button style="background: #ef4444; color: white;" onclick="app.rejectUpload('${doc.id}')">Reject</button>
-                    </div>
-                `;
-                list.appendChild(item);
-            });
-        })
-        .catch((e) => {
-            list.innerHTML = '<p style="color: #ef4444;">Error loading uploads</p>';
-        });
-}
-
-window.app.approveUpload = async (docId, url) => {
-    try {
-        await db.collection("approved_uploads").add({
-            url: url,
-            caption: '',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        await db.collection("pending_uploads").doc(docId).delete();
-        loadPendingUploads();
-    } catch (e) {
-        console.error("Error approving upload: ", e);
-        alert("Failed to approve: " + e.message);
-    }
-};
-
-window.app.rejectUpload = async (docId) => {
-    try {
-        await db.collection("pending_uploads").doc(docId).delete();
-        loadPendingUploads();
-    } catch (e) {
-        console.error("Error rejecting upload: ", e);
-        alert("Failed to reject: " + e.message);
-    }
-};
 
 function loadMessages() {
     if (!isAdmin) return;
     
+    const panel = document.getElementById('pending-panel');
+    if (panel) panel.style.display = 'flex';
+    
     const list = document.getElementById('messages-list');
     const msgCount = document.getElementById('msg-count');
+    if (!list) return;
+    
+    list.innerHTML = '<p style="color: #94a3b8;">Loading...</p>';
     
     db.collection("admin_messages")
         .orderBy("createdAt", "desc")
@@ -537,7 +448,7 @@ function loadMessages() {
             
             if (snapshot.empty) {
                 list.innerHTML = '<p style="color: #94a3b8;">No messages</p>';
-                msgCount.style.display = 'none';
+                if (msgCount) msgCount.style.display = 'none';
                 return;
             }
             
@@ -560,11 +471,13 @@ function loadMessages() {
                 list.appendChild(item);
             });
             
-            if (unreadCount > 0) {
-                msgCount.textContent = unreadCount;
-                msgCount.style.display = 'inline';
-            } else {
-                msgCount.style.display = 'none';
+            if (msgCount) {
+                if (unreadCount > 0) {
+                    msgCount.textContent = unreadCount;
+                    msgCount.style.display = 'inline';
+                } else {
+                    msgCount.style.display = 'none';
+                }
             }
         })
         .catch((e) => {
@@ -598,3 +511,6 @@ function containsBadWords(text) {
     const lower = text.toLowerCase();
     return BAD_WORDS.some(word => lower.includes(word));
 }
+
+// Initialize Condolences Listener on Page Load
+initCondolences();
