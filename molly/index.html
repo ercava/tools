@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Molly — In Loving Memory</title>
+    <title>Molly</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://firestore.googleapis.com">
@@ -13,6 +13,25 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- RIP / Memorial Header Section -->
+    <section class="rip-section">
+        <div class="rip-hero">
+            <div class="rip-image-wrapper">
+                <img src="./rip/WhatsApp Image 2026-08-30 at 19.51.26.jpeg" alt="Molly" class="rip-image" onclick="openModal(this)">
+            </div>
+            <h1 class="rip-title">Rest in Love, Molly️</h1>
+            <p class="rip-subtitle">You brought soooo much joy and warmth into our lives.</p>
+            <a href="#" class="rip-condolence-link" onclick="app.openCondolenceDialog(event)">leave a condolence</a>
+        </div>
+
+        <div class="condolences-ticker" id="condolences-ticker">
+            <div class="ticker-track" id="condolences-list">
+                <span class="ticker-loading">Loading condolences...</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
     <div class="gallery-container">
         <div id="gallery" class="masonry">
             <!-- Images -->
@@ -59,7 +78,17 @@
             <!-- Videos -->
             <div class="item"><video loading="lazy" src="./images/molly61.mp4" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
             <div class="item"><video loading="lazy" src="./images/molly62.mp4" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
+            <div class="item"><img loading="lazy" src="./images/IMG_9813.jpg" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/IMG_9814.jpg" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./images/IMG_9815.jpg" onclick="openModal(this)"></div>
             <!-- new image -->
+            <div class="item"><img loading="lazy" src="./new image/IMG_9911.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9915.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9918.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9919.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9920.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9922.JPG" onclick="openModal(this)"></div>
+            <div class="item"><img loading="lazy" src="./new image/IMG_9925.JPG" onclick="openModal(this)"></div>
             <div class="item"><img loading="lazy" src="./new image/IMG-20260106-WA0018.jpg" onclick="openModal(this)"></div>
             <div class="item"><img loading="lazy" src="./new image/IMG-20260106-WA0019.jpg" onclick="openModal(this)"></div>
             <div class="item"><img loading="lazy" src="./new image/IMG-20260106-WA0020.jpg" onclick="openModal(this)"></div>
@@ -75,22 +104,11 @@
             <div class="item"><img loading="lazy" src="./new image/IMG-20260305-WA0023.jpg" onclick="openModal(this)"></div>
             <div class="item"><img loading="lazy" src="./new image/IMG-20260305-WA0025.jpg" onclick="openModal(this)"></div>
             <div class="item"><img loading="lazy" src="./new image/IMG-20260428-WA0055.jpg" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9811.jpg" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9813.jpg" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9814.jpg" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9815.jpg" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9911.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9915.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9918.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9919.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9920.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9922.JPG" onclick="openModal(this)"></div>
-            <div class="item"><img loading="lazy" src="./new image/IMG_9925.JPG" onclick="openModal(this)"></div>
             <div class="item"><video loading="lazy" src="./new image/MVI_9909.MOV" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
             <div class="item"><video loading="lazy" src="./new image/MVI_9926.MOV" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
             <div class="item"><video loading="lazy" src="./new image/MVI_9927.MOV" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
             <div class="item"><video loading="lazy" src="./new image/MVI_9928.MOV" onclick="openModal(this)" muted loop autoplay playsinline></video></div>
-            <!-- /new image -->
+<!-- /new image -->
         </div>
     </div>
 
@@ -123,44 +141,14 @@
         </div>
     </div>
 
-    <!-- RIP / In Loving Memory Section -->
-    <section class="rip-section">
-        <div class="rip-container">
-            <div class="rip-card">
-                <div class="rip-image-wrapper">
-                    <img src="./rip/WhatsApp Image 2026-08-30 at 19.51.26.jpeg" alt="Molly - Rest in Peace" class="rip-image" onclick="openModal(this)">
-                </div>
-                <div class="rip-content">
-                    <div class="rip-badge">Forever in Our Hearts</div>
-                    <h1 class="rip-title">Rest in Peace, Molly 🕊️</h1>
-                    <p class="rip-subtitle">You brought so much joy, love, and warmth into our lives. Always remembered, never forgotten.</p>
-                    <button class="rip-condolence-btn" onclick="app.openCondolenceDialog()">
-                        <span class="heart-icon">🤍</span> Leave a Condolence
-                    </button>
-                </div>
-            </div>
-
-            <div class="condolences-container">
-                <div class="condolences-header">
-                    <h2>Messages & Condolences</h2>
-                    <span id="condolences-count" class="condolences-badge">0 messages</span>
-                </div>
-                <div id="condolences-list" class="condolences-grid">
-                    <p class="empty-condolences">Loading condolences...</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Condolence Input Dialog -->
     <div id="condolence-dialog">
-        <h3>Pay Your Respects</h3>
-        <p>Leave a tribute or condolence message for Molly</p>
+        <p>Leave a condolence message for Molly:</p>
         <input type="text" id="condolence-name" placeholder="Your Name" required maxlength="50">
-        <textarea id="condolence-text" placeholder="Write your condolences / memory here..." required maxlength="1000"></textarea>
+        <textarea id="condolence-text" placeholder="Your message..." required maxlength="1000"></textarea>
         <div class="dialog-buttons">
             <button class="btn-cancel" onclick="app.closeCondolenceDialog()">Cancel</button>
-            <button class="btn-save" onclick="app.submitCondolence()">Post Condolence</button>
+            <button class="btn-save" onclick="app.submitCondolence()">Submit</button>
         </div>
     </div>
 
@@ -201,9 +189,7 @@
         </div>
     </div>
 
-
-
-    <!-- Firebase SDK (Compat version for local file:// execution without CORS issues) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
 
@@ -227,7 +213,6 @@
                 modalImg.src = el.src;
             }
 
-            // Expose current element to app.js for commenting logic
             window.currentModalMedia = el.src.split('/').pop();
             const event = new CustomEvent('mediaOpened', { detail: window.currentModalMedia });
             window.dispatchEvent(event);
@@ -236,7 +221,6 @@
         function closeModal() {
             const modal = document.getElementById('modal');
             const modalVideo = document.getElementById('modalVideo');
-            // Only close if clicking outside the wrapper or pressing close
             if(event && event.target.closest('.modal-wrapper') && !event.target.classList.contains('close')) return;
             
             modal.style.display = 'none';
@@ -245,14 +229,12 @@
             window.dispatchEvent(new Event('mediaClosed'));
         }
 
-        // Make modal background close the modal
         document.getElementById('modal').addEventListener('click', function(e) {
             if(e.target === this) {
                 closeModal();
             }
         });
 
-        // Keyboard support
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal();

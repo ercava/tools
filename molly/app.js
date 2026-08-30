@@ -160,7 +160,6 @@ modalWrapper.addEventListener('mouseup', (e) => {
 
 function initCondolences() {
     const listEl = document.getElementById('condolences-list');
-    const countBadge = document.getElementById('condolences-count');
     if (!listEl) return;
 
     if (condolencesUnsubscribe) condolencesUnsubscribe();
@@ -168,51 +167,29 @@ function initCondolences() {
     condolencesUnsubscribe = db.collection("condolences")
         .orderBy("createdAt", "desc")
         .onSnapshot((snapshot) => {
-            const count = snapshot.size;
-            if (countBadge) {
-                countBadge.textContent = `${count} ${count === 1 ? 'message' : 'messages'}`;
-            }
-
             if (snapshot.empty) {
                 listEl.innerHTML = `
-                    <div class="empty-condolences">
-                        <p>No condolence messages yet.</p>
-                        <p style="font-size: 0.85em; margin-top: 6px; color: #64748b;">Be the first to share a warm memory or tribute for Molly.</p>
-                    </div>
+                    <span class="ticker-item empty">No condolences yet — leave the first one above.</span>
                 `;
                 return;
             }
 
-            listEl.innerHTML = '';
+            const items = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                const item = document.createElement('div');
-                item.className = 'condolence-card';
-                item.id = `condolence-${doc.id}`;
-
-                const dateStr = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                }) : 'Recently';
-
-                item.innerHTML = `
-                    <div class="condolence-card-header">
-                        <div class="condolence-author">
-                            <span class="condolence-avatar">🕯️</span>
-                            <span class="condolence-author-name">${escapeHtml(data.name || 'Anonymous')}</span>
-                        </div>
-                        <span class="condolence-date">${dateStr}</span>
-                    </div>
-                    <p class="condolence-text">${escapeHtml(data.message || '')}</p>
-                    ${isAdmin ? `<button class="condolence-delete-btn" onclick="app.deleteCondolence('${doc.id}')">&times; Delete</button>` : ''}
-                `;
-                listEl.appendChild(item);
+                const safeName = escapeHtml(data.name || 'Anonymous');
+                const safeMsg = escapeHtml(data.message || '');
+                const deleteBtn = isAdmin ? `<button class="ticker-del-btn" onclick="app.deleteCondolence('${doc.id}')">&times;</button>` : '';
+                items.push(`<span class="ticker-item" id="condolence-${doc.id}"><strong>${safeName}:</strong> ${safeMsg} ${deleteBtn}</span>`);
             });
+
+            // Duplicate items so infinite marquee scrolls seamlessly
+            const content = items.join('<span class="ticker-bullet">✦</span>');
+            listEl.innerHTML = `${content}<span class="ticker-bullet">✦</span>${content}`;
         }, (error) => {
             console.error("Error loading condolences:", error);
             if (listEl) {
-                listEl.innerHTML = '<p class="empty-condolences" style="color:#ef4444;">Failed to load condolences.</p>';
+                listEl.innerHTML = '<span class="ticker-item empty">Failed to load condolences.</span>';
             }
         });
 }

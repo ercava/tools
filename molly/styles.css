@@ -14,7 +14,7 @@ body {
     font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #fff;
     overflow-x: hidden;
-    padding: 20px 4vw 40px;
+    padding: 24px 4vw 40px;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -26,41 +26,41 @@ img, video {
 }
 
 /* =========================================
-   RIP / IN LOVING MEMORY SECTION
+   RIP / MEMORIAL SECTION
    ========================================= */
 
 .rip-section {
-    max-width: 1100px;
-    margin: 10px auto 40px auto;
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    text-align: center;
 }
 
-.rip-container {
+.rip-hero {
     display: flex;
     flex-direction: column;
-    gap: 32px;
-}
-
-.rip-card {
-    background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), transparent 70%), #0c121e;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 16px;
-    padding: 32px;
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 32px;
     align-items: center;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    justify-content: center;
 }
 
 .rip-image-wrapper {
-    position: relative;
+    width: 220px;
+    height: 280px;
     border-radius: 12px;
     overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    margin: 0 auto 20px auto;
+    /* Elegant memorial frame/border with double glow */
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    outline: 1px solid rgba(255, 255, 255, 0.2);
+    outline-offset: 4px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.08);
     background: #000;
-    aspect-ratio: 4 / 5;
     cursor: zoom-in;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rip-image-wrapper:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 255, 255, 0.15);
 }
 
 .rip-image {
@@ -68,185 +68,117 @@ img, video {
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.4s ease;
-}
-
-.rip-image-wrapper:hover .rip-image {
-    transform: scale(1.04);
-}
-
-.rip-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.rip-badge {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.1);
-    color: #cbd5e1;
-    font-size: 0.75em;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 20px;
-    margin-bottom: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .rip-title {
-    font-size: 2.2rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 600;
     color: #fff;
-    margin-bottom: 12px;
-    letter-spacing: -0.5px;
-    line-height: 1.2;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
 }
 
 .rip-subtitle {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: #94a3b8;
-    margin-bottom: 24px;
-    max-width: 600px;
-}
-
-.rip-condolence-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #fff;
-    color: #090d16;
-    font-weight: 600;
     font-size: 0.95rem;
-    padding: 12px 24px;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.15);
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.rip-condolence-btn:hover {
-    background: #e2e8f0;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
-}
-
-.rip-condolence-btn:active {
-    transform: translateY(0);
-}
-
-/* Condolences Board */
-.condolences-container {
-    background: #0a0f19;
-    border: 1px solid #1e293b;
-    border-radius: 16px;
-    padding: 28px;
-}
-
-.condolences-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #1e293b;
-    margin-bottom: 20px;
-}
-
-.condolences-header h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #f1f5f9;
-}
-
-.condolences-badge {
-    font-size: 0.8rem;
-    background: #1e293b;
-    color: #94a3b8;
-    padding: 4px 10px;
-    border-radius: 12px;
-}
-
-.condolences-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-}
-
-.condolence-card {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 10px;
-    padding: 16px;
-    position: relative;
-    transition: border-color 0.2s;
-    display: flex;
-    flex-direction: column;
-}
-
-.condolence-card:hover {
-    border-color: #334155;
-}
-
-.condolence-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.condolence-author {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.condolence-avatar {
-    font-size: 1rem;
-}
-
-.condolence-author-name {
-    font-weight: 600;
-    color: #38bdf8;
-    font-size: 0.95rem;
-}
-
-.condolence-date {
-    font-size: 0.75rem;
-    color: #64748b;
-}
-
-.condolence-text {
-    font-size: 0.9rem;
+    color: #888;
     line-height: 1.5;
-    color: #cbd5e1;
-    white-space: pre-line;
-    word-break: break-word;
-    flex: 1;
+    margin-bottom: 14px;
+    max-width: 480px;
 }
 
-.condolence-delete-btn {
-    align-self: flex-end;
-    margin-top: 10px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 0.75rem;
+.rip-condolence-link {
+    display: inline-block;
+    color: #38bdf8;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
     cursor: pointer;
-    font-family: inherit;
+    transition: color 0.2s;
 }
 
-.empty-condolences {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: #94a3b8;
-    padding: 30px 10px;
-    font-size: 0.95rem;
+.rip-condolence-link:hover {
+    color: #7dd3fc;
+}
+
+/* =========================================
+   CONDOLENCES HORIZONTAL SCROLL TICKER
+   ========================================= */
+
+.condolences-ticker {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: 28px;
+    padding: 14px 0;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #1a1a1a;
+    background: #050505;
+    overflow: hidden;
+    display: flex;
+    user-select: none;
+}
+
+.ticker-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: marquee 35s linear infinite;
+    will-change: transform;
+}
+
+.condolences-ticker:hover .ticker-track {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    font-size: 0.88rem;
+    color: #999;
+    padding: 0 12px;
+}
+
+.ticker-item strong {
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.ticker-item.empty {
+    color: #555;
+    font-style: italic;
+}
+
+.ticker-bullet {
+    color: #38bdf8;
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin: 0 4px;
+}
+
+.ticker-loading {
+    color: #555;
+    font-size: 0.85rem;
+    padding: 0 20px;
+}
+
+.ticker-del-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 11px;
+    line-height: 16px;
+    cursor: pointer;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 /* =========================================
@@ -406,30 +338,24 @@ img, video {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #1e293b;
-    padding: 24px;
-    border-radius: 12px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    padding: 20px;
+    border-radius: 8px;
     z-index: 1005;
     display: none;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     width: calc(100% - 40px);
-    max-width: 360px;
+    max-width: 320px;
     max-height: 90vh;
     overflow-y: auto;
-}
-
-#condolence-dialog h3 {
-    font-size: 1.15rem;
-    color: #fff;
 }
 
 #condolence-dialog p {
     font-size: 0.85rem;
     color: #94a3b8;
-    margin-top: -6px;
-    margin-bottom: 4px;
 }
 
 #comment-dialog input, #comment-dialog textarea,
@@ -437,39 +363,40 @@ img, video {
 #condolence-dialog textarea, #contact-dialog input,
 #contact-dialog textarea {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #334155;
-    background: #0f172a;
+    padding: 10px 12px;
+    border: 1px solid #374151;
+    background: #030712;
     color: white;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: inherit;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 #comment-dialog textarea, #contact-dialog textarea, #condolence-dialog textarea {
     resize: vertical;
-    min-height: 90px;
+    min-height: 80px;
 }
 
 .dialog-buttons {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
-    margin-top: 6px;
+    gap: 8px;
+    margin-top: 4px;
 }
 
 .dialog-buttons button {
-    padding: 10px 16px;
+    padding: 8px 14px;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.85rem;
     font-family: 'Montserrat', sans-serif;
     touch-action: manipulation;
 }
 
-.btn-cancel { background: #334155; color: white; }
-.btn-save { background: #38bdf8; color: #0f172a; }
+.btn-cancel { background: #1f2937; color: #9ca3af; }
+.btn-save { background: #38bdf8; color: #030712; font-weight: 600; }
 .btn-login { background: #22c55e; color: white; }
 
 .admin-delete-btn {
@@ -503,7 +430,7 @@ img, video {
 
 .attribution {
     text-align: center;
-    padding: 40px 0 20px;
+    padding: 36px 0 20px;
     font-size: 0.85em;
     color: #666;
     letter-spacing: 0.5px;
@@ -522,13 +449,13 @@ img, video {
 .action-links a {
     color: #38bdf8;
     text-decoration: none;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 4px;
     transition: all 0.2s;
 }
 
 .action-links a:active { background: rgba(56, 189, 248, 0.2); }
-.action-links .separator { color: #666; }
+.action-links .separator { color: #555; }
 
 /* =========================================
    ADMIN PANEL
@@ -540,11 +467,12 @@ img, video {
     bottom: 20px;
     right: 20px;
     left: auto;
-    width: 350px;
+    width: 340px;
     max-height: 60vh;
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 8px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    padding: 14px;
+    border-radius: 6px;
     z-index: 1006;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     display: flex;
@@ -553,8 +481,8 @@ img, video {
 }
 
 .pending-panel.collapsed {
-    width: 150px;
-    max-height: 50px;
+    width: 140px;
+    max-height: 44px;
     overflow: hidden;
 }
 
@@ -566,14 +494,14 @@ img, video {
 .panel-header {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 10px;
     flex-shrink: 0;
 }
 
 .panel-header h3 {
     color: #fff;
-    font-size: 1em;
+    font-size: 0.95em;
     margin: 0;
 }
 
@@ -584,10 +512,10 @@ img, video {
 }
 
 .panel-tab {
-    background: #334155;
+    background: #1f2937;
     border: none;
-    color: #94a3b8;
-    padding: 6px 12px;
+    color: #9ca3af;
+    padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.8em;
@@ -597,25 +525,25 @@ img, video {
 
 .panel-tab.active {
     background: #38bdf8;
-    color: #0f172a;
+    color: #030712;
 }
 
 .panel-tab span {
     background: #ef4444;
     color: white;
-    padding: 2px 6px;
-    border-radius: 10px;
+    padding: 1px 5px;
+    border-radius: 8px;
     font-size: 0.7em;
-    margin-left: 5px;
+    margin-left: 4px;
 }
 
 .panel-collapse {
     background: none;
     border: none;
-    color: #94a3b8;
+    color: #9ca3af;
     cursor: pointer;
-    font-size: 1.2em;
-    padding: 5px;
+    font-size: 1.1em;
+    padding: 4px;
     transition: transform 0.3s;
 }
 
@@ -626,65 +554,40 @@ img, video {
 #panel-content { flex: 1; overflow-y: auto; }
 #messages-list { flex: 1; }
 
-.pending-actions { display: flex; gap: 10px; margin-top: 10px; }
+.pending-actions { display: flex; gap: 8px; margin-top: 8px; }
 
 .pending-actions button {
     flex: 1;
-    padding: 8px;
+    padding: 6px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     font-family: inherit;
-    font-size: 0.85em;
+    font-size: 0.8em;
 }
 
 .message-item {
-    background: #0f172a;
-    padding: 12px;
+    background: #030712;
+    padding: 10px;
     border-radius: 4px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #1f2937;
 }
 
-.message-item strong { color: #38bdf8; }
-.message-item small { color: #64748b; display: block; margin-top: 5px; }
-.message-item p { color: #e2e8f0; margin-top: 8px; line-height: 1.4; }
+.message-item strong { color: #38bdf8; font-size: 0.85em; }
+.message-item small { color: #64748b; display: block; margin-top: 3px; font-size: 0.75em; }
+.message-item p { color: #cbd5e1; margin-top: 6px; font-size: 0.85em; line-height: 1.4; }
 
 .pending-panel > button:last-child { flex-shrink: 0; margin-top: 10px; }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .rip-card {
-        grid-template-columns: 1fr;
-        padding: 24px;
-        gap: 20px;
-    }
-    .rip-image-wrapper {
-        max-width: 280px;
-        margin: 0 auto;
-        width: 100%;
-    }
-    .rip-content {
-        align-items: center;
-        text-align: center;
-    }
-    .rip-subtitle {
-        margin-bottom: 20px;
-    }
-    .condolences-container {
-        padding: 20px;
-    }
-    .condolences-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 600px) {
+    .rip-title { font-size: 1.5rem; }
+    .rip-image-wrapper { width: 190px; height: 240px; }
     .attribution { padding: 20px 0; }
-    .action-links { font-size: 0.75em; gap: 8px; }
-    .action-links a { padding: 6px 8px; }
+    .action-links { font-size: 0.75em; gap: 6px; }
+    .action-links a { padding: 4px 6px; }
     .action-links .separator { display: none; }
-    .rip-title { font-size: 1.7rem; }
 }
 
 @media (max-width: 500px) {
