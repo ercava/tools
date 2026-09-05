@@ -29,6 +29,7 @@ const CONFIG = {
   PHONE_NUMBER_ID: process.env.PHONE_NUMBER_ID || '', // WhatsApp Phone Number ID
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AQ.Ab8RN6IAq5GuI0lYu_AjO0ZaHCTbecAAud26nXYtL5KAxMQdvA',
   GEMINI_MODEL: 'gemini-3.5-flash-lite',
+  APPS_SCRIPT_URL: process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxKilNW2NhljCbq9X4TWQbB0QtXKh_BGF1dqE_l0_4BYjzly0bgzulMjHc_qRpPsSvz3w/exec',
   SPREADSHEET_ID: process.env.SPREADSHEET_ID || '1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4',
   GOOGLE_ACCESS_TOKEN: process.env.GOOGLE_ACCESS_TOKEN || '',
   PLANNER_TAB: process.env.PLANNER_TAB || '[ISI DISINI]',
@@ -140,38 +141,46 @@ function getUser(phone) {
   return users[phone];
 }
 
-// 4. Append Expense to Google Sheets
+// 4. Append Expense via Apps Script Webhook
 async function appendExpenseToSheet(exp, targetSheetId, targetTab) {
   const sheetId = targetSheetId || CONFIG.SPREADSHEET_ID;
   const tab = targetTab || CONFIG.PLANNER_TAB;
-  if (!CONFIG.GOOGLE_ACCESS_TOKEN) return { success: false, reason: 'No Google Token' };
-  
-  const encGet = encodeURIComponent(`'${tab}'!F66:J121`);
-  const getRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encGet}`, {
-    headers: { Authorization: `Bearer ${CONFIG.GOOGLE_ACCESS_TOKEN}` }
-  });
-  const getData = await getRes.json();
-  const rows = getData.values || [];
-  let emptyOffset = rows.findIndex(r => !r || !r[0] || !String(r[0]).trim());
-  if (emptyOffset === -1) emptyOffset = rows.length;
-  const nextRow = 66 + emptyOffset;
-  if (nextRow > 121) return { success: false, reason: 'Sheet penuh' };
+  const scriptUrl = CONFIG.APPS_SCRIPT_URL;
 
-  const encWrite = encodeURIComponent(`'${tab}'!F${nextRow}:J${nextRow}`);
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encWrite}?valueInputOption=USER_ENTERED`, {
-    method: 'PUT',
-    headers: { Authorization: `Bearer ${CONFIG.GOOGLE_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      values: [[exp.date || new Date().toISOString().split('T')[0], exp.merchant || 'Umum', exp.category || 'Lainnya', exp.amount || 0, exp.notes || '']]
-    })
-  });
-  return { success: true, row: nextRow };
+  if (!scriptUrl) {
+    console.warn('[Sheet] APPS_SCRIPT_URL not configured');
+    return { success: false, reason: 'No Apps Script URL' };
+  }
+
+  try {
+    const res = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'appendExpense',
+        sheetId,
+        tab,
+        date: exp.date || new Date().toISOString().split('T')[0],
+        merchant: exp.merchant || 'Umum',
+        category: exp.category || 'Lainnya',
+        amount: exp.amount || 0,
+        notes: exp.notes || ''
+      })
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('[AppsScript Error]:', err.message);
+    return { success: false, reason: err.message };
+  }
 }
 
-// 5. Append Reminder to Tracker Tab
+// 5. Append Reminder via Apps Script Webhook
 async function appendReminderToSheet(rem, targetSheetId) {
   const sheetId = targetSheetId || CONFIG.SPREADSHEET_ID;
-  if (!CONFIG.GOOGLE_ACCESS_TOKEN) return;
+  const scriptUrl = CONFIG.APPS_SCRIPT_URL;
+  if (!scriptUrl) return;
+
   try {
     const dt = new Date(rem.timestamp);
     const y = dt.getFullYear();
@@ -180,25 +189,22 @@ async function appendReminderToSheet(rem, targetSheetId) {
     const hh = String(dt.getHours()).padStart(2, '0');
     const mm = String(dt.getMinutes()).padStart(2, '0');
     const dateTimeFormatted = `${y}-${m}-${d} ${hh}:${mm}`;
-    const timeNote = `Jam: ${hh}:${mm}${rem.notes ? ' • ' + rem.notes : ''}`;
 
-    const encGet = encodeURIComponent("'Tracker'!B3:E50");
-    const getRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encGet}`, {
-      headers: { Authorization: `Bearer ${CONFIG.GOOGLE_ACCESS_TOKEN}` }
+    await fetch(scriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'appendReminder',
+        sheetId,
+        datetime: dateTimeFormatted,
+        name: rem.name,
+        category: rem.category,
+        notes: `Jam: ${hh}:${mm}${rem.notes ? ' • ' + rem.notes : ''}`
+      })
     });
-    const getData = await getRes.json();
-    const rows = getData.values || [];
-    let emptyOffset = rows.findIndex(r => !r || !r[0]);
-    if (emptyOffset === -1) emptyOffset = rows.length;
-    const nextRow = 3 + emptyOffset;
-
-    const encWrite = encodeURIComponent(`'Tracker'!B${nextRow}:E${nextRow}`);
-    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encWrite}?valueInputOption=USER_ENTERED`, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${CONFIG.GOOGLE_ACCESS_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ values: [[dateTimeFormatted, rem.name, rem.category, timeNote]] })
-    });
-  } catch (e) {}
+  } catch (err) {
+    console.error('[AppsScript Reminder Error]:', err.message);
+  }
 }
 
 // --- WEBHOOK ROUTES FOR META CLOUD API ---
