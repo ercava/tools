@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RARITY - Receipt Budget Assistant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧾</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --success: #16a34a;
+      --user-msg: #26568c;
+      --bot-msg: #f1f5f9;
+    }
+    
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, Arial, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      padding: 1.5rem 1rem;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-container {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+    .desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin: 0 0 2rem 0;
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn:hover { transform: translateY(-1px); opacity: 0.95; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .app-container {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-light);
+    }
+    .header-titles h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0;
+    }
+    .header-titles .greeting {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+    .header-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .link-badge {
+      font-size: 0.8rem;
+      background: var(--primary);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg {
+      max-width: 85%;
+      padding: 8px 12px 6px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+      animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      position: relative;
+    }
+    .msg-content { margin-bottom: 2px; }
+    .msg-time {
+      font-size: 0.68rem;
+      text-align: right;
+      margin-top: 4px;
+      opacity: 0.7;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 3px;
+    }
+    .msg.bot {
+      background: var(--bot-msg);
+      color: var(--text);
+      align-self: flex-start;
+      border: 1px solid var(--line);
+    }
+    .msg.bot .msg-time { color: var(--muted); }
+    .msg.user {
+      background: var(--user-msg);
+      color: #fff;
+      align-self: flex-end;
+    }
+    .msg.user .msg-time { color: #cbd5e1; }
+    .msg-img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 6px;
+      margin-top: 6px;
+      display: block;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .receipt-card {
+      background: #fff;
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.85rem;
+    }
+    .receipt-label { color: var(--muted); font-weight: 500; }
+    .receipt-val { font-weight: 700; color: var(--accent); }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-action {
+      flex: 1;
+      padding: 8px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+    }
+    .btn-confirm { background: var(--success); color: #fff; }
+    .btn-edit { background: var(--line); color: var(--text); }
+
+    .input-area {
+      padding: 1rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      background: var(--bg-light);
+    }
+    .input-area input[type="text"] {
+      flex: 1;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .input-area input[type="text"]:focus { border-color: var(--primary); }
+    .btn-icon {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+    .btn-send {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 0 16px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    .modal-content h3 { margin: 0 0 1rem 0; color: var(--accent); font-size: 1.15rem; }
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.9rem;
+    }
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+    .badge-ok { background: #dcfce7; color: #166534; }
+    .badge-err { background: #fee2e2; color: #991b1b; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .btn-close {
+      margin-top: 1rem;
+      width: 100%;
+      background: var(--line);
+      color: var(--text);
+      border: none;
+      padding: 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .hidden { display: none !important; }
+    .app-body {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      width: 300%;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .app-body.show-panel-0 { transform: translateX(0%); }
+    .app-body.show-panel-1 { transform: translateX(-33.3333%); }
+    .app-body.show-panel-2 { transform: translateX(-66.6666%); }
+
+    .view-panel {
+      width: 33.3333%;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    /* Reminders Dashboard Styles */
+    .reminder-card {
+      position: relative;
+      display: flex;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .reminder-card:last-child { margin-bottom: 0; }
+    .reminder-card-body {
+      flex: 1;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 2;
+    }
+    .reminder-header-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .reminder-name {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.95rem;
+      line-height: 1.3;
+    }
+    .reminder-tag-sub {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .tag-tugas { background: #fee2e2; color: #991b1b; }
+    .tag-jadwal { background: #dcfce7; color: #166534; }
+    .tag-ujian { background: #fef3c7; color: #92400e; }
+    .tag-event { background: #e0f2fe; color: #0369a1; }
+    .tag-lainnya { background: #f1f5f9; color: #475569; }
+
+    .reminder-time-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+    .reminder-notes-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* Big side buttons on the right */
+    .reminder-card-actions {
+      display: flex;
+      flex-direction: column;
+      width: 52px;
+      border-left: 1px solid var(--line);
+      z-index: 3;
+    }
+    .btn-side {
+      flex: 1;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #fff;
+    }
+    .btn-side-done {
+      background: #16a34a;
+    }
+    .btn-side-done:hover {
+      background: #15803d;
+    }
+    .btn-side-del {
+      background: #dc2626;
+    }
+    .btn-side-del:hover {
+      background: #b91c1c;
+    }
+
+    /* Overview Dashboard Styles */
+    .overview-content {
+      padding: 1.5rem 1.25rem 2rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      background: var(--bg);
+    }
+    .overview-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .overview-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      letter-spacing: -0.01em;
+    }
+    .overview-total {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 6px 0 8px 0;
+    }
+    .btn-icon-sm {
+      background: var(--line);
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      transition: all 0.2s;
+    }
+    .btn-icon-sm:hover {
+      background: #cbd5e1;
+    }
+    .chart-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding: 6px 0;
+    }
+    .chart-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .tx-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      transition: background 0.15s ease;
+    }
+    .tx-item:hover { background: #f1f5f9; }
+    .tx-merchant { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .tx-sub { font-size: 0.75rem; color: var(--muted); }
+    .tx-amt { font-weight: 700; color: var(--accent); }
+
+    /* Bottom Taskbar Navigation */
+    .taskbar {
+      display: flex;
+      border-top: 1px solid var(--line);
+      background: #fff;
+      padding: 8px 16px;
+      justify-content: space-around;
+      z-index: 10;
+    }
+    .taskbar-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 10px;
+      padding: 8px 0;
+      transition: all 0.2s ease;
+    }
+    .taskbar-btn.active {
+      color: var(--primary);
+      background: #f1f5f9;
+    }
+    .taskbar-btn svg {
+      transition: transform 0.2s ease;
+    }
+    .taskbar-btn.active svg {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Login -->
+  <div id="screen-login" class="screen active">
+    <div class="auth-container">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧾</div>
+      <h1 class="title">RARITY</h1>
+      <p class="desc">Scan struk belanja, verifikasi AI, catat otomatis ke Google Sheet.</p>
+      
+      <button class="btn" id="login-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 style="display: flex; align-items: center; gap: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        Status Sistem
+      </h3>
+      <div class="status-item">
+        <span>Google Auth</span>
+        <span class="badge badge-ok">Terhubung</span>
+      </div>
+      <div class="status-item">
+        <span>Google Sheets</span>
+        <span id="sheet-status" class="badge badge-pending">Memeriksa...</span>
+      </div>
+      <div class="status-item">
+        <span>Gemini AI</span>
+        <span id="gemini-status" class="badge badge-pending">Memeriksa...</span>
+      </div>
+
+      <!-- WhatsApp Integration Box -->
+      <div style="margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; text-align: left;">
+        <div style="font-weight: 700; font-size: 0.85rem; color: #15803d; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+          <span>💬 Integrasi WhatsApp Bot</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--muted); margin-bottom: 8px;">
+          Gunakan ID Sheet ini di chat WhatsApp bot dengan ketik: <code>!sheet &lt;ID&gt;</code>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <input type="text" id="wa-sheet-id-input" readonly style="flex: 1; font-size: 0.75rem; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff;" value="Belum ada sheet">
+          <button class="btn-action" style="width: auto; padding: 5px 10px; font-size: 0.75rem; background: var(--primary); color: #fff;" onclick="copyWaSheetId()">Salin</button>
+        </div>
+        <a id="wa-bot-link" href="https://wa.me/6285810629900?text=!help" target="_blank" style="display: block; margin-top: 8px; font-size: 0.78rem; text-align: center; color: #16a34a; font-weight: 600; text-decoration: none;">
+          📲 Buka Chat Bot di WhatsApp ↗
+        </a>
+      </div>
+
+      <button class="btn-action btn-edit" style="margin-top: 12px;" onclick="checkSystemStatus()">🔄 Cek Ulang Status</button>
+      <button class="btn-action" style="margin-top: 6px; background: #0284c7; color: #fff;" onclick="reinitializeSheet()">📑 Inisialisasi Ulang Sheet</button>
+      <button class="btn-close" id="close-settings-btn">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Scanner, Chat & Data Overview -->
+  <div id="screen-app" class="screen">
+    <div class="app-container">
+      <header>
+        <div class="header-titles">
+          <h1>RARITY</h1>
+          <div class="greeting" id="user-greeting">Halo!</div>
+        </div>
+        <div class="header-links">
+          <a id="sheet-link" class="link-badge hidden" target="_blank">Sheet ↗</a>
+          <button class="btn-logout" id="settings-btn" title="Status & Pengaturan" style="display: flex; align-items: center; justify-content: center; padding: 6px 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn-logout" id="logout-btn">Keluar</button>
+        </div>
+      </header>
+
+      <div class="app-body" id="app-body">
+        <!-- Panel 1: Chat & Scan -->
+        <div id="panel-chat" class="view-panel">
+          <div class="chat-box" id="chat-box">
+            <div class="msg bot">👋 Halo! Foto/upload struk atau ketik pengeluaranmu (misal: <i>"Beli kopi 25rb di Janji Jiwa"</i>). Saya cek dulu sebelum disimpan ke Google Sheet.</div>
+          </div>
+
+          <div class="input-area">
+            <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
+            <button class="btn-icon" id="cam-btn" title="Foto / Upload Struk" disabled style="display: flex; align-items: center; justify-content: center;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+            <input type="text" id="user-input" placeholder="Tunggu inisialisasi AI..." disabled>
+            <button class="btn-send" id="send-btn" disabled>Kirim</button>
+          </div>
+        </div>
+
+        <!-- Panel 2: Budgeting Overview -->
+        <div id="panel-overview" class="view-panel">
+          <div class="overview-content">
+            <div class="overview-card">
+              <div class="overview-title">
+                <span>Total Pengeluaran Periode Ini</span>
+                <button class="btn-icon-sm" title="Perbarui Data" onclick="loadOverviewData()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                </button>
+              </div>
+              <div class="overview-total" id="overview-total-val">Rp 0</div>
+              <div style="font-size: 0.78rem; color: var(--muted);" id="overview-period-label">Memuat data sheet...</div>
+            </div>
+
+            <div class="overview-card">
+              <div class="overview-title">Distribusi Kategori</div>
+              <div class="chart-box">
+                <svg id="pie-chart-svg" width="140" height="140" viewBox="0 0 42 42">
+                  <circle cx="21" cy="21" r="15.91549430918954" fill="#f8fafc" stroke="#e2e8f0" stroke-width="6"></circle>
+                </svg>
+                <div class="chart-legend" id="chart-legend">
+                  <span style="color: var(--muted); font-size: 0.8rem;">Belum ada data</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="overview-card">
+              <div class="overview-title">Pengeluaran Terbesar (Top Costs)</div>
+              <div id="top-costs-list" class="tx-list">
+                <span style="color: var(--muted); font-size: 0.8rem;">Belum ada data</span>
+              </div>
+            </div>
+
+            <div class="overview-card">
+              <div class="overview-title">5 Transaksi Terakhir</div>
+              <div id="recent-tx-list" class="tx-list">
+                <span style="color: var(--muted); font-size: 0.8rem;">Belum ada data</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: Reminders & Tracker -->
+        <div id="panel-reminders" class="view-panel">
+          <div class="overview-content">
+            <div class="overview-card">
+              <div class="overview-title">
+                <span>Pengingat & Agenda Aktif</span>
+                <button class="btn-icon-sm" title="Perbarui" onclick="renderReminders()">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                </button>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">
+                Ketik di chat: <i>"Ingatkan ujian kalkulus tgl 2 Sep jam 08:00"</i>. Bot akan mengingatkan H-1 hari, 12 jam, 5 jam, 1 jam, 30 menit.
+              </div>
+              <div id="reminders-list" class="tx-list">
+                <span style="color: var(--muted); font-size: 0.8rem;">Belum ada agenda pengingat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Taskbar -->
+      <nav class="taskbar">
+        <button class="taskbar-btn active" id="tab-chat-btn" title="Chat & Scanner" onclick="switchView(0)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="taskbar-btn" id="tab-overview-btn" title="Ringkasan Data" onclick="switchView(1)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        </button>
+        <button class="taskbar-btn" id="tab-reminders-btn" title="Pengingat & Agenda" onclick="switchView(2)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_CLIENT_ID = "181034412045-4iu4f1msf66l6ok3nn0iujj3qj6lkamm.apps.googleusercontent.com";
+    const GEMINI_API_KEY = "AQ.Ab8RN6IAq5GuI0lYu_AjO0ZaHCTbecAAud26nXYtL5KAxMQdvA";
+    const GEMINI_MODEL = "gemini-3.5-flash-lite";
+
+    let accessToken = localStorage.getItem("rarity_access_token");
+    let tokenExpiry = parseInt(localStorage.getItem("rarity_token_expiry") || "0", 10);
+    let spreadsheetId = localStorage.getItem("rarity_sheet_id");
+    let userProfile = JSON.parse(localStorage.getItem("rarity_user_profile") || "null");
+    let pendingReceipt = null;
+    let tokenClient = null;
+    let isModelReady = false;
+
+    const screenLogin = document.getElementById("screen-login");
+    const screenApp = document.getElementById("screen-app");
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const camBtn = document.getElementById("cam-btn");
+    const greetingElem = document.getElementById("user-greeting");
+
+    // Rupiah formatter: stdlib Intl
+    const rupiah = (val) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
+
+    // Time-based Indonesian greeting
+    function getIndonesianGreeting() {
+      const hour = new Date().getHours();
+      if (hour >= 4 && hour < 11) return "Selamat pagi";
+      if (hour >= 11 && hour < 15) return "Selamat siang";
+      if (hour >= 15 && hour < 18) return "Selamat sore";
+      return "Selamat malam";
+    }
+
+    function updateGreeting() {
+      const name = userProfile?.name || userProfile?.given_name || "Sobat";
+      const greeting = getIndonesianGreeting();
+      greetingElem.innerText = `${greeting}, ${name}!`;
+    }
+
+    function setInterfaceReady(ready) {
+      isModelReady = ready;
+      userInput.disabled = !ready;
+      sendBtn.disabled = !ready;
+      camBtn.disabled = !ready;
+      userInput.placeholder = ready ? "Ketik pengeluaran / koreksi..." : "Menghubungkan ke Gemini AI...";
+    }
+
+    // Native Web Audio Synthesizer (Zero asset dependencies)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'send') {
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } else if (type === 'receive') {
+        osc.frequency.setValueAtTime(780, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(560, audioCtx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.12);
+      } else if (type === 'success') {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.22);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.22);
+      }
+    }
+
+    const getTimeString = () => new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+
+    let syncTimer = null;
+    function queueSyncToSheet() {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(syncChatToSheet, 2000); // Debounced cloud backup
+    }
+
+    async function syncChatToSheet() {
+      if (!spreadsheetId || spreadsheetId === "undefined" || !accessToken) return;
+      try {
+        const html = chatBox.innerHTML;
+        const encRange = encodeURIComponent("_ChatState!A1");
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}?valueInputOption=RAW`, {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ values: [[html]] })
+        });
+        console.log("[DEBUG] Chat history synced to Sheet (_ChatState)");
+      } catch (e) {
+        console.warn("[DEBUG] Chat sync to sheet error:", e);
+      }
+    }
+
+    async function loadChatFromSheet() {
+      if (!spreadsheetId || !accessToken) return;
+      try {
+        const encRange = encodeURIComponent("_ChatState!A1");
+        const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.values && data.values[0] && data.values[0][0]) {
+            chatBox.innerHTML = data.values[0][0];
+            chatBox.scrollTop = chatBox.scrollHeight;
+            localStorage.setItem("rarity_chat_html", data.values[0][0]);
+            console.log("[DEBUG] Chat history restored from Google Sheet");
+          }
+        }
+      } catch (e) {
+        console.warn("[DEBUG] Could not load chat from sheet:", e);
+      }
+    }
+
+    function saveChatHistory() {
+      try { localStorage.setItem("rarity_chat_html", chatBox.innerHTML); } catch (e) {}
+      queueSyncToSheet();
+    }
+
+    function loadChatHistory() {
+      const saved = localStorage.getItem("rarity_chat_html");
+      if (saved) {
+        chatBox.innerHTML = saved;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function addBotMsg(html, playAudio = true) {
+      const time = getTimeString();
+      const msg = document.createElement("div");
+      msg.className = "msg bot";
+      msg.innerHTML = `<div class="msg-content">${html}</div><div class="msg-time">${time}</div>`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      saveChatHistory();
+      if (playAudio) playSound('receive');
+    }
+
+    function addUserMsg(text) {
+      const time = getTimeString();
+      const msg = document.createElement("div");
+      msg.className = "msg user";
+      msg.innerHTML = `<div class="msg-content">${text}</div><div class="msg-time">${time} <span style="font-size:0.75rem;">✓✓</span></div>`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      saveChatHistory();
+      playSound('send');
+    }
+
+    function addUserMsgWithImage(text, imgSrc) {
+      const time = getTimeString();
+      const msg = document.createElement("div");
+      msg.className = "msg user";
+      msg.innerHTML = `<div class="msg-content">${text}</div><img src="${imgSrc}" class="msg-img" alt="Foto Struk"><div class="msg-time">${time} <span style="font-size:0.75rem;">✓✓</span></div>`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      saveChatHistory();
+      playSound('send');
+    }
+
+    function isTokenValid() {
+      return accessToken && Date.now() < (tokenExpiry - 60000);
+    }
+
+    function initTokenClient() {
+      if (!window.google || tokenClient) return;
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+        callback: async (resp) => {
+          if (resp.error) return alert("Login gagal: " + resp.error);
+          accessToken = resp.access_token;
+          const expiresIn = resp.expires_in ? parseInt(resp.expires_in, 10) * 1000 : 3600000;
+          tokenExpiry = Date.now() + expiresIn;
+          localStorage.setItem("rarity_access_token", accessToken);
+          localStorage.setItem("rarity_token_expiry", tokenExpiry.toString());
+
+          await fetchUserProfile();
+          screenLogin.classList.remove("active");
+          screenApp.classList.add("active");
+          await setupUserSheet();
+          await warmUpGemini();
+        }
+      });
+    }
+
+    async function fetchUserProfile() {
+      try {
+        const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        userProfile = await res.json();
+        localStorage.setItem("rarity_user_profile", JSON.stringify(userProfile));
+        updateGreeting();
+      } catch (e) {
+        console.warn("[DEBUG] Profile fetch failed:", e);
+      }
+    }
+
+    function triggerLogin(promptType = '') {
+      initTokenClient();
+      if (!tokenClient) return alert("Google Sign-In sedang dimuat, coba sesaat lagi.");
+      tokenClient.requestAccessToken({ prompt: promptType });
+    }
+
+    document.getElementById("login-btn").onclick = () => triggerLogin('consent');
+
+    const TEMPLATE_SHEET_ID = "1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU";
+
+    function getUserSheetTitle() {
+      const name = userProfile?.given_name || userProfile?.name || "User";
+      return `${name}'s Budget and Planning!`;
+    }
+
+    async function setupUserSheet() {
+      const sheetTitle = getUserSheetTitle();
+      
+      if (!spreadsheetId) {
+        addBotMsg(`⏳ Menyalin template ke Google Drive Anda: <b>${sheetTitle}</b>...`, false);
+        try {
+          // Copy template to user's personal Google Drive
+          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ name: sheetTitle })
+          });
+          const copyData = await copyRes.json();
+          
+          if (!copyRes.ok) {
+            throw new Error(copyData.error?.message || ("HTTP " + copyRes.status));
+          }
+
+          spreadsheetId = copyData.id;
+          localStorage.setItem("rarity_sheet_id", spreadsheetId);
+          console.log("[DEBUG] User spreadsheet copied successfully. ID:", spreadsheetId);
+
+          // Discover sheet tab title from copied spreadsheet
+          try {
+            const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+              headers: { "Authorization": `Bearer ${accessToken}` }
+            });
+            const metaData = await metaRes.json();
+            if (metaData.sheets && metaData.sheets.length > 0) {
+              window.PLANNER_TAB = metaData.sheets[0].properties.title;
+              localStorage.setItem("rarity_planner_tab", window.PLANNER_TAB);
+              console.log("[DEBUG] Primary planner tab discovered:", window.PLANNER_TAB);
+            }
+          } catch (e) {
+            console.warn("[DEBUG] Error reading sheet metadata:", e);
+          }
+
+          // Add _ChatState tab as HIDDEN tab for cloud chat history backup
+          try {
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({
+                requests: [{ addSheet: { properties: { title: "_ChatState", hidden: true } } }]
+              })
+            });
+          } catch (e) {
+            console.warn("[DEBUG] _ChatState tab init:", e);
+          }
+
+          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disiapkan!`, false);
+        } catch (e) {
+          console.error("[DEBUG] Copy template error:", e);
+          addBotMsg(`⚠️ Gagal menyalin template: ${e.message}<br><small>Pastikan izin Google Drive disetujui saat login.</small>`, false);
+          return;
+        }
+      } else {
+        window.PLANNER_TAB = localStorage.getItem("rarity_planner_tab") || "[ISI DISINI]";
+        // Ensure _ChatState is hidden on existing sheet
+        try {
+          const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+            headers: { "Authorization": `Bearer ${accessToken}` }
+          });
+          const metaData = await metaRes.json();
+          const chatSheet = metaData.sheets?.find(s => s.properties.title === "_ChatState");
+          if (chatSheet && !chatSheet.properties.hidden) {
+            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({
+                requests: [{
+                  updateSheetProperties: {
+                    properties: { sheetId: chatSheet.properties.sheetId, hidden: true },
+                    fields: "hidden"
+                  }
+                }]
+              })
+            });
+          }
+        } catch (e) {}
+
+        if (!localStorage.getItem("rarity_chat_html")) {
+          await loadChatFromSheet();
+        }
+      }
+
+      const sheetLink = document.getElementById("sheet-link");
+      sheetLink.href = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+      sheetLink.classList.remove("hidden");
+    }
+
+    // Status modal logic
+    const settingsModal = document.getElementById("settings-modal");
+    document.getElementById("settings-btn").onclick = () => {
+      settingsModal.classList.remove("hidden");
+      checkSystemStatus();
+    };
+    document.getElementById("close-settings-btn").onclick = () => {
+      settingsModal.classList.add("hidden");
+    };
+
+    function copyWaSheetId() {
+      const waInput = document.getElementById("wa-sheet-id-input");
+      if (!waInput || !waInput.value || waInput.value.includes("Belum")) return;
+      navigator.clipboard.writeText(waInput.value).then(() => {
+        alert("ID Sheet disalin! Kirim pesan ke WhatsApp bot:\n!sheet " + waInput.value);
+      });
+    }
+
+    async function checkSystemStatus() {
+      const sheetStatus = document.getElementById("sheet-status");
+      const geminiStatus = document.getElementById("gemini-status");
+
+      if (spreadsheetId && accessToken) {
+        sheetStatus.className = "badge badge-ok";
+        sheetStatus.innerText = "Terhubung";
+      } else {
+        sheetStatus.className = "badge badge-err";
+        sheetStatus.innerText = "Belum Siap";
+      }
+
+      // Update WhatsApp Integration Box
+      const waInput = document.getElementById("wa-sheet-id-input");
+      if (waInput) waInput.value = spreadsheetId || "Belum ada sheet";
+
+      geminiStatus.className = "badge badge-pending";
+      geminiStatus.innerText = "Memeriksa...";
+      try {
+        const pingRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "1" }] }] })
+        });
+        if (pingRes.ok) {
+          geminiStatus.className = "badge badge-ok";
+          geminiStatus.innerText = "Terhubung";
+          setInterfaceReady(true);
+        } else {
+          geminiStatus.className = "badge badge-err";
+          geminiStatus.innerText = "Error " + pingRes.status;
+        }
+      } catch (e) {
+        geminiStatus.className = "badge badge-err";
+        geminiStatus.innerText = "Offline";
+      }
+    }
+
+    // Warm-up & Verify Gemini model before enabling interface
+    async function warmUpGemini() {
+      setInterfaceReady(false);
+      try {
+        console.log(`[DEBUG] Warming up Gemini (${GEMINI_MODEL})...`);
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: "1" }] }] })
+        });
+        if (res.ok) {
+          console.log("[DEBUG] Gemini model loaded & active.");
+          setInterfaceReady(true);
+        } else {
+          const err = await res.json();
+          console.error("[DEBUG] Gemini load error:", err);
+          addBotMsg(`⚠️ Gagal memuat AI (${res.status}). Coba buka status sistem di tombol pengaturan.`);
+        }
+      } catch (e) {
+        console.error("[DEBUG] Network error warming up Gemini:", e);
+      }
+    }
+
+    // Reinitialize Sheet Action from Settings Modal
+    async function reinitializeSheet() {
+      localStorage.removeItem("rarity_sheet_id");
+      spreadsheetId = null;
+      addBotMsg("🔄 Menginisialisasi ulang spreadsheet...");
+      settingsModal.classList.add("hidden");
+      await setupUserSheet();
+      await checkSystemStatus();
+    }
+
+    // Concise, token-optimized LLM call with clean JSON parsing
+    async function callGemini(contents, jsonMode = true) {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: contents,
+          generationConfig: jsonMode ? { responseMimeType: "application/json" } : {}
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+      let raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      raw = raw.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+      return raw;
+    }
+
+    // Month names in Indonesian for sheet header sync
+    const MONTH_NAMES = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    // Valid expense categories from Setting sheet Table2
+    const EXPENSE_CATEGORIES = [
+      "Makan", "Belanja", "Hiburan", "Hutang", "Jajan", "Top Up",
+      "transport", "Gadget", "Pakaian", "Lainnya"
+    ];
+
+    // Ultra-terse prompt aligned with exact template categories
+    async function parseReceipt(base64Data, mimeType) {
+      const catList = EXPENSE_CATEGORIES.join(', ');
+      const prompt = `Analisis foto struk ini. Ekstrak data ke format JSON murni:
+{
+  "date": "YYYY-MM-DD (tanggal struk atau hari ini jika tidak ada)",
+  "merchant": "Nama Toko / Tempat",
+  "amount": Total_bayar_dalam_angka_integer,
+  "category": "Pilih salah satu: ${catList}",
+  "notes": "Nama barang/menu yang dibeli atau kosongkan"
+}`;
+      
+      try {
+        const jsonText = await callGemini([{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: mimeType, data: base64Data } }
+          ]
+        }]);
+        console.log("[DEBUG] Gemini OCR Response:", jsonText);
+        pendingReceipt = JSON.parse(jsonText);
+        if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category)) pendingReceipt.category = "Lainnya";
+        showReceiptVerification(pendingReceipt);
+      } catch (e) {
+        console.error("[DEBUG] parseReceipt failed:", e);
+        addBotMsg("❌ Struk kurang jelas. Coba foto ulang atau ketik manual.");
+      }
+    }
+
+    function showReceiptVerification(data) {
+      const today = new Date().toISOString().split('T')[0];
+      data.date = data.date || today;
+      data.amount = parseInt(data.amount, 10) || 0;
+      data.category = data.category || "Lainnya";
+
+      const html = `
+        Hasil pembacaan:
+        <div class="receipt-card">
+          <div class="receipt-row"><span class="receipt-label">Tanggal:</span><span class="receipt-val">${data.date}</span></div>
+          <div class="receipt-row"><span class="receipt-label">Toko/Merchant:</span><span class="receipt-val">${data.merchant || '-'}</span></div>
+          <div class="receipt-row"><span class="receipt-label">Total:</span><span class="receipt-val">${rupiah(data.amount)}</span></div>
+          <div class="receipt-row"><span class="receipt-label">Kategori:</span><span class="receipt-val">${data.category}</span></div>
+          <div class="receipt-row"><span class="receipt-label">Catatan:</span><span class="receipt-val">${data.notes || '-'}</span></div>
+          <div class="card-actions">
+            <button class="btn-action btn-confirm" onclick="confirmReceipt()">✅ Simpan ke Sheet</button>
+            <button class="btn-action btn-edit" onclick="promptCorrection()">✏️ Koreksi</button>
+          </div>
+        </div>
+      `;
+      addBotMsg(html);
+    }
+
+    window.promptCorrection = () => {
+      addBotMsg("Ketik koreksi (contoh: <i>'Jumlahnya 45000'</i> atau <i>'Kategori Transportasi'</i>).");
+    };
+
+    window.confirmReceipt = async () => {
+      if (!pendingReceipt) return;
+      addBotMsg("💾 Menyimpan ke tabel Pengeluaran...");
+      try {
+        const txDate = new Date(pendingReceipt.date || Date.now());
+        const txMonthName = MONTH_NAMES[txDate.getMonth()] || "Januari";
+        const txYear = txDate.getFullYear().toString();
+        const tab = window.PLANNER_TAB || localStorage.getItem("rarity_planner_tab") || "[ISI DISINI]";
+
+        // Update active Month (C10) & Year (C12) so template formulas compute correctly
+        try {
+          const encRange = encodeURIComponent(`'${tab}'!C10:C12`);
+          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}?valueInputOption=USER_ENTERED`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              values: [
+                [txMonthName],
+                [""],
+                [txYear]
+              ]
+            })
+          });
+        } catch (e) {
+          console.warn("[DEBUG] Month/Year header sync error:", e);
+        }
+
+        // Find first empty row in Pengeluaran table rows 66 to 121 (below header row 65)
+        const encGetRange = encodeURIComponent(`'${tab}'!F66:J121`);
+        const getUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encGetRange}`;
+        const getRes = await fetch(getUrl, { headers: { "Authorization": `Bearer ${accessToken}` } });
+        const getData = await getRes.json();
+        
+        const existingRows = getData.values || [];
+        let emptyOffset = existingRows.findIndex(row => !row || !row[0] || String(row[0]).trim() === "");
+        if (emptyOffset === -1) emptyOffset = existingRows.length;
+        const nextRow = 66 + emptyOffset;
+
+        if (nextRow > 121) {
+          addBotMsg("⚠️ Tabel Pengeluaran bulan ini penuh (maksimal 56 baris, sampai baris 121).");
+          return;
+        }
+
+        const encWriteRange = encodeURIComponent(`'${tab}'!F${nextRow}:J${nextRow}`);
+        const writeUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWriteRange}?valueInputOption=USER_ENTERED`;
+        await fetch(writeUrl, {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            values: [[
+              pendingReceipt.date || new Date().toISOString().split('T')[0],
+              pendingReceipt.merchant || "Umum",
+              pendingReceipt.category || "Lainnya",
+              pendingReceipt.amount || 0,
+              pendingReceipt.notes || ""
+            ]]
+          })
+        });
+
+        const merchantName = pendingReceipt.merchant || "Umum";
+        const catName = pendingReceipt.category || "Lainnya";
+        const amt = pendingReceipt.amount || 0;
+
+        addBotMsg(`✅ Tercatat di baris ${nextRow}: <b>${merchantName}</b> (${rupiah(amt)}) [${catName}] — Periode: ${txMonthName} ${txYear}!`);
+        playSound('success');
+        pendingReceipt = null;
+      } catch (e) {
+        console.error("[DEBUG] Sheets append failed:", e);
+        addBotMsg("❌ Gagal menyimpan: " + e.message);
+      }
+    };
+
+    async function handleUserChat() {
+      const text = userInput.value.trim();
+      if (!text || !isModelReady) return;
+      userInput.value = "";
+      addUserMsg(text);
+
+      if (pendingReceipt) {
+        addBotMsg("Memperbarui data...");
+        const prompt = `Current: ${JSON.stringify(pendingReceipt)}. Edit instruction: "${text}". JSON only with date, merchant, amount(IDR number), category, notes.`;
+        try {
+          const updatedJson = await callGemini([{ parts: [{ text: prompt }] }]);
+          pendingReceipt = JSON.parse(updatedJson);
+          showReceiptVerification(pendingReceipt);
+        } catch (e) {
+          addBotMsg("❌ Gagal mengubah data. Silakan coba lagi.");
+        }
+        return;
+      }
+
+      // Check Notification Permission on first chat interaction
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+
+      const now = new Date();
+      const todayISO = now.toISOString().split('T')[0];
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const expenseCats = EXPENSE_CATEGORIES.join('/');
+      const trackerCats = "Tugas/Jadwal Kumpul/Ujian/Event/Lainnya";
+
+      const classifierPrompt = `Determine intent and extract JSON for Indonesian user prompt: "${text}".
+Current time: ${todayISO} ${timeStr}.
+Output JSON only:
+If prompt is a reminder/task/event/deadline (e.g. ingatkan, ujian, tugas, deadline, jadwal, rapat):
+{
+  "type": "reminder",
+  "name": "Nama agenda/tugas",
+  "datetime": "YYYY-MM-DD HH:mm",
+  "category": "${trackerCats}",
+  "notes": "Keterangan tambahan atau kosongkan"
+}
+Else (expense/pengeluaran):
+{
+  "type": "expense",
+  "date": "YYYY-MM-DD",
+  "merchant": "Nama toko/merchant",
+  "amount": integer_IDR,
+  "category": "${expenseCats}",
+  "notes": "keterangan"
+}`;
+
+      try {
+        addBotMsg("Memproses...");
+        const rawJson = await callGemini([{ parts: [{ text: classifierPrompt }] }]);
+        const parsed = JSON.parse(rawJson);
+
+        if (parsed.type === "reminder" && parsed.datetime) {
+          const targetTime = new Date(parsed.datetime.replace(' ', 'T')).getTime();
+          if (isNaN(targetTime)) {
+            addBotMsg("Format waktu belum jelas. Contoh: <i>'Ingatkan ujian kalkulus 2 Sep jam 08:00'</i>");
+            return;
+          }
+
+          const newReminder = {
+            id: Date.now(),
+            name: parsed.name || "Agenda",
+            timestamp: targetTime,
+            category: parsed.category || "Lainnya",
+            notes: parsed.notes || "",
+            done: false,
+            triggered: []
+          };
+
+          reminders.push(newReminder);
+          saveReminders();
+          logReminderToSheet(newReminder);
+
+          const formattedDT = new Date(targetTime).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+          addBotMsg(`⏰ <b>Pengingat Tersimpan!</b><br>📌 <b>${newReminder.name}</b> [${newReminder.category}]<br>🗓️ <b>${formattedDT}</b><br><small>Saya akan mengingatkan H-1 hari, 12 jam, 5 jam, 1 jam, 30 menit & saat acara dimulai.</small>`);
+          playSound('success');
+          return;
+        }
+
+        // Expense handling
+        pendingReceipt = parsed;
+        if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category)) pendingReceipt.category = "Lainnya";
+        showReceiptVerification(pendingReceipt);
+      } catch (e) {
+        console.error("[DEBUG] Chat parse error:", e);
+        addBotMsg("Format belum terbaca. Contoh pengeluaran: <i>'Beli bensin 50rb di Pertamina'</i><br>Contoh pengingat: <i>'Ingatkan tugas kalkulus tgl 2 Sep jam 08:00'</i>");
+      }
+    }
+
+    // Camera & Upload listener
+    const camInput = document.getElementById("camera-input");
+    document.getElementById("cam-btn").onclick = () => camInput.click();
+
+    function processSelectedFile(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const fullBase64 = reader.result;
+        const base64Data = fullBase64.split(',')[1];
+        addUserMsgWithImage("📷 Foto Struk Terunggah", fullBase64);
+        addBotMsg("🔍 Membaca struk dengan AI...");
+        await parseReceipt(base64Data, file.type);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    camInput.onchange = (e) => {
+      const file = e.target.files[0];
+      processSelectedFile(file);
+      camInput.value = "";
+    };
+
+    // Clipboard Paste Listener (Paste images directly in chat)
+    window.addEventListener("paste", (e) => {
+      if (!isModelReady) return;
+      const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+      if (!items) return;
+      for (let item of items) {
+        if (item.type.indexOf("image") !== -1) {
+          const file = item.getAsFile();
+          processSelectedFile(file);
+          e.preventDefault();
+          break;
+        }
+      }
+    });
+
+    document.getElementById("send-btn").onclick = handleUserChat;
+    userInput.onkeydown = (e) => { if (e.key === "Enter") handleUserChat(); };
+
+    document.getElementById("logout-btn").onclick = () => {
+      localStorage.removeItem("rarity_access_token");
+      localStorage.removeItem("rarity_token_expiry");
+      localStorage.removeItem("rarity_sheet_id");
+      localStorage.removeItem("rarity_chat_html");
+      localStorage.removeItem("rarity_user_profile");
+      location.reload();
+    };
+
+    // Multi-Interval Reminder System (1d, 12h, 5h, 1h, 30m)
+    let reminders = JSON.parse(localStorage.getItem("rarity_reminders") || "[]");
+
+    const REMINDER_INTERVALS = [
+      { label: "1 hari lagi", ms: 24 * 60 * 60 * 1000 },
+      { label: "12 jam lagi", ms: 12 * 60 * 60 * 1000 },
+      { label: "5 jam lagi", ms: 5 * 60 * 60 * 1000 },
+      { label: "1 jam lagi", ms: 60 * 60 * 1000 },
+      { label: "30 menit lagi", ms: 30 * 60 * 1000 },
+      { label: "Waktunya sekarang!", ms: 0 }
+    ];
+
+    function saveReminders() {
+      localStorage.setItem("rarity_reminders", JSON.stringify(reminders));
+      renderReminders();
+    }
+
+    function renderReminders() {
+      const list = document.getElementById("reminders-list");
+      if (!list) return;
+      if (reminders.length === 0) {
+        list.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada agenda pengingat</span>`;
+        return;
+      }
+      const tagClass = {
+        'Tugas': 'tag-tugas',
+        'Jadwal Kumpul': 'tag-jadwal',
+        'Ujian': 'tag-ujian',
+        'Event': 'tag-event',
+        'Lainnya': 'tag-lainnya'
+      };
+
+      list.innerHTML = reminders.map((r, i) => {
+        const dt = new Date(r.timestamp);
+        const dtStr = dt.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const isDone = r.done;
+        return `
+          <div class="reminder-card" style="${isDone ? 'opacity:0.65; background:#f8fafc;' : ''}">
+            <div class="reminder-card-body">
+              <div class="reminder-header-row">
+                <span class="reminder-name" style="${isDone ? 'text-decoration:line-through; color:var(--muted);' : ''}">${r.name}</span>
+                <span class="reminder-tag-sub ${tagClass[r.category] || 'tag-lainnya'}">${r.category}</span>
+              </div>
+              <div class="reminder-time-sub">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>${dtStr}</span>
+                ${isDone ? '<b style="color:var(--success); margin-left:4px;">[Selesai]</b>' : ''}
+              </div>
+              ${r.notes ? `<div class="reminder-notes-sub">Catatan: ${r.notes}</div>` : ''}
+            </div>
+
+            <!-- Big Side Green & Red Action Buttons -->
+            <div class="reminder-card-actions">
+              ${!isDone ? `
+                <button class="btn-side btn-side-done" title="Tandai Selesai" onclick="markReminderDone(${i})">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+              ` : ''}
+              <button class="btn-side btn-side-del" title="Hapus Pengingat" onclick="deleteReminder(${i})">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    window.markReminderDone = async (idx) => {
+      if (reminders[idx]) {
+        reminders[idx].done = true;
+        saveReminders();
+        addBotMsg(`🎉 Mantap! Agenda <b>${reminders[idx].name}</b> telah diselesaikan!`);
+      }
+    };
+
+    window.deleteReminder = (idx) => {
+      reminders.splice(idx, 1);
+      saveReminders();
+    };
+
+    // Periodic reminder checker (checks every 30 seconds)
+    setInterval(() => {
+      const now = Date.now();
+      let changed = false;
+
+      reminders.forEach(r => {
+        if (r.done) return;
+        const target = r.timestamp;
+        const diff = target - now;
+
+        r.triggered = r.triggered || [];
+
+        REMINDER_INTERVALS.forEach(inv => {
+          if (diff <= inv.ms && diff > (inv.ms - 45000) && !r.triggered.includes(inv.label)) {
+            r.triggered.push(inv.label);
+            changed = true;
+            triggerAlarm(r, inv.label);
+          }
+        });
+
+        // Event passed
+        if (diff < -60000 && !r.triggered.includes("overdue") && !r.done) {
+          r.triggered.push("overdue");
+          changed = true;
+          triggerAlarm(r, "Sudah terlewat!");
+        }
+      });
+
+      if (changed) saveReminders();
+    }, 30000);
+
+    function triggerAlarm(reminder, intervalText) {
+      playSound('success');
+      addBotMsg(`🔔 <b>PENGINGAT AGENDAMU!</b><br>📌 <b>${reminder.name}</b> (${reminder.category})<br>⏳ <b>${intervalText}</b><br><small>Jadwal: ${new Date(reminder.timestamp).toLocaleString('id-ID')}</small><br><button class="btn-done" style="margin-top:6px;" onclick="markReminderDone(${reminders.indexOf(reminder)})">✅ Tandai Selesai</button>`);
+      
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(`⏰ Pengingat: ${reminder.name}`, {
+          body: `${intervalText} • ${reminder.category}`,
+          icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔔</text></svg>"
+        });
+      }
+    }
+
+    // Save reminder to Sheet's 'Tracker' tab if exists
+    async function logReminderToSheet(rem) {
+      if (!spreadsheetId || !accessToken) return;
+      try {
+        const dt = new Date(rem.timestamp);
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        const hh = String(dt.getHours()).padStart(2, '0');
+        const mm = String(dt.getMinutes()).padStart(2, '0');
+        
+        // Exact Date & Hour format: YYYY-MM-DD HH:mm (e.g. 2026-08-31 13:00)
+        const dateTimeFormatted = `${y}-${m}-${d} ${hh}:${mm}`;
+        const timeNote = `Jam: ${hh}:${mm}${rem.notes ? ' • ' + rem.notes : ''}`;
+
+        const encRange = encodeURIComponent("'Tracker'!B3:E50");
+        const getRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        if (getRes.ok) {
+          const getData = await getRes.json();
+          const existing = getData.values || [];
+          let offset = existing.findIndex(r => !r || !r[0]);
+          if (offset === -1) offset = existing.length;
+          const nextRow = 3 + offset;
+
+          const encWrite = encodeURIComponent(`'Tracker'!B${nextRow}:E${nextRow}`);
+          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWrite}?valueInputOption=USER_ENTERED`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              values: [[
+                dateTimeFormatted,
+                rem.name,
+                rem.category,
+                timeNote
+              ]]
+            })
+          });
+          console.log("[DEBUG] Logged reminder with hour to Tracker sheet row", nextRow);
+        }
+      } catch (e) {
+        console.warn("[DEBUG] Tracker sheet log error:", e);
+      }
+    }
+
+    // Tab Navigation & Data Overview
+    const appBody = document.getElementById("app-body");
+    const tabBtns = [
+      document.getElementById("tab-chat-btn"),
+      document.getElementById("tab-overview-btn"),
+      document.getElementById("tab-reminders-btn")
+    ];
+
+    const CHART_COLORS = [
+      "#2563eb", "#06b6d4", "#10b981", "#f59e0b", "#ef4444",
+      "#8b5cf6", "#ec4899", "#6366f1", "#14b8a6", "#64748b"
+    ];
+
+    window.switchView = (index) => {
+      appBody.className = `app-body show-panel-${index}`;
+      tabBtns.forEach((btn, i) => {
+        if (i === index) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+      if (index === 1) loadOverviewData();
+      if (index === 2) renderReminders();
+    };
+
+    async function loadOverviewData() {
+      if (!spreadsheetId || !accessToken) return;
+      const tab = window.PLANNER_TAB || localStorage.getItem("rarity_planner_tab") || "[ISI DISINI]";
+      const periodLabel = document.getElementById("overview-period-label");
+      const totalVal = document.getElementById("overview-total-val");
+      const recentList = document.getElementById("recent-tx-list");
+      const topList = document.getElementById("top-costs-list");
+      const pieSvg = document.getElementById("pie-chart-svg");
+      const legendBox = document.getElementById("chart-legend");
+
+      periodLabel.innerText = "Memperbarui data...";
+
+      try {
+        // 1. Get Month & Year header info
+        const encHeader = encodeURIComponent(`'${tab}'!C10:C12`);
+        const headerRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encHeader}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        const headerData = await headerRes.json();
+        const curMonth = headerData.values?.[0]?.[0] || "";
+        const curYear = headerData.values?.[2]?.[0] || "";
+        periodLabel.innerText = `Periode: ${curMonth} ${curYear}`;
+
+        // 2. Fetch expense records from F66:J121
+        const encRows = encodeURIComponent(`'${tab}'!F66:J121`);
+        const rowsRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRows}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        const rowsData = await rowsRes.json();
+        const rawRows = rowsData.values || [];
+
+        // Filter valid entries (has Date and Amount)
+        const transactions = [];
+        let grandTotal = 0;
+        const catMap = {};
+
+        rawRows.forEach((r, idx) => {
+          if (!r || !r[0] || !r[3]) return;
+          const date = r[0];
+          const merchant = r[1] || "Umum";
+          const category = r[2] || "Lainnya";
+          const amountStr = String(r[3]).replace(/[^0-9]/g, "");
+          const amount = parseInt(amountStr, 10) || 0;
+          const notes = r[4] || "";
+
+          if (amount > 0) {
+            grandTotal += amount;
+            catMap[category] = (catMap[category] || 0) + amount;
+            transactions.push({ date, merchant, category, amount, notes, index: idx });
+          }
+        });
+
+        // Update Total Display
+        totalVal.innerText = rupiah(grandTotal);
+
+        // Render 5 Recent Transactions (Reverse chronological)
+        const recent5 = [...transactions].reverse().slice(0, 5);
+        if (recent5.length === 0) {
+          recentList.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada transaksi di periode ini</span>`;
+        } else {
+          recentList.innerHTML = recent5.map(tx => `
+            <div class="tx-item">
+              <div>
+                <div class="tx-merchant">${tx.merchant}</div>
+                <div class="tx-sub">${tx.date} • <span style="color: var(--primary);">${tx.category}</span></div>
+              </div>
+              <div class="tx-amt">${rupiah(tx.amount)}</div>
+            </div>
+          `).join('');
+        }
+
+        // Render Top Costs Ranking (Sorted highest to lowest)
+        const top5 = [...transactions].sort((a, b) => b.amount - a.amount).slice(0, 5);
+        if (top5.length === 0) {
+          topList.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada transaksi</span>`;
+        } else {
+          topList.innerHTML = top5.map((tx, i) => `
+            <div class="tx-item">
+              <div>
+                <div class="tx-merchant">#${i+1} ${tx.merchant}</div>
+                <div class="tx-sub">${tx.category} • ${tx.notes || tx.date}</div>
+              </div>
+              <div class="tx-amt" style="color: #b91c1c;">${rupiah(tx.amount)}</div>
+            </div>
+          `).join('');
+        }
+
+        // Render Native SVG Donut / Pie Chart & Legend
+        const catEntries = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+        if (catEntries.length === 0 || grandTotal === 0) {
+          pieSvg.innerHTML = `<circle cx="21" cy="21" r="15.91549430918954" fill="#f8fafc" stroke="#e2e8f0" stroke-width="6"></circle>`;
+          legendBox.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada data</span>`;
+        } else {
+          let cumulativePercent = 0;
+          let svgCircles = `<circle cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="#f1f5f9" stroke-width="6"></circle>`;
+          let legendHtml = "";
+
+          catEntries.forEach(([cat, val], idx) => {
+            const percent = (val / grandTotal) * 100;
+            const dashArray = `${percent} ${100 - percent}`;
+            const dashOffset = 100 - cumulativePercent + 25;
+            const color = CHART_COLORS[idx % CHART_COLORS.length];
+
+            svgCircles += `
+              <circle cx="21" cy="21" r="15.91549430918954"
+                fill="transparent"
+                stroke="${color}"
+                stroke-width="6"
+                stroke-dasharray="${dashArray}"
+                stroke-dashoffset="${dashOffset}">
+              </circle>
+            `;
+
+            legendHtml += `
+              <div class="legend-item">
+                <span class="legend-dot" style="background: ${color};"></span>
+                <span><b>${cat}</b> (${Math.round(percent)}% - ${rupiah(val)})</span>
+              </div>
+            `;
+
+            cumulativePercent += percent;
+          });
+
+          pieSvg.innerHTML = svgCircles;
+          legendBox.innerHTML = legendHtml;
+        }
+
+      } catch (e) {
+        console.error("[DEBUG] Error fetching overview data:", e);
+        periodLabel.innerText = "Gagal memuat: " + e.message;
+      }
+    }
+
+    // Auto-restore login & check readiness on load
+    window.addEventListener("DOMContentLoaded", async () => {
+      loadChatHistory();
+      if (isTokenValid()) {
+        updateGreeting();
+        screenLogin.classList.remove("active");
+        screenApp.classList.add("active");
+        setupUserSheet();
+        warmUpGemini();
+      } else if (accessToken) {
+        const checkGoogle = setInterval(() => {
+          if (window.google) {
+            clearInterval(checkGoogle);
+            triggerLogin('');
+          }
+        }, 100);
+      }
+    });
+  </script>
+</body>
+</html>
