@@ -27,8 +27,7 @@ const CONFIG = {
   VERIFY_TOKEN: process.env.WHATSAPP_VERIFY_TOKEN || 'rarity_webhook_secret_123',
   WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN || '', // Meta Cloud API System User / Access Token
   PHONE_NUMBER_ID: process.env.PHONE_NUMBER_ID || '', // WhatsApp Phone Number ID
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
-  GEMINI_MODEL: 'gemini-3.5-flash-lite',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AQ.Ab8RN6IAq5GuI0lYu_AjO0ZaHCTbecAAud26nXYtL5KAxMQdvA',  GEMINI_MODEL: 'gemini-3.5-flash-lite',
   APPS_SCRIPT_URL: process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxKilNW2NhljCbq9X4TWQbB0QtXKh_BGF1dqE_l0_4BYjzly0bgzulMjHc_qRpPsSvz3w/exec',
   SPREADSHEET_ID: process.env.SPREADSHEET_ID || '1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4',
   GOOGLE_ACCESS_TOKEN: process.env.GOOGLE_ACCESS_TOKEN || '',
