@@ -15,7 +15,7 @@ let currentQR = null;
 let botStatus = 'Initializing';
 
 const CONFIG = {
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || 'AQ.Ab8RN6IAq5GuI0lYu_AjO0ZaHCTbecAAud26nXYtL5KAxMQdvA',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
   GEMINI_MODEL: 'gemini-3.5-flash-lite',
   SPREADSHEET_ID: process.env.SPREADSHEET_ID || '1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4',
   GOOGLE_ACCESS_TOKEN: process.env.GOOGLE_ACCESS_TOKEN || '',
