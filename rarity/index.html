@@ -606,6 +606,13 @@
           <span style="color: var(--muted); font-size: 0.85rem;">Gemini AI</span>
           <span id="gemini-status" class="badge badge-pending">Memeriksa...</span>
         </div>
+        <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0; display: flex; justify-content: space-between; align-items: center;">
+          <span style="color: var(--muted); font-size: 0.85rem;">Mata Uang</span>
+          <select id="currency-select" style="font-size: 0.8rem; font-weight: 600; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; color: var(--text);" onchange="changeCurrency(this.value)">
+            <option value="IDR">IDR (Rp)</option>
+            <option value="AUD">AUD ($)</option>
+          </select>
+        </div>
       </div>
 
       <!-- Minimal WhatsApp Card -->
@@ -779,8 +786,22 @@
     const camBtn = document.getElementById("cam-btn");
     const greetingElem = document.getElementById("user-greeting");
 
-    // Rupiah formatter: stdlib Intl
-    const rupiah = (val) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
+    // Currency formatter supporting IDR and AUD
+    let currentCurrency = localStorage.getItem("rarity_currency") || "IDR";
+    function formatCurrency(val) {
+      if (currentCurrency === "AUD") {
+        return new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 2 }).format(val || 0);
+      }
+      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
+    }
+    const rupiah = formatCurrency;
+
+    function changeCurrency(curr) {
+      currentCurrency = curr;
+      localStorage.setItem("rarity_currency", curr);
+      loadOverviewData();
+      checkSystemStatus();
+    }
 
     // Time-based Indonesian greeting
     function getIndonesianGreeting() {
@@ -1130,6 +1151,9 @@
       // Update WhatsApp Integration Box
       const waInput = document.getElementById("wa-sheet-id-input");
       if (waInput) waInput.value = spreadsheetId || "Belum ada sheet";
+
+      const currSelect = document.getElementById("currency-select");
+      if (currSelect) currSelect.value = currentCurrency;
 
       geminiStatus.className = "badge badge-pending";
       geminiStatus.innerText = "Memeriksa...";
