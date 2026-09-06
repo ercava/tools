@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status Layanan — ERCAVA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.2);
+      --red: #ef4444;
+      --yellow: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 40px 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .container { width: 100%; max-width: 680px; }
+    .header { margin-bottom: 28px; text-align: center; }
+    .badge-all {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 9999px;
+      background: var(--green-glow); color: var(--green);
+      font-size: 0.85rem; font-weight: 700; margin-bottom: 12px;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
+    .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    
+    .card-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 16px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: border-color 0.2s;
+    }
+    .service-card:hover { border-color: #374151; }
+    .service-info h3 { font-size: 1rem; font-weight: 600; }
+    .service-info p { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .service-status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
+    .dot.yellow { background: var(--yellow); }
+    .dot.red { background: var(--red); box-shadow: 0 0 10px var(--red); }
+    .status-text.green { color: var(--green); }
+    .status-text.yellow { color: var(--yellow); }
+    .status-text.red { color: var(--red); }
+    
+    .refresh-box { margin-top: 28px; text-align: center; }
+    .btn-refresh {
+      background: #1f2937; color: var(--text); border: 1px solid #374151;
+      padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-refresh:hover { background: #374151; }
+    .timestamp { color: var(--text-muted); font-size: 0.75rem; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge-all" id="overall-badge">
+        <span class="badge-dot" id="overall-dot"></span>
+        <span id="overall-text">Memeriksa Layanan...</span>
+      </div>
+      <h1>Status Sistem ERCAVA</h1>
+      <p class="subtitle">Pemantauan operasional real-time aplikasi & webhook bot</p>
+    </div>
+
+    <div class="card-list" id="services-list">
+      <!-- Injected via JS -->
+    </div>
+
+    <div class="refresh-box">
+      <button class="btn-refresh" onclick="checkAll()">Perbarui Status</button>
+      <div class="timestamp" id="last-update">Memuat data...</div>
+    </div>
+  </div>
+
+  <script>
+    const SERVICES = [
+      { id: 'rarity-web', name: 'Rarity Web Dashboard', url: 'https://erc.my.id/tools/rarity/', desc: 'Frontend Google Sheets Budget & Agenda' },
+      { id: 'rarity-bot', name: 'Rarity WhatsApp Cloud Webhook', url: 'https://rarity-kwn4.onrender.com/health', desc: 'Render Webhook Server' },
+      { id: 'rarity-api', name: 'Rarity Users Registry', url: 'https://rarity-kwn4.onrender.com/api/users?key=rarity_x9k2m', desc: 'Active User Management Endpoint' },
+      { id: 'google-apps', name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec', desc: 'Spreadsheet Bridge API' },
+      { id: 'tools-hub', name: 'Ercava Tools Hub', url: 'https://erc.my.id/tools/', desc: 'Portal Tools Utama' }
+    ];
+
+    async function checkService(svc) {
+      const start = Date.now();
+      try {
+        await fetch(svc.url, { method: 'GET', mode: 'no-cors' });
+        const latency = Date.now() - start;
+        return { ...svc, status: 'operational', label: 'Operasional', latency };
+      } catch (e) {
+        return { ...svc, status: 'degraded', label: 'Terganggu', latency: 0 };
+      }
+    }
+
+    async function checkAll() {
+      const container = document.getElementById('services-list');
+      const badgeText = document.getElementById('overall-text');
+      const timeLabel = document.getElementById('last-update');
+      badgeText.innerText = 'Memeriksa Layanan...';
+
+      const results = await Promise.all(SERVICES.map(checkService));
+      const hasIssue = results.some(r => r.status !== 'operational');
+
+      badgeText.innerText = hasIssue ? 'Beberapa Layanan Terkendala' : 'Seluruh Sistem Normal & Operasional';
+      document.getElementById('overall-badge').style.borderColor = hasIssue ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)';
+      document.getElementById('overall-badge').style.background = hasIssue ? 'rgba(239, 68, 68, 0.2)' : 'var(--green-glow)';
+      document.getElementById('overall-badge').style.color = hasIssue ? 'var(--red)' : 'var(--green)';
+      document.getElementById('overall-dot').style.background = hasIssue ? 'var(--red)' : 'var(--green)';
+
+      container.innerHTML = results.map(r => `
+        <div class="service-card">
+          <div class="service-info">
+            <h3>${r.name}</h3>
+            <p>${r.desc} • <a href="${r.url}" target="_blank" style="color:var(--primary);text-decoration:none;">Kunjungi</a></p>
+          </div>
+          <div class="service-status">
+            <span class="dot ${r.status === 'operational' ? 'green' : 'red'}"></span>
+            <span class="status-text ${r.status === 'operational' ? 'green' : 'red'}">${r.label}</span>
+          </div>
+        </div>
+      `).join('');
+
+      timeLabel.innerText = 'Pembaruan terakhir: ' + new Date().toLocaleTimeString('id-ID') + ' WIB';
+    }
+
+    checkAll();
+    setInterval(checkAll, 60000);
+  </script>
+</body>
+</html>
