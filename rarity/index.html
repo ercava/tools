@@ -2186,6 +2186,25 @@ Output JSON only:
     // Auto-restore login & check readiness on load
     window.addEventListener("DOMContentLoaded", async () => {
       loadChatHistory();
+
+      // Check App Version Announcement
+      const WEB_APP_VERSION = "2.2.0";
+      const lastSeenVersion = localStorage.getItem("rarity_app_version");
+      if (lastSeenVersion !== WEB_APP_VERSION) {
+        localStorage.setItem("rarity_app_version", WEB_APP_VERSION);
+        setTimeout(() => {
+          addBotMsg(
+            `🚀 <b>Pembaruan RARITY v${WEB_APP_VERSION}!</b><br><br>` +
+            `Fitur baru yang tersedia:<br>` +
+            `• 📚 <b>Perintah !tugas</b> — Cek tugas aktif & deadline.<br>` +
+            `• 📅 <b>Integrasi Google Calendar</b> — Simpan agenda langsung ke Google Calendar.<br>` +
+            `• 🗓️ <b>Tampilan Kalender</b> — Cek jadwal bulanan di panel Pengingat.<br>` +
+            `• ↩️ <b>Fitur Hapus & Undo</b> — Batalkan transaksi/pengingat salah via tombol hapus (✕) atau <code>!batal</code>.<br><br>` +
+            `⚠️ <b>Perhatian:</b> Jika Anda menggunakan WhatsApp bot dan data belum masuk ke Google Sheet, buka menu <b>Settings (⚙️)</b> lalu klik <b>"Beri Izin Bot WhatsApp"</b> atau kirim ulang Sheet ID Anda ke bot!`
+          );
+        }, 1200);
+      }
+
       if (isTokenValid()) {
         updateGreeting();
         screenLogin.classList.remove("active");
