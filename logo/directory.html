@@ -7,7 +7,7 @@
     <title>Asset Directory</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:italic,wght@700&family=Roboto+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -21,7 +21,7 @@
                     },
                     fontFamily: {
                         sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
+                        serif: ['Montserrat', 'sans-serif'],
                         mono: ['Roboto Mono', 'monospace'],
                     }
                 }
@@ -272,7 +272,7 @@
         assets.forEach(asset => {
             const isImage = asset.path.match(/\.(jpg|jpeg|png|gif|svg)$/i);
             const card = document.createElement('div');
-            card.className = "asset-card group bg-white rounded-3xl overflow-hidden border border-slate-200 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2";
+            card.className = "asset-card group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-slate-400 transition-colors";
 
             let previewHtml = '';
             if (isImage) {
@@ -353,35 +353,6 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        // Mouse Star Trail
-        document.addEventListener('mousemove', (e) => {
-            if (Math.random() > 0.1) return;
-
-            const star = document.createElement('div');
-            star.innerHTML = '✦'; // 4-pointed star
-            star.className = 'absolute pointer-events-none opacity-100 transition-all duration-1000';
-            star.style.left = e.pageX + 'px';
-            star.style.top = e.pageY + 'px';
-            star.style.fontSize = (Math.random() * 10 + 10) + 'px';
-            star.style.color = '#263B4C'; // Blue-hued
-            star.style.zIndex = '9999';
-
-            document.body.appendChild(star);
-
-            setTimeout(() => {
-                const angle = Math.random() * 360;
-                const dist = Math.random() * 100 + 50;
-                star.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) rotate(${angle * 5}deg) scale(0)`;
-                star.style.opacity = '0';
-            }, 50);
-
-            setTimeout(() => {
-                star.remove();
-            }, 1000);
-        });
-    </script>
 </body>
 
 </html>
