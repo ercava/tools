@@ -1030,7 +1030,30 @@
             console.warn("[DEBUG] _ChatState tab init:", e);
           }
 
-          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disiapkan!`, false);
+          // Auto-share copied sheet with bot email (rarity-erc@gmail.com) and link-sharing
+          try {
+            await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity-erc@gmail.com" })
+            });
+            console.log("[DEBUG] rarity-erc@gmail.com added as editor");
+          } catch (e) {
+            console.warn("[DEBUG] Error adding bot editor permission:", e);
+          }
+
+          try {
+            await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ role: "editor", type: "anyone" })
+            });
+            console.log("[DEBUG] anyone-with-link editor permission added");
+          } catch (e) {
+            console.warn("[DEBUG] Error adding anyone permission:", e);
+          }
+
+          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disiapkan & terhubung ke WhatsApp Bot!`, false);
         } catch (e) {
           console.error("[DEBUG] Copy template error:", e);
           addBotMsg(`⚠️ Gagal menyalin template: ${e.message}<br><small>Pastikan izin Google Drive disetujui saat login.</small>`, false);
@@ -1125,6 +1148,16 @@
         geminiStatus.className = "badge badge-err";
         geminiStatus.innerText = "Offline";
       }
+    }
+
+    async function reinitializeSheet() {
+      if (!confirm("Buat ulang spreadsheet baru dari template dan sambungkan ke bot WhatsApp?")) return;
+      localStorage.removeItem("rarity_sheet_id");
+      localStorage.removeItem("rarity_planner_tab");
+      spreadsheetId = null;
+      settingsModal.classList.add("hidden");
+      await setupUserSheet();
+      checkSystemStatus();
     }
 
     // Warm-up & Verify Gemini model before enabling interface
