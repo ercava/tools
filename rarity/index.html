@@ -1376,7 +1376,26 @@
 
     window.confirmReceipt = async () => {
       if (!pendingReceipt) return;
-      addBotMsg("💾 Menyimpan ke tabel Pengeluaran...");
+      
+      const cat = pendingReceipt.category;
+      let targetTable = 'Pengeluaran';
+      let startRow = 66, endRow = 121, colStart = 'F', colEnd = 'J';
+      let is4Col = false;
+
+      if (cat === 'Pemasukan' || pendingReceipt.type === 'pemasukan') {
+        targetTable = 'Pemasukan';
+        startRow = 48; endRow = 85; colStart = 'M'; colEnd = 'P';
+        is4Col = true;
+      } else if (cat === 'Tabungan & Investasi' || pendingReceipt.type === 'tabungan') {
+        targetTable = 'Tabungan & Investasi';
+        startRow = 10; endRow = 42; colStart = 'F'; colEnd = 'J';
+      } else if (cat === 'Tagihan' || pendingReceipt.type === 'tagihan') {
+        targetTable = 'Tagihan';
+        startRow = 10; endRow = 42; colStart = 'M'; colEnd = 'P';
+        is4Col = true;
+      }
+
+      addBotMsg(`💾 Menyimpan ke tabel ${targetTable}...`);
       try {
         const txDate = new Date(pendingReceipt.date || Date.now());
         const txMonthName = MONTH_NAMES[txDate.getMonth()] || "Januari";
@@ -1401,8 +1420,8 @@
           console.warn("[DEBUG] Month/Year header sync error:", e);
         }
 
-        // Find first empty row in Pengeluaran table rows 66 to 121 (below header row 65)
-        const encGetRange = encodeURIComponent(`'${tab}'!F66:J121`);
+        // Find first empty row in target table
+        const encGetRange = encodeURIComponent(`'${tab}'!${colStart}${startRow}:${colEnd}${endRow}`);
         const getUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encGetRange}`;
         const getRes = await fetch(getUrl, { headers: { "Authorization": `Bearer ${accessToken}` } });
         const getData = await getRes.json();
@@ -1410,35 +1429,43 @@
         const existingRows = getData.values || [];
         let emptyOffset = existingRows.findIndex(row => !row || !row[0] || String(row[0]).trim() === "");
         if (emptyOffset === -1) emptyOffset = existingRows.length;
-        const nextRow = 66 + emptyOffset;
+        const nextRow = startRow + emptyOffset;
 
-        if (nextRow > 121) {
-          addBotMsg("⚠️ Tabel Pengeluaran bulan ini penuh (maksimal 56 baris, sampai baris 121).");
+        if (nextRow > endRow) {
+          addBotMsg(`⚠️ Tabel ${targetTable} bulan ini penuh (maksimal sampai baris ${endRow}).`);
           return;
         }
 
-        const encWriteRange = encodeURIComponent(`'${tab}'!F${nextRow}:J${nextRow}`);
-        const writeUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWriteRange}?valueInputOption=USER_ENTERED`;
-        await fetch(writeUrl, {
-          method: "PUT",
-          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            values: [[
+        const rowValues = is4Col
+          ? [
+              pendingReceipt.date || new Date().toISOString().split('T')[0],
+              pendingReceipt.merchant || "Umum",
+              pendingReceipt.amount || 0,
+              pendingReceipt.notes || ""
+            ]
+          : [
               pendingReceipt.date || new Date().toISOString().split('T')[0],
               pendingReceipt.merchant || "Umum",
               pendingReceipt.category || "Lainnya",
               pendingReceipt.amount || 0,
               pendingReceipt.notes || ""
-            ]]
-          })
+            ];
+
+        const encWriteRange = encodeURIComponent(`'${tab}'!${colStart}${nextRow}:${colEnd}${nextRow}`);
+        const writeUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWriteRange}?valueInputOption=USER_ENTERED`;
+        await fetch(writeUrl, {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ values: [rowValues] })
         });
 
         const merchantName = pendingReceipt.merchant || "Umum";
         const catName = pendingReceipt.category || "Lainnya";
         const amt = pendingReceipt.amount || 0;
 
+        window.lastWebEntry = { row: nextRow, colStart, colEnd, desc: `${merchantName} (${rupiah(amt)})` };
         window.lastWebRow = nextRow;
-        addBotMsg(`✅ Tercatat di baris ${nextRow}: <b>${merchantName}</b> (${rupiah(amt)}) [${catName}] — Periode: ${txMonthName} ${txYear}!<br><small>Ketik <code>!batal</code> jika salah mencatat.</small>`);
+        addBotMsg(`✅ Tercatat di tabel <b>${targetTable}</b> baris ${nextRow}: <b>${merchantName}</b> (${rupiah(amt)}) [${catName}] — Periode: ${txMonthName} ${txYear}!<br><small>Ketik <code>!batal</code> jika salah mencatat.</small>`);
         playSound('success');
         pendingReceipt = null;
       } catch (e) {
@@ -1507,7 +1534,12 @@
 
       // Command !batal / !undo on web
       if (/^(!batal|!undo|!hapus|batalkan)/i.test(text)) {
-        if (window.lastWebRow) {
+        if (window.lastWebEntry) {
+          const entry = window.lastWebEntry;
+          window.lastWebEntry = null;
+          window.lastWebRow = null;
+          await deleteTransactionRow(entry.row, entry.desc, entry.colStart, entry.colEnd);
+        } else if (window.lastWebRow) {
           const rowToDelete = window.lastWebRow;
           window.lastWebRow = null;
           await deleteTransactionRow(rowToDelete, "transaksi terakhir");
@@ -2165,13 +2197,13 @@ Output JSON only:
     }
 
     // Delete single transaction row from Google Sheet
-    window.deleteTransactionRow = async function(rowNum, desc) {
+    window.deleteTransactionRow = async function(rowNum, desc, colStart = 'F', colEnd = 'J') {
       if (!confirm(`Hapus transaksi "${desc}" di baris ${rowNum}?`)) return;
       if (!spreadsheetId || !accessToken) return;
       const tab = window.PLANNER_TAB || "[ISI DISINI]";
 
       try {
-        const encRange = encodeURIComponent(`'${tab}'!F${rowNum}:J${rowNum}`);
+        const encRange = encodeURIComponent(`'${tab}'!${colStart}${rowNum}:${colEnd}${rowNum}`);
         await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}:clear`, {
           method: "POST",
           headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" }
