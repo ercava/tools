@@ -4,138 +4,167 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Status Layanan — ERCAVA</title>
+  <link rel="icon" type="image/x-icon" href="https://erc.my.id/tools/logo/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #111827;
-      --card-border: #1f2937;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
-      --primary: #6366f1;
-      --green: #10b981;
-      --green-glow: rgba(16, 185, 129, 0.2);
-      --red: #ef4444;
-      --yellow: #f59e0b;
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 40px 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-    .container { width: 100%; max-width: 680px; }
-    .header { margin-bottom: 28px; text-align: center; }
-    .badge-all {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .wrap { max-width: 700px; margin: 0 auto; padding: 4rem 1.5rem 2rem; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; font-weight: 600; color: var(--primary);
+      text-decoration: none; margin-bottom: 2.5rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    .header { text-align: center; margin-bottom: 2rem; }
+    .logo { height: 64px; margin-bottom: 1rem; }
+    h1 { font-size: 1.8rem; font-weight: 900; color: var(--accent); letter-spacing: -0.02em; }
+    .subtitle { color: var(--muted); font-size: 0.88rem; margin-top: 4px; }
+
+    .overall-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 14px; border-radius: 9999px;
-      background: var(--green-glow); color: var(--green);
-      font-size: 0.85rem; font-weight: 700; margin-bottom: 12px;
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 5px 14px; border-radius: 9999px;
+      font-size: 0.78rem; font-weight: 700; margin: 1rem auto 0;
     }
-    .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
-    .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
-    
-    .card-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .overall-badge.ok { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .overall-badge.warn { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .overall-badge.down { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; animation: blink 1.5s infinite; }
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    .service-list { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 2rem; }
+
     .service-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px; padding: 16px 20px;
       display: flex; justify-content: space-between; align-items: center;
-      transition: border-color 0.2s;
+      padding: 1rem 1.25rem;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      transition: transform 0.15s, border-color 0.15s;
     }
-    .service-card:hover { border-color: #374151; }
-    .service-info h3 { font-size: 1rem; font-weight: 600; }
-    .service-info p { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
-    .service-status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
-    .dot.yellow { background: var(--yellow); }
-    .dot.red { background: var(--red); box-shadow: 0 0 10px var(--red); }
-    .status-text.green { color: var(--green); }
-    .status-text.yellow { color: var(--yellow); }
-    .status-text.red { color: var(--red); }
-    
-    .refresh-box { margin-top: 28px; text-align: center; }
+    .service-card:hover { transform: scale(1.01); border-color: #cbd5e1; }
+    .service-info h3 { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .service-info p {
+      font-size: 0.75rem; color: var(--muted); margin-top: 2px;
+      font-family: 'Roboto Mono', monospace;
+    }
+    .service-info a { color: var(--primary); text-decoration: none; }
+    .service-info a:hover { text-decoration: underline; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 9999px;
+      font-size: 0.72rem; font-weight: 700; flex-shrink: 0; margin-left: 1rem;
+    }
+    .status-pill.live { background: #d1fae5; color: #065f46; }
+    .status-pill.checking { background: #fef3c7; color: #92400e; }
+    .status-pill.down { background: #fee2e2; color: #991b1b; }
+    .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .footer { margin-top: 2.5rem; text-align: center; color: var(--muted); font-size: 0.78rem; }
     .btn-refresh {
-      background: #1f2937; color: var(--text); border: 1px solid #374151;
-      padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
+      margin-top: 0.75rem;
+      background: var(--bg); color: var(--primary); border: 1px solid var(--line);
+      padding: 6px 16px; border-radius: 7px; font-size: 0.8rem; font-weight: 600;
+      cursor: pointer; font-family: 'Montserrat', sans-serif;
+      transition: all 0.15s;
     }
-    .btn-refresh:hover { background: #374151; }
-    .timestamp { color: var(--text-muted); font-size: 0.75rem; margin-top: 10px; }
+    .btn-refresh:hover { background: var(--bg-light); border-color: #cbd5e1; }
+
+    @media (max-width: 500px) {
+      .wrap { padding: 2rem 1rem; }
+      h1 { font-size: 1.4rem; }
+      .service-card { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .status-pill { margin-left: 0; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
+    <a class="back-link" href="https://erc.my.id/tools/">
+      ← Kembali ke Tools
+    </a>
+
     <div class="header">
-      <div class="badge-all" id="overall-badge">
-        <span class="badge-dot" id="overall-dot"></span>
-        <span id="overall-text">Memeriksa Layanan...</span>
+      <img class="logo" src="https://erc.my.id/tools/logo.svg" alt="Ercava">
+      <h1>Status Layanan</h1>
+      <p class="subtitle">Pemantauan operasional real-time — Ercava Development Program</p>
+      <div id="overall-badge" class="overall-badge checking">
+        <span class="badge-dot"></span>
+        <span id="overall-text">Memeriksa...</span>
       </div>
-      <h1>Status Sistem ERCAVA</h1>
-      <p class="subtitle">Pemantauan operasional real-time aplikasi & webhook bot</p>
     </div>
 
-    <div class="card-list" id="services-list">
-      <!-- Injected via JS -->
+    <div class="service-list" id="services-list">
+      <!-- Rendered by JS -->
     </div>
 
-    <div class="refresh-box">
-      <button class="btn-refresh" onclick="checkAll()">Perbarui Status</button>
-      <div class="timestamp" id="last-update">Memuat data...</div>
+    <div class="footer">
+      <div id="last-update">Memuat...</div>
+      <button class="btn-refresh" onclick="checkAll()">↻ Perbarui</button>
     </div>
   </div>
 
   <script>
     const SERVICES = [
-      { id: 'rarity-web', name: 'Rarity Web Dashboard', url: 'https://erc.my.id/tools/rarity/', desc: 'Frontend Google Sheets Budget & Agenda' },
-      { id: 'rarity-bot', name: 'Rarity WhatsApp Cloud Webhook', url: 'https://rarity-kwn4.onrender.com/health', desc: 'Render Webhook Server' },
-      { id: 'rarity-api', name: 'Rarity Users Registry', url: 'https://rarity-kwn4.onrender.com/api/users?key=rarity_x9k2m', desc: 'Active User Management Endpoint' },
-      { id: 'google-apps', name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec', desc: 'Spreadsheet Bridge API' },
-      { id: 'tools-hub', name: 'Ercava Tools Hub', url: 'https://erc.my.id/tools/', desc: 'Portal Tools Utama' }
+      { name: 'Rarity Web Dashboard',            url: 'https://erc.my.id/tools/rarity/',    desc: 'erc.my.id/tools/rarity' },
+      { name: 'Rarity WhatsApp Cloud Webhook',   url: 'https://rarity-kwn4.onrender.com/health', desc: 'rarity-kwn4.onrender.com/health' },
+      { name: 'Rarity Users Registry API',       url: 'https://rarity-kwn4.onrender.com/api/users?key=rarity_x9k2m', desc: 'rarity-kwn4.onrender.com/api/users' },
+      { name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec', desc: 'script.google.com (Apps Script)' },
+      { name: 'Ercava Tools Hub',                url: 'https://erc.my.id/tools/',           desc: 'erc.my.id/tools' }
     ];
 
     async function checkService(svc) {
-      const start = Date.now();
       try {
-        await fetch(svc.url, { method: 'GET', mode: 'no-cors' });
-        const latency = Date.now() - start;
-        return { ...svc, status: 'operational', label: 'Operasional', latency };
-      } catch (e) {
-        return { ...svc, status: 'degraded', label: 'Terganggu', latency: 0 };
+        await fetch(svc.url, { mode: 'no-cors' });
+        return { ...svc, state: 'live', label: 'Operasional' };
+      } catch {
+        return { ...svc, state: 'down', label: 'Terganggu' };
       }
     }
 
     async function checkAll() {
-      const container = document.getElementById('services-list');
-      const badgeText = document.getElementById('overall-text');
-      const timeLabel = document.getElementById('last-update');
-      badgeText.innerText = 'Memeriksa Layanan...';
-
+      document.getElementById('overall-text').innerText = 'Memeriksa...';
       const results = await Promise.all(SERVICES.map(checkService));
-      const hasIssue = results.some(r => r.status !== 'operational');
-
-      badgeText.innerText = hasIssue ? 'Beberapa Layanan Terkendala' : 'Seluruh Sistem Normal & Operasional';
-      document.getElementById('overall-badge').style.borderColor = hasIssue ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)';
-      document.getElementById('overall-badge').style.background = hasIssue ? 'rgba(239, 68, 68, 0.2)' : 'var(--green-glow)';
-      document.getElementById('overall-badge').style.color = hasIssue ? 'var(--red)' : 'var(--green)';
-      document.getElementById('overall-dot').style.background = hasIssue ? 'var(--red)' : 'var(--green)';
-
-      container.innerHTML = results.map(r => `
+      const allOk = results.every(r => r.state === 'live');
+      const badge = document.getElementById('overall-badge');
+      badge.className = 'overall-badge ' + (allOk ? 'ok' : 'down');
+      document.getElementById('overall-text').innerText = allOk
+        ? 'Seluruh Sistem Operasional'
+        : 'Ada Layanan Terganggu';
+      document.getElementById('services-list').innerHTML = results.map(r => `
         <div class="service-card">
           <div class="service-info">
             <h3>${r.name}</h3>
-            <p>${r.desc} • <a href="${r.url}" target="_blank" style="color:var(--primary);text-decoration:none;">Kunjungi</a></p>
+            <p><a href="${r.url}" target="_blank" rel="noopener">${r.desc}</a></p>
           </div>
-          <div class="service-status">
-            <span class="dot ${r.status === 'operational' ? 'green' : 'red'}"></span>
-            <span class="status-text ${r.status === 'operational' ? 'green' : 'red'}">${r.label}</span>
-          </div>
+          <span class="status-pill ${r.state}">
+            <span class="dot"></span>${r.label}
+          </span>
         </div>
       `).join('');
-
-      timeLabel.innerText = 'Pembaruan terakhir: ' + new Date().toLocaleTimeString('id-ID') + ' WIB';
+      document.getElementById('last-update').innerText =
+        'Diperbarui: ' + new Date().toLocaleTimeString('id-ID') + ' WIB';
     }
 
     checkAll();
