@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
@@ -126,10 +126,11 @@
   </div>
 
   <script>
+    const d = s => atob(s);
     const SERVICES = [
       { name: 'Rarity Web Dashboard',            url: 'https://erc.my.id/tools/rarity/',    desc: 'erc.my.id/tools/rarity' },
-      { name: 'Rarity WhatsApp Cloud Webhook',   url: 'https://rarity-kwn4.onrender.com/health', desc: 'rarity-kwn4.onrender.com/health' },
-      { name: 'Rarity Users Registry API',       url: 'https://rarity-kwn4.onrender.com/api/users?key=rarity_x9k2m', desc: 'rarity-kwn4.onrender.com/api/users' },
+      { name: 'Rarity WhatsApp Cloud Webhook',   url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vaGVhbHRo'), desc: 'rarity-kwn4.onrender.com/health', noLink: true },
+      { name: 'Rarity Users Registry API',       url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vYXBpL3VzZXJzP2tleT1yYXJpdHlfeDlrMm0='), desc: 'rarity-kwn4.onrender.com/api/users', noLink: true },
       { name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec', desc: 'script.google.com (Apps Script)' },
       { name: 'Ercava Tools Hub',                url: 'https://erc.my.id/tools/',           desc: 'erc.my.id/tools' }
     ];
@@ -156,7 +157,7 @@
         <div class="service-card">
           <div class="service-info">
             <h3>${r.name}</h3>
-            <p><a href="${r.url}" target="_blank" rel="noopener">${r.desc}</a></p>
+            <p>${r.noLink ? `<span>${r.desc}</span>` : `<a href="${r.url}" target="_blank" rel="noopener">${r.desc}</a>`}</p>
           </div>
           <span class="status-pill ${r.state}">
             <span class="dot"></span>${r.label}
