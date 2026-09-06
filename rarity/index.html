@@ -1431,7 +1431,7 @@
       const classifierPrompt = `Determine intent and extract JSON for Indonesian user prompt: "${text}".
 Current time: ${todayISO} ${timeStr}.
 Output JSON only:
-If prompt is a reminder/task/event/deadline (e.g. ingatkan, ujian, tugas, deadline, jadwal, rapat):
+1. If prompt is a reminder/task/event/deadline (e.g. ingatkan, ujian, tugas, deadline, jadwal, rapat):
 {
   "type": "reminder",
   "name": "Nama agenda/tugas",
@@ -1439,14 +1439,41 @@ If prompt is a reminder/task/event/deadline (e.g. ingatkan, ujian, tugas, deadli
   "category": "${trackerCats}",
   "notes": "Keterangan tambahan atau kosongkan"
 }
-Else (expense/pengeluaran):
+2. If prompt is income/pemasukan (gaji, transfer masuk, uang jajan, bonus):
+{
+  "type": "expense",
+  "date": "YYYY-MM-DD",
+  "merchant": "Sumber pemasukan/pemberi",
+  "amount": integer_numeric,
+  "category": "Pemasukan",
+  "notes": "Pemasukan"
+}
+3. If prompt is savings/investment (nabung, investasi, reksadana, bibit, simpan uang):
+{
+  "type": "expense",
+  "date": "YYYY-MM-DD",
+  "merchant": "Wadah tabungan/investasi",
+  "amount": integer_numeric,
+  "category": "Tabungan & Investasi",
+  "notes": "Tabungan"
+}
+4. If prompt is bill payment (bayar tagihan, wifi, listrik, air, kos, pulsa):
+{
+  "type": "expense",
+  "date": "YYYY-MM-DD",
+  "merchant": "Nama tagihan",
+  "amount": integer_numeric,
+  "category": "Tagihan",
+  "notes": "Tagihan"
+}
+5. Else (general expense/pengeluaran belanja):
 {
   "type": "expense",
   "date": "YYYY-MM-DD",
   "merchant": "Nama toko/merchant",
-  "amount": integer_IDR,
+  "amount": integer_numeric,
   "category": "${expenseCats}",
-  "notes": "keterangan"
+  "notes": "Pengeluaran"
 }`;
 
       try {
@@ -1481,13 +1508,15 @@ Else (expense/pengeluaran):
           return;
         }
 
-        // Expense handling
+        // Expense / Financial transaction handling
         pendingReceipt = parsed;
-        if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category)) pendingReceipt.category = "Lainnya";
+        if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category) && !['Pemasukan', 'Tabungan & Investasi', 'Tagihan'].includes(pendingReceipt.category)) {
+          pendingReceipt.category = "Lainnya";
+        }
         showReceiptVerification(pendingReceipt);
       } catch (e) {
         console.error("[DEBUG] Chat parse error:", e);
-        addBotMsg("Format belum terbaca. Contoh pengeluaran: <i>'Beli bensin 50rb di Pertamina'</i><br>Contoh pengingat: <i>'Ingatkan tugas kalkulus tgl 2 Sep jam 08:00'</i>");
+        addBotMsg("Format belum terbaca. Contoh: <i>'Beli bensin 50rb di Shell'</i>, <i>'Dapat gaji 5jt'</i>, <i>'Nabung 500rb di Bibit'</i>, atau <i>'Ingatkan rapat besok jam 10:00'</i>");
       }
     }
 
