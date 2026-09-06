@@ -437,6 +437,49 @@
       background: #b91c1c;
     }
 
+    /* Calendar View Styles */
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .cal-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 4px 0;
+    }
+    .cal-day {
+      min-height: 48px;
+      padding: 4px 2px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .cal-day.today {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+    .cal-day.other-month {
+      opacity: 0.35;
+    }
+    .cal-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: 4px;
+    }
+
     /* Overview Dashboard Styles */
     .overview-content {
       padding: 1.5rem 1.25rem 2rem 1.25rem;
@@ -635,15 +678,22 @@
       </div>
 
       <!-- Clean Actions -->
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-action btn-edit" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="checkSystemStatus()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-          <span>Refresh</span>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button id="btn-grant-bot" class="btn-action" style="margin: 0; padding: 9px; font-size: 0.8rem; border-radius: 8px; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600;" onclick="grantBotEditorAccess()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          <span>Beri Izin Bot WhatsApp (rarity-erc)</span>
         </button>
-        <button class="btn-action" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="reinitializeSheet()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          <span>Buat Ulang Sheet</span>
-        </button>
+
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-action btn-edit" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="checkSystemStatus()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            <span>Refresh</span>
+          </button>
+          <button class="btn-action" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="reinitializeSheet()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            <span>Buat Ulang Sheet</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -733,15 +783,34 @@
             <div class="overview-card">
               <div class="overview-title">
                 <span>Pengingat & Agenda Aktif</span>
-                <button class="btn-icon-sm" title="Perbarui" onclick="renderReminders()">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-                </button>
+                <div style="display: flex; gap: 4px;">
+                  <button id="btn-toggle-list" class="btn-icon-sm" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; width: auto; background: var(--primary); color: #fff;" onclick="toggleAgendaView('list')">List</button>
+                  <button id="btn-toggle-cal" class="btn-icon-sm" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; width: auto; background: #f1f5f9; color: var(--text);" onclick="toggleAgendaView('cal')">Kalender</button>
+                  <button class="btn-icon-sm" title="Perbarui" onclick="renderReminders()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  </button>
+                </div>
               </div>
               <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">
-                Ketik di chat: <i>"Ingatkan ujian kalkulus tgl 2 Sep jam 08:00"</i>. Bot akan mengingatkan H-1 hari, 12 jam, 5 jam, 1 jam, 30 menit.
+                Ketik di chat: <i>"Ingatkan ujian kalkulus tgl 2 Sep jam 08:00"</i> atau <i>"!tugas"</i> untuk filter tugas.
               </div>
+
+              <!-- List View -->
               <div id="reminders-list" class="tx-list">
                 <span style="color: var(--muted); font-size: 0.8rem;">Belum ada agenda pengingat</span>
+              </div>
+
+              <!-- Calendar View -->
+              <div id="reminders-calendar-box" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                  <span id="cal-month-label" style="font-size: 0.9rem; font-weight: 700;"></span>
+                  <div style="display: flex; gap: 4px;">
+                    <button class="btn-icon-sm" onclick="navCalMonth(-1)">◀</button>
+                    <button class="btn-icon-sm" onclick="navCalMonth(1)">▶</button>
+                  </div>
+                </div>
+                <div id="cal-grid" class="cal-grid"></div>
+                <div id="cal-selected-events" style="margin-top: 12px; font-size: 0.8rem;"></div>
               </div>
             </div>
           </div>
@@ -1368,7 +1437,8 @@
         const catName = pendingReceipt.category || "Lainnya";
         const amt = pendingReceipt.amount || 0;
 
-        addBotMsg(`✅ Tercatat di baris ${nextRow}: <b>${merchantName}</b> (${rupiah(amt)}) [${catName}] — Periode: ${txMonthName} ${txYear}!`);
+        window.lastWebRow = nextRow;
+        addBotMsg(`✅ Tercatat di baris ${nextRow}: <b>${merchantName}</b> (${rupiah(amt)}) [${catName}] — Periode: ${txMonthName} ${txYear}!<br><small>Ketik <code>!batal</code> jika salah mencatat.</small>`);
         playSound('success');
         pendingReceipt = null;
       } catch (e) {
@@ -1407,13 +1477,47 @@
           `• ⏰ <b>Buat Pengingat:</b><br>` +
           `  <i>Ingatkan [agenda] [waktu]</i><br>` +
           `  Contoh: <code>Ingatkan ujian kalkulus besok jam 08:00</code><br><br>` +
+          `• 📚 <b>Lihat Daftar Tugas:</b> Ketik <code>!tugas</code><br>` +
+          `• ↩️ <b>Batalkan Catatan Terakhir:</b> Ketik <code>!batal</code> atau <code>!undo</code><br>` +
           `• ✅ <b>Selesaikan Pengingat:</b><br>` +
           `  <i>selesai [nama agenda]</i><br><br>` +
           `⚙️ <b>Menu & Dashboard:</b><br>` +
           `• Tombol 📊 di taskbar bawah untuk melihat grafik & analitik pengeluaran.<br>` +
-          `• Tombol ⏰ di taskbar bawah untuk melihat daftar pengingat aktif.<br>` +
-          `• Tombol ⚙️ di pojok kanan atas untuk cek status Google Sheet, Gemini AI, dan ID bot WhatsApp.`;
+          `• Tombol ⏰ di taskbar bawah untuk melihat daftar pengingat & kalender.<br>` +
+          `• Tombol ⚙️ di pojok kanan atas untuk cek status, beri izin bot, dan ID sheet.`;
         addBotMsg(helpHtml, true);
+        return;
+      }
+
+      // Command !tugas on web
+      if (/^(!tugas|!assignments?|tugas)/i.test(text)) {
+        const activeTasks = reminders.filter(r => !r.done && (r.category === 'Tugas' || /tugas|pr|assignment|proyek/i.test(r.name)));
+        if (activeTasks.length === 0) {
+          addBotMsg("📚 <b>Daftar Tugas:</b><br>Tidak ada tugas yang sedang aktif! 🎉");
+        } else {
+          let msg = `📚 <b>Daftar Tugas Aktif (${activeTasks.length}):</b><br><br>`;
+          activeTasks.forEach((t, i) => {
+            const dt = new Date(t.timestamp).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            msg += `${i+1}. <b>${t.name}</b><br>&nbsp;&nbsp;&nbsp;🗓️ Deadline: ${dt}${t.notes ? ` • <i>${t.notes}</i>` : ''}<br>`;
+          });
+          addBotMsg(msg);
+        }
+        return;
+      }
+
+      // Command !batal / !undo on web
+      if (/^(!batal|!undo|!hapus|batalkan)/i.test(text)) {
+        if (window.lastWebRow) {
+          const rowToDelete = window.lastWebRow;
+          window.lastWebRow = null;
+          await deleteTransactionRow(rowToDelete, "transaksi terakhir");
+        } else if (reminders.length > 0) {
+          const lastRem = reminders.pop();
+          saveReminders();
+          addBotMsg(`🗑️ Pengingat <b>${lastRem.name}</b> berhasil dibatalkan.`);
+        } else {
+          addBotMsg("⚠️ Tidak ada transaksi atau pengingat yang dapat dibatalkan.");
+        }
         return;
       }
 
@@ -1582,6 +1686,158 @@ Output JSON only:
       { label: "Waktunya sekarang!", ms: 0 }
     ];
 
+    // Helper: Generate Google Calendar Web Intent Link
+    function makeGCalLink(title, timestampMs, notes = '') {
+      try {
+        const start = new Date(timestampMs);
+        const end = new Date(timestampMs + 3600000);
+        const toGCalISO = d => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        const dates = `${toGCalISO(start)}/${toGCalISO(end)}`;
+        return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dates}&details=${encodeURIComponent(notes)}`;
+      } catch {
+        return '';
+      }
+    }
+
+    // Grant Editor Permission to rarity-erc@gmail.com
+    window.grantBotEditorAccess = async function() {
+      const btn = document.getElementById("btn-grant-bot");
+      if (!spreadsheetId || !accessToken) {
+        alert("Spreadsheet belum terhubung. Silakan login atau buat sheet terlebih dahulu.");
+        return;
+      }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = "⏳ Memberikan Izin...";
+      }
+      try {
+        await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity-erc@gmail.com" })
+        });
+        await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "editor", type: "anyone" })
+        });
+        if (btn) {
+          btn.style.background = "#15803d";
+          btn.innerHTML = "✅ Berhasil! Bot WhatsApp Aktif";
+        }
+        addBotMsg("✅ <b>Izin Bot Diberikan!</b> Akun <code>rarity-erc@gmail.com</code> sekarang dapat mencatat pengeluaran & pengingat dari WhatsApp ke Google Sheet Anda.");
+      } catch (e) {
+        console.error("Grant bot error:", e);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = "⚠️ Gagal Memberi Izin (Coba Lagi)";
+        }
+        alert("Gagal memberikan izin: " + e.message);
+      }
+    };
+
+    // Calendar & List view toggle
+    let curCalYear = new Date().getFullYear();
+    let curCalMonth = new Date().getMonth(); // 0-indexed
+
+    window.toggleAgendaView = function(view) {
+      const listEl = document.getElementById("reminders-list");
+      const calEl = document.getElementById("reminders-calendar-box");
+      const btnList = document.getElementById("btn-toggle-list");
+      const btnCal = document.getElementById("btn-toggle-cal");
+
+      if (view === 'cal') {
+        listEl.classList.add("hidden");
+        calEl.classList.remove("hidden");
+        btnList.style.background = "#f1f5f9";
+        btnList.style.color = "var(--text)";
+        btnCal.style.background = "var(--primary)";
+        btnCal.style.color = "#fff";
+        renderCalendar();
+      } else {
+        calEl.classList.add("hidden");
+        listEl.classList.remove("hidden");
+        btnCal.style.background = "#f1f5f9";
+        btnCal.style.color = "var(--text)";
+        btnList.style.background = "var(--primary)";
+        btnList.style.color = "#fff";
+        renderReminders();
+      }
+    };
+
+    window.navCalMonth = function(delta) {
+      curCalMonth += delta;
+      if (curCalMonth < 0) {
+        curCalMonth = 11;
+        curCalYear--;
+      } else if (curCalMonth > 11) {
+        curCalMonth = 0;
+        curCalYear++;
+      }
+      renderCalendar();
+    };
+
+    function renderCalendar() {
+      const grid = document.getElementById("cal-grid");
+      const label = document.getElementById("cal-month-label");
+      if (!grid || !label) return;
+
+      const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+      label.innerText = `${monthNames[curCalMonth]} ${curCalYear}`;
+
+      const firstDay = new Date(curCalYear, curCalMonth, 1).getDay(); // 0 is Sun
+      const daysInMonth = new Date(curCalYear, curCalMonth + 1, 0).getDate();
+      const today = new Date();
+      const isCurrentMonth = (today.getFullYear() === curCalYear && today.getMonth() === curCalMonth);
+
+      const headers = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+      let html = headers.map(h => `<div class="cal-header">${h}</div>`).join('');
+
+      for (let i = 0; i < firstDay; i++) {
+        html += `<div class="cal-day other-month"></div>`;
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = isCurrentMonth && (today.getDate() === d);
+        const dayDate = new Date(curCalYear, curCalMonth, d);
+        const nextDate = new Date(curCalYear, curCalMonth, d + 1);
+
+        const dayEvents = reminders.filter(r => r.timestamp >= dayDate.getTime() && r.timestamp < nextDate.getTime());
+        const hasDot = dayEvents.length > 0;
+
+        html += `
+          <div class="cal-day ${isToday ? 'today' : ''}" onclick="selectCalDay(${curCalYear}, ${curCalMonth}, ${d})">
+            <span>${d}</span>
+            ${hasDot ? `<div class="cal-dot"></div>` : ''}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    window.selectCalDay = function(y, m, d) {
+      const selBox = document.getElementById("cal-selected-events");
+      if (!selBox) return;
+      const dayStart = new Date(y, m, d).getTime();
+      const dayEnd = new Date(y, m, d + 1).getTime();
+      const dayEvents = reminders.filter(r => r.timestamp >= dayStart && r.timestamp < dayEnd);
+
+      if (dayEvents.length === 0) {
+        selBox.innerHTML = `<div style="color:var(--muted); padding:6px 0;">Tidak ada agenda pada ${d}/${m+1}/${y}.</div>`;
+      } else {
+        selBox.innerHTML = `<b>Agenda ${d}/${m+1}/${y}:</b><br>` + dayEvents.map(ev => `
+          <div style="margin-top:4px; padding:4px 8px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <span>${ev.name} [${ev.category}]</span>
+              <div style="font-size:0.7rem; color:var(--muted);">${new Date(ev.timestamp).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</div>
+            </div>
+            <a href="${makeGCalLink(ev.name, ev.timestamp, ev.notes || ev.category)}" target="_blank" style="font-size:0.7rem; color:var(--primary); text-decoration:none; font-weight:600;">+ Google Cal</a>
+          </div>
+        `).join('');
+      }
+    };
+
     function saveReminders() {
       localStorage.setItem("rarity_reminders", JSON.stringify(reminders));
       renderReminders();
@@ -1606,6 +1862,7 @@ Output JSON only:
         const dt = new Date(r.timestamp);
         const dtStr = dt.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         const isDone = r.done;
+        const gcalLink = makeGCalLink(r.name, r.timestamp, r.notes || r.category);
         return `
           <div class="reminder-card" style="${isDone ? 'opacity:0.65; background:#f8fafc;' : ''}">
             <div class="reminder-card-body">
@@ -1619,6 +1876,12 @@ Output JSON only:
                 ${isDone ? '<b style="color:var(--success); margin-left:4px;">[Selesai]</b>' : ''}
               </div>
               ${r.notes ? `<div class="reminder-notes-sub">Catatan: ${r.notes}</div>` : ''}
+              <div style="margin-top:6px;">
+                <a href="${gcalLink}" target="_blank" style="display:inline-flex; align-items:center; gap:4px; font-size:0.72rem; color:var(--primary); text-decoration:none; font-weight:600;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span>+ Google Calendar</span>
+                </a>
+              </div>
             </div>
 
             <!-- Big Side Green & Red Action Buttons -->
@@ -1822,15 +2085,21 @@ Output JSON only:
         if (recent5.length === 0) {
           recentList.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada transaksi di periode ini</span>`;
         } else {
-          recentList.innerHTML = recent5.map(tx => `
-            <div class="tx-item">
-              <div>
-                <div class="tx-merchant">${tx.merchant}</div>
-                <div class="tx-sub">${tx.date} • <span style="color: var(--primary);">${tx.category}</span></div>
+          recentList.innerHTML = recent5.map(tx => {
+            const actualRow = 66 + tx.index;
+            return `
+              <div class="tx-item" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div class="tx-merchant">${tx.merchant}</div>
+                  <div class="tx-sub">${tx.date} • <span style="color: var(--primary);">${tx.category}</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div class="tx-amt">${rupiah(tx.amount)}</div>
+                  <button title="Hapus transaksi ini" style="background:#fee2e2; border:none; color:#dc2626; border-radius:6px; padding:4px 6px; cursor:pointer; font-size:0.7rem; font-weight:700;" onclick="deleteTransactionRow(${actualRow}, '${tx.merchant.replace(/'/g, "\\'")}')">✕</button>
+                </div>
               </div>
-              <div class="tx-amt">${rupiah(tx.amount)}</div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
 
         // Render Top Costs Ranking (Sorted highest to lowest)
@@ -1894,6 +2163,25 @@ Output JSON only:
         periodLabel.innerText = "Gagal memuat: " + e.message;
       }
     }
+
+    // Delete single transaction row from Google Sheet
+    window.deleteTransactionRow = async function(rowNum, desc) {
+      if (!confirm(`Hapus transaksi "${desc}" di baris ${rowNum}?`)) return;
+      if (!spreadsheetId || !accessToken) return;
+      const tab = window.PLANNER_TAB || "[ISI DISINI]";
+
+      try {
+        const encRange = encodeURIComponent(`'${tab}'!F${rowNum}:J${rowNum}`);
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}:clear`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" }
+        });
+        addBotMsg(`🗑️ Transaksi <b>${desc}</b> di baris ${rowNum} berhasil dihapus.`);
+        loadOverviewData();
+      } catch (e) {
+        alert("Gagal menghapus: " + e.message);
+      }
+    };
 
     // Auto-restore login & check readiness on load
     window.addEventListener("DOMContentLoaded", async () => {
