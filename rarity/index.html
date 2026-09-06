@@ -1372,6 +1372,27 @@
         return;
       }
 
+      // Command !help on web
+      if (/^(!help|help|\/help|info)/i.test(text)) {
+        const helpHtml = `👋 <b>Halo! Ini Panduan Cepat RARITY:</b><br><br>` +
+          `📌 <b>Format Perintah:</b><br>` +
+          `• 📷 <b>Kirim / Unggah Foto Struk</b> → Tombol kamera untuk scan otomatis struk belanja.<br>` +
+          `• 💸 <b>Catat Pengeluaran:</b><br>` +
+          `  <i>Beli [nama item] [harga] [toko (opsional)]</i><br>` +
+          `  Contoh: <code>Beli kopi 25rb di Janji Jiwa</code> atau <code>Bayar bensin 50000 di Shell</code><br><br>` +
+          `• ⏰ <b>Buat Pengingat:</b><br>` +
+          `  <i>Ingatkan [agenda] [waktu]</i><br>` +
+          `  Contoh: <code>Ingatkan ujian kalkulus besok jam 08:00</code><br><br>` +
+          `• ✅ <b>Selesaikan Pengingat:</b><br>` +
+          `  <i>selesai [nama agenda]</i><br><br>` +
+          `⚙️ <b>Menu & Dashboard:</b><br>` +
+          `• Tombol 📊 di taskbar bawah untuk melihat grafik & analitik pengeluaran.<br>` +
+          `• Tombol ⏰ di taskbar bawah untuk melihat daftar pengingat aktif.<br>` +
+          `• Tombol ⚙️ di pojok kanan atas untuk cek status Google Sheet, Gemini AI, dan ID bot WhatsApp.`;
+        addBotMsg(helpHtml, true);
+        return;
+      }
+
       // Check Notification Permission on first chat interaction
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
