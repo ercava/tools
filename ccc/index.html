@@ -1,0 +1,605 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ercava Certificate Portal</title>
+  <link rel="icon" type="image/x-icon" href="https://erc.my.id/tools/logo/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --success: #22c55e;
+    }
+    
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, Arial, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+    }
+
+    .screen {
+      display: none;
+      min-height: 100vh;
+      width: 100%;
+      padding: 2rem 1rem;
+    }
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .auth-container {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: var(--shadow);
+      margin-top: 6vh;
+      text-align: center;
+    }
+    .logo img {
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+    .title {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: var(--accent);
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+    .desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 1.75rem 0;
+      line-height: 1.4;
+    }
+    .input-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+    .input-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+      box-shadow: var(--shadow);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+    }
+
+    /* Dashboard */
+    .dashboard-wrap {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .user-info h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .user-info p {
+      margin: 0.25rem 0 0 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pill-btn {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 0.5rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: inherit;
+    }
+    .pill-btn:hover {
+      background: var(--bg-light);
+      border-color: var(--primary);
+    }
+    .pill-btn.primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    /* Search and filter toolbar */
+    .toolbar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+    .filter-select {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    /* Stats Banner */
+    .stats-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .stats-info {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .stats-info strong {
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    /* Certificate Grid */
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+    .cert-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .cert-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+    .cert-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+      align-self: flex-start;
+      background: #eef7fc;
+      color: var(--primary);
+    }
+    .cert-badge.png {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .cert-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      line-height: 1.35;
+    }
+    .cert-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cert-actions {
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid var(--line);
+      padding-top: 0.85rem;
+      margin-top: auto;
+    }
+    .action-btn {
+      flex: 1;
+      text-align: center;
+      padding: 0.55rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+    .action-btn.view {
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      color: var(--accent);
+    }
+    .action-btn.view:hover {
+      background: #e2e8f0;
+    }
+    .action-btn.download {
+      background: var(--primary);
+      color: white;
+    }
+    .action-btn.download:hover {
+      opacity: 0.9;
+    }
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="screen active">
+    <div class="auth-container">
+      <div class="logo">
+        <img src="https://erc.my.id/tools/logo.svg" alt="EDP Logo">
+      </div>
+      <h1 class="title">Ercava Certificates</h1>
+      <p class="desc">Enter your NISN or Full Name to access and download your verified certificates.</p>
+      
+      <div class="input-group">
+        <label for="nisn-input" class="input-label">NISN or Full Name</label>
+        <input type="text" id="nisn-input" class="input-field" placeholder="e.g. 0079144295 or Full Name" autofocus>
+      </div>
+
+      <button id="login-btn" class="btn">View Certificates</button>
+      <div id="error-msg" class="error-msg"></div>
+
+      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
+        <a href="https://erc.my.id/tools/PEGASUS" style="color: var(--primary); text-decoration: none; font-weight: 600;">Open PEGASUS Portal &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="dash-screen" class="screen">
+    <div class="dashboard-wrap">
+      
+      <div class="header-bar">
+        <div class="user-info">
+          <h2 id="student-name">Loading...</h2>
+          <p id="student-nisn">NISN: Loading...</p>
+        </div>
+        <div class="header-actions">
+          <a href="https://erc.my.id/tools/PEGASUS" class="pill-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            PEGASUS
+          </a>
+          <a href="https://erc.my.id/tools" class="pill-btn">All Tools</a>
+          <button id="logout-btn" class="pill-btn">Log Out</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="cert-search" placeholder="Search certificates by title, event, year...">
+        </div>
+        <select id="event-filter" class="filter-select">
+          <option value="all">All Events</option>
+        </select>
+        <select id="year-filter" class="filter-select">
+          <option value="all">All Years</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+        </select>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-info">
+          Found <strong id="cert-count">0</strong> certificate(s)
+        </div>
+        <button id="download-all-btn" class="pill-btn primary" style="display: none;">Download All</button>
+      </div>
+
+      <div id="cert-grid" class="cert-grid">
+        <!-- Certificates rendered here -->
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/certs.js"></script>
+  <script>
+    (function() {
+      const data = window.__CERT_DATA || { students: {}, all_certs: [] };
+      let currentUser = null;
+      let userCerts = [];
+
+      const authScreen = document.getElementById('auth-screen');
+      const dashScreen = document.getElementById('dash-screen');
+      const nisnInput = document.getElementById('nisn-input');
+      const loginBtn = document.getElementById('login-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const errorMsg = document.getElementById('error-msg');
+
+      const studentNameEl = document.getElementById('student-name');
+      const studentNisnEl = document.getElementById('student-nisn');
+      const certSearchInput = document.getElementById('cert-search');
+      const eventFilter = document.getElementById('event-filter');
+      const yearFilter = document.getElementById('year-filter');
+      const certGrid = document.getElementById('cert-grid');
+      const certCountEl = document.getElementById('cert-count');
+
+      function cleanVal(v) {
+        return (v || '').toString().trim().replace(/^0+/, '').toLowerCase();
+      }
+
+      function findStudent(query) {
+        const q = cleanVal(query);
+        if (!q) return null;
+
+        // Check by NISN (exact or trimmed)
+        for (const [nisnKey, s] of Object.entries(data.students)) {
+          if (cleanVal(nisnKey) === q || cleanVal(s.nisn) === q) {
+            return s;
+          }
+        }
+
+        // Check by name
+        const rawQ = query.trim().toLowerCase();
+        for (const s of Object.values(data.students)) {
+          if (s.name.toLowerCase() === rawQ || s.name.toLowerCase().includes(rawQ)) {
+            return s;
+          }
+        }
+        return null;
+      }
+
+      function handleLogin() {
+        const val = nisnInput.value.trim();
+        if (!val) {
+          showError('Please enter a valid NISN or Full Name.');
+          return;
+        }
+
+        const student = findStudent(val);
+        if (!student) {
+          showError('No student record found with this NISN or Name.');
+          return;
+        }
+
+        currentUser = student;
+        userCerts = student.certificates || [];
+        
+        // Also look up any certificate directly carrying this student name if not matched
+        const sNameLower = student.name.toLowerCase();
+        data.all_certs.forEach(c => {
+          if (c.name.toLowerCase() === sNameLower || (sNameLower.length > 5 && c.name.toLowerCase().includes(sNameLower))) {
+            if (!userCerts.some(uc => uc.path === c.path)) {
+              userCerts.push(c);
+            }
+          }
+        });
+
+        errorMsg.style.display = 'none';
+        authScreen.classList.remove('active');
+        dashScreen.classList.add('active');
+
+        studentNameEl.textContent = student.name;
+        studentNisnEl.textContent = `NISN: ${student.nisn || 'N/A'} · Angkatan ${student.angkatan || '29'}`;
+
+        populateEventFilter();
+        renderCerts();
+
+        // Save session
+        localStorage.setItem('cert_user_nisn', student.nisn || student.name);
+      }
+
+      function showError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.style.display = 'block';
+      }
+
+      function populateEventFilter() {
+        eventFilter.innerHTML = '<option value="all">All Events</option>';
+        const events = new Set();
+        userCerts.forEach(c => {
+          if (c.event) events.add(c.event);
+        });
+        Array.from(events).sort().forEach(ev => {
+          const opt = document.createElement('option');
+          opt.value = ev;
+          opt.textContent = ev;
+          eventFilter.appendChild(opt);
+        });
+      }
+
+      function renderCerts() {
+        const q = certSearchInput.value.trim().toLowerCase();
+        const selectedEv = eventFilter.value;
+        const selectedYr = yearFilter.value;
+
+        const filtered = userCerts.filter(c => {
+          const matchQ = !q || c.filename.toLowerCase().includes(q) || c.event.toLowerCase().includes(q) || c.role.toLowerCase().includes(q);
+          const matchEv = selectedEv === 'all' || c.event === selectedEv;
+          const matchYr = selectedYr === 'all' || c.year === selectedYr;
+          return matchQ && matchEv && matchYr;
+        });
+
+        certCountEl.textContent = filtered.length;
+        certGrid.innerHTML = '';
+
+        if (filtered.length === 0) {
+          certGrid.innerHTML = `
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.5;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <h3>No certificates found</h3>
+              <p>Try clearing your search query or filters.</p>
+            </div>
+          `;
+          return;
+        }
+
+        filtered.forEach(c => {
+          const card = document.createElement('div');
+          card.className = 'cert-card';
+          // repo path: c.path is relative to tools/ root
+          const fileUrl = `../${c.path}`;
+
+          card.innerHTML = `
+            <div>
+              <span class="cert-badge ${c.ext}">${c.event} · ${c.year}</span>
+              <div class="cert-title">${c.role || c.event}</div>
+              <div class="cert-sub">
+                <span>${c.name}</span> · <span style="font-family: 'Roboto Mono', monospace; font-size: 0.75rem;">${c.ext.toUpperCase()}</span>
+              </div>
+            </div>
+            <div class="cert-actions">
+              <a href="${fileUrl}" target="_blank" class="action-btn view">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                View
+              </a>
+              <a href="${fileUrl}" download="${c.filename}" class="action-btn download">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download
+              </a>
+            </div>
+          `;
+          certGrid.appendChild(card);
+        });
+      }
+
+      loginBtn.addEventListener('click', handleLogin);
+      nisnInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleLogin();
+      });
+
+      logoutBtn.addEventListener('click', () => {
+        currentUser = null;
+        userCerts = [];
+        localStorage.removeItem('cert_user_nisn');
+        dashScreen.classList.remove('active');
+        authScreen.classList.add('active');
+        nisnInput.value = '';
+        nisnInput.focus();
+      });
+
+      certSearchInput.addEventListener('input', renderCerts);
+      eventFilter.addEventListener('change', renderCerts);
+      yearFilter.addEventListener('change', renderCerts);
+
+      // Auto-login from local storage or query param
+      const urlParams = new URLSearchParams(window.location.search);
+      const qNisn = urlParams.get('nisn') || localStorage.getItem('cert_user_nisn');
+      if (qNisn) {
+        nisnInput.value = qNisn;
+        handleLogin();
+      }
+
+    })();
+  </script>
+</body>
+</html>
