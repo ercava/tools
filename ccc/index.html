@@ -336,6 +336,38 @@
       padding: 4rem 1rem;
       color: var(--muted);
     }
+
+    /* === Animations === */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .auth-container {
+      animation: fadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .dashboard-wrap {
+      animation: fadeIn 0.3s ease both;
+    }
+    .cert-card {
+      animation: fadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .stats-card {
+      animation: scaleIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .share-btn.copied {
+      background: #dcfce7 !important;
+      border-color: #86efac !important;
+      color: #15803d !important;
+    }
   </style>
 </head>
 <body>
@@ -542,9 +574,10 @@
           return;
         }
 
-        filtered.forEach(c => {
+        filtered.forEach((c, i) => {
           const card = document.createElement('div');
           card.className = 'cert-card';
+          card.style.animationDelay = `${i * 60}ms`;
           // repo path: c.path is relative to tools/ root
           const fileUrl = `../${c.path}`;
           const shareUrl = `${location.origin}${location.pathname}?nisn=${encodeURIComponent(currentUser.nisn || currentUser.name)}`;
@@ -579,9 +612,12 @@
         certGrid.querySelectorAll('.share-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             navigator.clipboard.writeText(this.dataset.url).then(() => {
-              const orig = this.textContent.trim();
-              this.textContent = 'Copied!';
-              setTimeout(() => { this.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share`; }, 1500);
+              this.classList.add('copied');
+              this.textContent = '✓ Copied!';
+              setTimeout(() => {
+                this.classList.remove('copied');
+                this.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share`;
+              }, 1800);
             });
           });
         });
