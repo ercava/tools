@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ercava Certificate Portal</title>
+  <title>Certificate Control Center</title>
   <link rel="icon" type="image/x-icon" href="https://erc.my.id/tools/logo/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -346,7 +346,7 @@
       <div class="logo">
         <img src="https://erc.my.id/tools/logo.svg" alt="EDP Logo">
       </div>
-      <h1 class="title">Ercava Certificates</h1>
+      <h1 class="title">Certificate Control Center</h1>
       <p class="desc">Enter your NISN or Full Name to access and download your verified certificates.</p>
       
       <div class="input-group">
@@ -356,10 +356,6 @@
 
       <button id="login-btn" class="btn">View Certificates</button>
       <div id="error-msg" class="error-msg"></div>
-
-      <div style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--muted);">
-        <a href="https://erc.my.id/tools/PEGASUS" style="color: var(--primary); text-decoration: none; font-weight: 600;">Open PEGASUS Portal &rarr;</a>
-      </div>
     </div>
   </div>
 
@@ -373,10 +369,6 @@
           <p id="student-nisn">NISN: Loading...</p>
         </div>
         <div class="header-actions">
-          <a href="https://erc.my.id/tools/PEGASUS" class="pill-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-            PEGASUS
-          </a>
           <a href="https://erc.my.id/tools" class="pill-btn">All Tools</a>
           <button id="logout-btn" class="pill-btn">Log Out</button>
         </div>
@@ -432,6 +424,13 @@
       const yearFilter = document.getElementById('year-filter');
       const certGrid = document.getElementById('cert-grid');
       const certCountEl = document.getElementById('cert-count');
+
+      function greeting() {
+        const h = new Date().getHours();
+        if (h < 12) return 'Good Morning';
+        if (h < 17) return 'Good Afternoon';
+        return 'Good Evening';
+      }
 
       function cleanVal(v) {
         return (v || '').toString().trim().replace(/^0+/, '').toLowerCase();
@@ -489,7 +488,7 @@
         dashScreen.classList.add('active');
 
         studentNameEl.textContent = student.name;
-        studentNisnEl.textContent = `NISN: ${student.nisn || 'N/A'} · Angkatan ${student.angkatan || '29'}`;
+        studentNisnEl.textContent = greeting();
 
         populateEventFilter();
         renderCerts();
@@ -548,6 +547,7 @@
           card.className = 'cert-card';
           // repo path: c.path is relative to tools/ root
           const fileUrl = `../${c.path}`;
+          const shareUrl = `${location.origin}${location.pathname}?nisn=${encodeURIComponent(currentUser.nisn || currentUser.name)}`;
 
           card.innerHTML = `
             <div>
@@ -566,9 +566,24 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                 Download
               </a>
+              <button class="action-btn share-btn" data-url="${shareUrl}" style="background:var(--bg-light);border:1px solid var(--line);color:var(--accent);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                Share
+              </button>
             </div>
           `;
           certGrid.appendChild(card);
+        });
+
+        // Share button handler (copy to clipboard)
+        certGrid.querySelectorAll('.share-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            navigator.clipboard.writeText(this.dataset.url).then(() => {
+              const orig = this.textContent.trim();
+              this.textContent = 'Copied!';
+              setTimeout(() => { this.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Share`; }, 1500);
+            });
+          });
         });
       }
 
@@ -591,11 +606,10 @@
       eventFilter.addEventListener('change', renderCerts);
       yearFilter.addEventListener('change', renderCerts);
 
-      // Auto-login from local storage or query param
-      const urlParams = new URLSearchParams(window.location.search);
-      const qNisn = urlParams.get('nisn') || localStorage.getItem('cert_user_nisn');
-      if (qNisn) {
-        nisnInput.value = qNisn;
+      // Auto-login from local storage only (no ?nisn= param)
+      const saved = localStorage.getItem('cert_user_nisn');
+      if (saved) {
+        nisnInput.value = saved;
         handleLogin();
       }
 
