@@ -1100,22 +1100,38 @@
           const initialSheetId = createData.sheets?.[0]?.properties?.sheetId;
           console.log("[DEBUG] New spreadsheet created:", spreadsheetId);
 
-          // 2. Clone rich template tab (formatting, colors, formulas) via sheets.copyTo
+          // 2. Clone rich template tabs (Budget and Tracker) via sheets.copyTo
+          const TEMPLATE_BUDGET_GID = 842695108;
+          const TEMPLATE_TRACKER_GID = 1939073907;
           let copiedTabTitle = "[ISI DISINI]";
+
           try {
-            const copyTabRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/0:copyTo`, {
+            // Copy primary Budget tab
+            const copyBudgetRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/${TEMPLATE_BUDGET_GID}:copyTo`, {
               method: "POST",
               headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
               body: JSON.stringify({ destinationSpreadsheetId: spreadsheetId })
             });
-            const copyTabData = await copyTabRes.json();
-            if (copyTabRes.ok && copyTabData.title) {
-              copiedTabTitle = copyTabData.title;
+            const budgetData = await copyBudgetRes.json();
+            
+            if (copyBudgetRes.ok && budgetData.title) {
+              copiedTabTitle = budgetData.title;
               window.PLANNER_TAB = copiedTabTitle;
               localStorage.setItem("rarity_planner_tab", copiedTabTitle);
-              console.log("[DEBUG] Template tab cloned with full styles:", copiedTabTitle);
+              console.log("[DEBUG] Budget template tab cloned:", copiedTabTitle);
 
-              // 3. Remove initial blank 'Sheet1' if present
+              // Copy optional Tracker tab
+              try {
+                await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/${TEMPLATE_TRACKER_GID}:copyTo`, {
+                  method: "POST",
+                  headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+                  body: JSON.stringify({ destinationSpreadsheetId: spreadsheetId })
+                });
+              } catch (tErr) {
+                console.warn("[DEBUG] Tracker tab clone:", tErr);
+              }
+
+              // 3. Remove initial blank 'Sheet1'
               if (initialSheetId !== undefined) {
                 await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
                   method: "POST",
@@ -1126,10 +1142,12 @@
                 });
               }
             } else {
-              console.warn("[DEBUG] copyTo warning, checking existing sheets:", copyTabData);
+              console.error("[DEBUG] copyTo Budget failed:", budgetData);
+              throw new Error(budgetData.error?.message || "Gagal menyalin tab Budget dari template");
             }
           } catch (tabErr) {
-            console.warn("[DEBUG] copyTo error, using default tab:", tabErr);
+            console.error("[DEBUG] Template cloning error:", tabErr);
+            throw tabErr;
           }
 
           // 4. Add _ChatState tab as HIDDEN tab for cloud chat history backup
