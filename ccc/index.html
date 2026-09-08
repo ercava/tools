@@ -243,17 +243,16 @@
     /* Certificate Grid */
     .cert-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.25rem;
     }
     .cert-card {
       background: white;
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 1.25rem;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
@@ -262,57 +261,91 @@
       box-shadow: var(--shadow);
       border-color: var(--primary);
     }
+
+    /* Thumbnail */
+    .cert-thumb {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      background: var(--bg-light);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .cert-thumb iframe,
+    .cert-thumb img {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+    .cert-thumb iframe {
+      /* PDF rendered at natural size then clipped */
+      transform-origin: top left;
+    }
+
+    /* Bookmark badge — hangs from top-left of thumb */
     .cert-badge {
-      display: inline-flex;
+      position: absolute;
+      top: 0;
+      left: 1rem;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      margin-bottom: 0.75rem;
-      align-self: flex-start;
-      background: #eef7fc;
-      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      padding: 0.45rem 0.55rem 0.85rem;
+      background: var(--primary);
+      color: #fff;
+      /* bookmark pointed bottom via clip-path */
+      clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+      min-width: 54px;
+      text-align: center;
+      letter-spacing: 0.01em;
+      z-index: 1;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.18);
     }
     .cert-badge.png {
-      background: #fef3c7;
-      color: #92400e;
+      background: #b45309;
+    }
+    .cert-badge-year {
+      font-size: 0.6rem;
+      font-weight: 500;
+      opacity: 0.85;
+      margin-top: 0.1rem;
+    }
+
+    /* Card body */
+    .cert-body {
+      padding: 0.9rem 1rem 0.75rem;
+      flex: 1;
     }
     .cert-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 0.35rem;
       line-height: 1.35;
-    }
-    .cert-sub {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
     }
     .cert-actions {
       display: flex;
       gap: 0.5rem;
       border-top: 1px solid var(--line);
-      padding-top: 0.85rem;
-      margin-top: auto;
+      padding: 0.7rem 1rem;
     }
     .action-btn {
       flex: 1;
       text-align: center;
-      padding: 0.55rem;
+      padding: 0.5rem;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      gap: 0.3rem;
       transition: all 0.2s;
     }
     .action-btn.view {
@@ -320,16 +353,12 @@
       border: 1px solid var(--line);
       color: var(--accent);
     }
-    .action-btn.view:hover {
-      background: #e2e8f0;
-    }
+    .action-btn.view:hover { background: #e2e8f0; }
     .action-btn.download {
       background: var(--primary);
       color: white;
     }
-    .action-btn.download:hover {
-      opacity: 0.9;
-    }
+    .action-btn.download:hover { opacity: 0.9; }
     .empty-state {
       grid-column: 1 / -1;
       text-align: center;
@@ -578,17 +607,23 @@
           const card = document.createElement('div');
           card.className = 'cert-card';
           card.style.animationDelay = `${i * 60}ms`;
-          // repo path: c.path is relative to tools/ root
           const fileUrl = `../${c.path}`;
           const shareUrl = `${location.origin}${location.pathname}?nisn=${encodeURIComponent(currentUser.nisn || currentUser.name)}`;
 
+          const thumb = c.ext === 'png'
+            ? `<img src="${fileUrl}" alt="${c.filename}" loading="lazy">`
+            : `<iframe src="${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH" loading="lazy" title="${c.filename}"></iframe>`;
+
           card.innerHTML = `
-            <div>
-              <span class="cert-badge ${c.ext}">${c.event} · ${c.year}</span>
+            <div class="cert-thumb">
+              ${thumb}
+              <span class="cert-badge ${c.ext}">
+                ${c.event}
+                <span class="cert-badge-year">${c.year}</span>
+              </span>
+            </div>
+            <div class="cert-body">
               <div class="cert-title">${c.role || c.event}</div>
-              <div class="cert-sub">
-                <span>${c.name}</span> · <span style="font-family: 'Roboto Mono', monospace; font-size: 0.75rem;">${c.ext.toUpperCase()}</span>
-              </div>
             </div>
             <div class="cert-actions">
               <a href="${fileUrl}" target="_blank" class="action-btn view">
