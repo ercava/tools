@@ -1119,40 +1119,59 @@
       const sheetTitle = getUserSheetTitle();
       
       if (!spreadsheetId) {
-        addBotMsg(`⏳ Menyalin template ke Google Drive Anda: <b>${sheetTitle}</b>...`, false);
+        addBotMsg(`⏳ Menyiapkan template Google Sheet: <b>${sheetTitle}</b>...`, false);
         try {
-          // Copy template to user's personal Google Drive
-          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy`, {
+          // 1. Create fresh spreadsheet in user's Drive (permitted under drive.file)
+          const createRes = await fetch("https://sheets.googleapis.com/v4/spreadsheets", {
             method: "POST",
             headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ name: sheetTitle })
+            body: JSON.stringify({
+              properties: { title: sheetTitle }
+            })
           });
-          const copyData = await copyRes.json();
-          
-          if (!copyRes.ok) {
-            throw new Error(copyData.error?.message || ("HTTP " + copyRes.status));
+          const createData = await createRes.json();
+          if (!createRes.ok) {
+            throw new Error(createData.error?.message || ("HTTP " + createRes.status));
           }
 
-          spreadsheetId = copyData.id;
+          spreadsheetId = createData.spreadsheetId;
           localStorage.setItem("rarity_sheet_id", spreadsheetId);
-          console.log("[DEBUG] User spreadsheet copied successfully. ID:", spreadsheetId);
+          const initialSheetId = createData.sheets?.[0]?.properties?.sheetId;
+          console.log("[DEBUG] New spreadsheet created:", spreadsheetId);
 
-          // Discover sheet tab title from copied spreadsheet
+          // 2. Clone rich template tab (formatting, colors, formulas) via sheets.copyTo
+          let copiedTabTitle = "[ISI DISINI]";
           try {
-            const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
-              headers: { "Authorization": `Bearer ${accessToken}` }
+            const copyTabRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/0:copyTo`, {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ destinationSpreadsheetId: spreadsheetId })
             });
-            const metaData = await metaRes.json();
-            if (metaData.sheets && metaData.sheets.length > 0) {
-              window.PLANNER_TAB = metaData.sheets[0].properties.title;
-              localStorage.setItem("rarity_planner_tab", window.PLANNER_TAB);
-              console.log("[DEBUG] Primary planner tab discovered:", window.PLANNER_TAB);
+            const copyTabData = await copyTabRes.json();
+            if (copyTabRes.ok && copyTabData.title) {
+              copiedTabTitle = copyTabData.title;
+              window.PLANNER_TAB = copiedTabTitle;
+              localStorage.setItem("rarity_planner_tab", copiedTabTitle);
+              console.log("[DEBUG] Template tab cloned with full styles:", copiedTabTitle);
+
+              // 3. Remove initial blank 'Sheet1' if present
+              if (initialSheetId !== undefined) {
+                await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+                  method: "POST",
+                  headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    requests: [{ deleteSheet: { sheetId: initialSheetId } }]
+                  })
+                });
+              }
+            } else {
+              console.warn("[DEBUG] copyTo warning, checking existing sheets:", copyTabData);
             }
-          } catch (e) {
-            console.warn("[DEBUG] Error reading sheet metadata:", e);
+          } catch (tabErr) {
+            console.warn("[DEBUG] copyTo error, using default tab:", tabErr);
           }
 
-          // Add _ChatState tab as HIDDEN tab for cloud chat history backup
+          // 4. Add _ChatState tab as HIDDEN tab for cloud chat history backup
           try {
             await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
               method: "POST",
@@ -1165,7 +1184,7 @@
             console.warn("[DEBUG] _ChatState tab init:", e);
           }
 
-          // Auto-share copied sheet with bot email (rarity-erc@gmail.com) and link-sharing
+          // 5. Share with WhatsApp Bot email & Anyone with Link
           try {
             await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
               method: "POST",
@@ -1188,10 +1207,10 @@
             console.warn("[DEBUG] Error adding anyone permission:", e);
           }
 
-          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disiapkan & terhubung ke WhatsApp Bot!`, false);
+          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil dibuat dengan format lengkap & terhubung ke WhatsApp Bot!`, false);
         } catch (e) {
-          console.error("[DEBUG] Copy template error:", e);
-          addBotMsg(`⚠️ Gagal menyalin template: ${e.message}<br><small>Pastikan izin Google Drive disetujui saat login.</small>`, false);
+          console.error("[DEBUG] Create sheet error:", e);
+          addBotMsg(`⚠️ Gagal membuat spreadsheet: ${e.message}<br><small>Pastikan izin Google Drive disetujui saat login.</small>`, false);
           return;
         }
       } else {
