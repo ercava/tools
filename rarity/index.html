@@ -616,7 +616,7 @@
       <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧾</div>
       <h1 class="title" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
         <span>RARITY</span>
-        <span style="font-size: 0.72rem; font-weight: 700; color: var(--primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9999px; padding: 2px 8px; vertical-align: middle; letter-spacing: 0;">v1.2.0</span>
+        <span style="font-size: 0.72rem; font-weight: 700; font-family: monospace; color: var(--primary); background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9999px; padding: 2px 8px; vertical-align: middle; letter-spacing: 0;">v1.2.0</span>
       </h1>
       <p class="desc">Scan struk belanja, verifikasi AI, catat otomatis ke Google Sheet.</p>
       
@@ -1103,55 +1103,81 @@
           const initialSheetId = createData.sheets?.[0]?.properties?.sheetId;
           console.log("[DEBUG] New spreadsheet created:", spreadsheetId);
 
-          // 2. Clone rich template tabs (Budget and Tracker) via sheets.copyTo
-          const TEMPLATE_BUDGET_GID = 842695108;
-          const TEMPLATE_TRACKER_GID = 1939073907;
-          let copiedTabTitle = "[ISI DISINI]";
+          // 2. Add Budget + Tracker tabs and write starter data via batchUpdate
+          //    (drive.file scope blocks copyTo from template; we build structure inline instead)
+          const budgetTabTitle = "Budget";
+          const trackerTabTitle = "Tracker";
 
-          try {
-            // Copy primary Budget tab
-            const copyBudgetRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/${TEMPLATE_BUDGET_GID}:copyTo`, {
-              method: "POST",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ destinationSpreadsheetId: spreadsheetId })
-            });
-            const budgetData = await copyBudgetRes.json();
-            
-            if (copyBudgetRes.ok && budgetData.title) {
-              copiedTabTitle = budgetData.title;
-              window.PLANNER_TAB = copiedTabTitle;
-              localStorage.setItem("rarity_planner_tab", copiedTabTitle);
-              console.log("[DEBUG] Budget template tab cloned:", copiedTabTitle);
+          // Rename initial Sheet1 → Budget, add Tracker
+          const renameRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ requests: [
+              { updateSheetProperties: { properties: { sheetId: initialSheetId, title: budgetTabTitle }, fields: "title" } },
+              { addSheet: { properties: { title: trackerTabTitle } } }
+            ]})
+          });
+          const renameData = await renameRes.json();
+          const trackerSheetId = renameData.replies?.[1]?.addSheet?.properties?.sheetId;
 
-              // Copy optional Tracker tab
-              try {
-                await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${TEMPLATE_SHEET_ID}/sheets/${TEMPLATE_TRACKER_GID}:copyTo`, {
-                  method: "POST",
-                  headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-                  body: JSON.stringify({ destinationSpreadsheetId: spreadsheetId })
-                });
-              } catch (tErr) {
-                console.warn("[DEBUG] Tracker tab clone:", tErr);
-              }
 
-              // 3. Remove initial blank 'Sheet1'
-              if (initialSheetId !== undefined) {
-                await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
-                  method: "POST",
-                  headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    requests: [{ deleteSheet: { sheetId: initialSheetId } }]
-                  })
-                });
-              }
-            } else {
-              console.error("[DEBUG] copyTo Budget failed:", budgetData);
-              throw new Error(budgetData.error?.message || "Gagal menyalin tab Budget dari template");
-            }
-          } catch (tabErr) {
-            console.error("[DEBUG] Template cloning error:", tabErr);
-            throw tabErr;
-          }
+          // Write Budget tab data
+
+          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Budget!A1?valueInputOption=USER_ENTERED`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ range: "Budget!A1", majorDimension: "ROWS", values: [
+              ["", "", "", "", "", "", "Pemasukan", "", "Pengeluaran", "", "", "Tagihan", "", "", "Tabungan"],
+              ["", "", "", "", "", "", "Rp0", "", "Rp0", "", "", "Rp0", "", "", "Rp0"],
+              [],
+              ["", "Periode Anggaran"],
+              ["", "Pilih Bulan", new Date().toLocaleString("id-ID", { month: "long" })],
+              ["", "Pilih tahun", String(new Date().getFullYear())],
+              [],
+              ["", "Sisa Anggaran"],
+              ["", "Rp0"],
+              [],
+              ["", "Cashflow", "", "", "", "Tabungan", "", "", "", "", "", "Tagihan"],
+              ["", "", "Rencana", "Actual", "", "Tanggal", "Nama", "Kategori", "Jumlah", "Keterangan", "", "Check", "Tanggal", "Nama", "Jumlah", "Keterangan"],
+              ["", "Pemasukan", "Rp0", "Rp0"],
+              ["", "Tabungan", "Rp0", "Rp0"],
+              ["", "Pengeluaran", "Rp0", "Rp0"],
+              ["", "Tagihan", "Rp0", "Rp0"],
+              ["", "Total", "Rp0", "Rp0"],
+              [],
+              ["", "Pemasukan"],
+              ["", "", "Rencana", "Aktual"],
+              ["", "Gaji", "", "Rp0"],
+              ["", "Bonus", "", "Rp0"],
+              ["", "Lainnya", "", "Rp0"],
+              ["", "Total", "Rp0", "Rp0"],
+              [],
+              ["", "Pengeluaran"],
+              ["", "", "Rencana", "Aktual"],
+              ["", "Makan", "", "Rp0"],
+              ["", "Belanja", "", "Rp0"],
+              ["", "Hiburan", "", "Rp0"],
+              ["", "Transport", "", "Rp0"],
+              ["", "Jajan", "", "Rp0"],
+              ["", "Tagihan", "", "Rp0"],
+              ["", "Lainnya", "", "Rp0"],
+              ["", "Total", "Rp0", "Rp0"],
+            ]})
+          });
+
+          // Write Tracker tab headers
+          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Tracker!A1?valueInputOption=USER_ENTERED`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ range: "Tracker!A1", majorDimension: "ROWS", values: [
+              ["", "Tanggal", "Nama", "Kategori", "Keterangan"],
+            ]})
+          });
+
+          const copiedTabTitle = budgetTabTitle;
+          window.PLANNER_TAB = copiedTabTitle;
+          localStorage.setItem("rarity_planner_tab", copiedTabTitle);
+          console.log("[DEBUG] Budget + Tracker tabs created inline");
 
           // 4. Add _ChatState tab as HIDDEN tab for cloud chat history backup
           try {
