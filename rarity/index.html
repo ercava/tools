@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   
   <style>
     :root {
@@ -1083,126 +1084,84 @@
       const sheetTitle = getUserSheetTitle();
       
       if (!spreadsheetId) {
-        addBotMsg(`⏳ Menyiapkan template Google Sheet: <b>${sheetTitle}</b>...`, false);
+        addBotMsg(`📂 Pilih template Rarity di Google Drive untuk menyalin spreadsheet...`, false);
         try {
-          // 1. Create fresh spreadsheet in user's Drive (permitted under drive.file)
-          const createRes = await fetch("https://sheets.googleapis.com/v4/spreadsheets", {
+          // 1. Load gapi picker library
+          await new Promise((res, rej) => {
+            if (window.google?.picker) return res();
+            gapi.load("picker", { callback: res, onerror: rej });
+          });
+
+          // 2. Show Picker — user picks the template file
+          const pickedId = await new Promise((res, rej) => {
+            const view = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS)
+              .setIncludeFolders(false)
+              .setSelectFolderEnabled(false);
+            // Also show shared-with-me so template appears
+            const sharedView = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS)
+              .setOwnedByMe(false)
+              .setIncludeFolders(false);
+
+            const picker = new google.picker.PickerBuilder()
+              .setTitle("Pilih template Rarity Budget (buka link template dulu jika tidak muncul)")
+              .addView(view)
+              .addView(sharedView)
+              .setOAuthToken(accessToken)
+              .setCallback((data) => {
+                if (data.action === google.picker.Action.PICKED) {
+                  res(data.docs[0].id);
+                } else if (data.action === google.picker.Action.CANCEL) {
+                  rej(new Error("Pemilihan template dibatalkan"));
+                }
+              })
+              .build();
+            picker.setVisible(true);
+          });
+
+          console.log("[DEBUG] Template picked:", pickedId);
+
+          // 3. Copy the picked file — now permitted under drive.file because user opened it
+          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${pickedId}/copy`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              properties: { title: sheetTitle }
-            })
+            body: JSON.stringify({ name: sheetTitle })
           });
-          const createData = await createRes.json();
-          if (!createRes.ok) {
-            throw new Error(createData.error?.message || ("HTTP " + createRes.status));
-          }
+          const copyData = await copyRes.json();
+          if (!copyRes.ok) throw new Error(copyData.error?.message || "HTTP " + copyRes.status);
 
-          spreadsheetId = createData.spreadsheetId;
+          spreadsheetId = copyData.id;
           localStorage.setItem("rarity_sheet_id", spreadsheetId);
-          const initialSheetId = createData.sheets?.[0]?.properties?.sheetId;
-          console.log("[DEBUG] New spreadsheet created:", spreadsheetId);
+          console.log("[DEBUG] Spreadsheet copied:", spreadsheetId);
 
-          // 2. Add Budget + Tracker tabs and write starter data via batchUpdate
-          //    (drive.file scope blocks copyTo from template; we build structure inline instead)
-          const budgetTabTitle = "Budget";
-          const trackerTabTitle = "Tracker";
-
-          // Rename initial Sheet1 → Budget, add Tracker
-          const renameRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ requests: [
-              { updateSheetProperties: { properties: { sheetId: initialSheetId, title: budgetTabTitle }, fields: "title" } },
-              { addSheet: { properties: { title: trackerTabTitle } } }
-            ]})
+          // Detect Budget tab name from copy
+          const metaCopy = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+            headers: { "Authorization": `Bearer ${accessToken}` }
           });
-          const renameData = await renameRes.json();
-          const trackerSheetId = renameData.replies?.[1]?.addSheet?.properties?.sheetId;
-
-
-          // Write Budget tab data
-
-          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Budget!A1?valueInputOption=USER_ENTERED`, {
-            method: "PUT",
-            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ range: "Budget!A1", majorDimension: "ROWS", values: [
-              ["", "", "", "", "", "", "Pemasukan", "", "Pengeluaran", "", "", "Tagihan", "", "", "Tabungan"],
-              ["", "", "", "", "", "", "Rp0", "", "Rp0", "", "", "Rp0", "", "", "Rp0"],
-              [],
-              ["", "Periode Anggaran"],
-              ["", "Pilih Bulan", new Date().toLocaleString("id-ID", { month: "long" })],
-              ["", "Pilih tahun", String(new Date().getFullYear())],
-              [],
-              ["", "Sisa Anggaran"],
-              ["", "Rp0"],
-              [],
-              ["", "Cashflow", "", "", "", "Tabungan", "", "", "", "", "", "Tagihan"],
-              ["", "", "Rencana", "Actual", "", "Tanggal", "Nama", "Kategori", "Jumlah", "Keterangan", "", "Check", "Tanggal", "Nama", "Jumlah", "Keterangan"],
-              ["", "Pemasukan", "Rp0", "Rp0"],
-              ["", "Tabungan", "Rp0", "Rp0"],
-              ["", "Pengeluaran", "Rp0", "Rp0"],
-              ["", "Tagihan", "Rp0", "Rp0"],
-              ["", "Total", "Rp0", "Rp0"],
-              [],
-              ["", "Pemasukan"],
-              ["", "", "Rencana", "Aktual"],
-              ["", "Gaji", "", "Rp0"],
-              ["", "Bonus", "", "Rp0"],
-              ["", "Lainnya", "", "Rp0"],
-              ["", "Total", "Rp0", "Rp0"],
-              [],
-              ["", "Pengeluaran"],
-              ["", "", "Rencana", "Aktual"],
-              ["", "Makan", "", "Rp0"],
-              ["", "Belanja", "", "Rp0"],
-              ["", "Hiburan", "", "Rp0"],
-              ["", "Transport", "", "Rp0"],
-              ["", "Jajan", "", "Rp0"],
-              ["", "Tagihan", "", "Rp0"],
-              ["", "Lainnya", "", "Rp0"],
-              ["", "Total", "Rp0", "Rp0"],
-            ]})
-          });
-
-          // Write Tracker tab headers
-          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Tracker!A1?valueInputOption=USER_ENTERED`, {
-            method: "PUT",
-            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ range: "Tracker!A1", majorDimension: "ROWS", values: [
-              ["", "Tanggal", "Nama", "Kategori", "Keterangan"],
-            ]})
-          });
-
-          const copiedTabTitle = budgetTabTitle;
+          const metaCopyData = await metaCopy.json();
+          const budgetSheet = metaCopyData.sheets?.find(s =>
+            s.properties.title.toLowerCase().includes("budget") || s.properties.index === 0
+          );
+          const copiedTabTitle = budgetSheet?.properties?.title || "Budget";
           window.PLANNER_TAB = copiedTabTitle;
           localStorage.setItem("rarity_planner_tab", copiedTabTitle);
-          console.log("[DEBUG] Budget + Tracker tabs created inline");
 
-          // 4. Add _ChatState tab as HIDDEN tab for cloud chat history backup
+          // 4. Add hidden _ChatState tab
           try {
             await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
               method: "POST",
               headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({
-                requests: [{ addSheet: { properties: { title: "_ChatState", hidden: true } } }]
-              })
+              body: JSON.stringify({ requests: [{ addSheet: { properties: { title: "_ChatState", hidden: true } } }] })
             });
-          } catch (e) {
-            console.warn("[DEBUG] _ChatState tab init:", e);
-          }
+          } catch (e) { console.warn("[DEBUG] _ChatState:", e); }
 
-          // 5. Share with WhatsApp Bot email & Anyone with Link
+          // 5. Share with bot + anyone
           try {
             await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
               method: "POST",
               headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
               body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity-erc@gmail.com" })
             });
-            console.log("[DEBUG] rarity-erc@gmail.com added as editor");
-          } catch (e) {
-            console.warn("[DEBUG] Error adding bot editor permission:", e);
-          }
+          } catch (e) { console.warn("[DEBUG] bot share:", e); }
 
           try {
             await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
@@ -1210,15 +1169,12 @@
               headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
               body: JSON.stringify({ role: "editor", type: "anyone" })
             });
-            console.log("[DEBUG] anyone-with-link editor permission added");
-          } catch (e) {
-            console.warn("[DEBUG] Error adding anyone permission:", e);
-          }
+          } catch (e) { console.warn("[DEBUG] anyone share:", e); }
 
-          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil dibuat dengan format lengkap & terhubung ke WhatsApp Bot!`, false);
+          addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disalin dari template dengan format lengkap & terhubung ke WhatsApp Bot!`, false);
         } catch (e) {
-          console.error("[DEBUG] Create sheet error:", e);
-          addBotMsg(`⚠️ Gagal membuat spreadsheet: ${e.message}<br><small>Pastikan izin Google Drive disetujui saat login.</small>`, false);
+          console.error("[DEBUG] Setup error:", e);
+          addBotMsg(`⚠️ Gagal menyiapkan spreadsheet: ${e.message}<br><small>Coba login ulang dan pilih template saat diminta.</small>`, false);
           return;
         }
       } else {
