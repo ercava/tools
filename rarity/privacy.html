@@ -127,7 +127,7 @@
     <!-- Indonesian Version -->
     <div id="lang-id">
       <h1>Kebijakan Privasi</h1>
-      <div class="date">Terakhir diperbarui: 6 September 2026</div>
+      <div class="date">Terakhir diperbarui: 8 September 2026</div>
 
       <p>Rarity berkomitmen melindungi privasi data pengguna yang mengakses aplikasi web Rarity maupun asisten WhatsApp Rarity.</p>
 
@@ -136,31 +136,56 @@
         <li><b>Data Akun & Identitas:</b> Nomor WhatsApp pengirim dan nama panggilan yang disimpan saat onboarding.</li>
         <li><b>Catatan Keuangan:</b> Teks pengeluaran, gambar struk belanja yang diunggah, serta tanggal dan kategori transaksi.</li>
         <li><b>Pengingat & Agenda:</b> Judul agenda, waktu pengingat, dan catatan yang Anda instruksikan untuk diingatkan.</li>
-        <li><b>Google Spreadsheet:</b> ID sheet yang dihubungkan untuk menyimpan data Anda secara mandiri di Google Drive.</li>
+        <li><b>Google User Data (Google Sheets & Drive):</b> ID spreadsheet dan otorisasi akses file spreadsheet milik pengguna untuk mencatat transaksi dan agenda.</li>
       </ul>
 
       <h2>2. Penggunaan Informasi</h2>
       <ul>
-        <li>Menganalisis foto struk menggunakan Gemini AI untuk mengekstraksi toko, tanggal, item, dan nominal secara otomatis.</li>
-        <li>Mencatat data transaksi dan agenda ke spreadsheet Google Drive milik Anda.</li>
+        <li>Menganalisis foto struk menggunakan Google Gemini AI untuk mengekstraksi toko, tanggal, item, dan nominal secara otomatis.</li>
+        <li>Mencatat data transaksi dan agenda langsung ke file Google Sheet pada Google Drive milik Anda.</li>
         <li>Mengirimkan pesan pengingat jadwal melalui WhatsApp Cloud API secara otomatis sebelum agenda dimulai.</li>
-        <li><b>Kami tidak pernah memperjualbelikan</b> data identitas, percakapan, atau rekam keuangan Anda ke pihak mana pun.</li>
       </ul>
 
-      <h2>3. Penyimpanan & Keamanan</h2>
+      <h2>3. Berbagi, Pengalihan, dan Pengungkapan Data (Data Sharing & Disclosure)</h2>
       <ul>
-        <li>Data transaksi disimpan langsung di Google Sheet akun pengguna masing-masing.</li>
-        <li>Gambar struk hanya diproses sementara oleh AI saat OCR berlangsung dan tidak dijadikan arsip publik.</li>
+        <li><b>Tidak Ada Penjualan Data:</b> Kami tidak pernah menjual, menyewakan, atau memperdagangkan data pengguna Google maupun data pribadi lainnya ke pihak ketiga mana pun.</li>
+        <li><b>Penyedia Layanan Pihak Ketiga:</b> Data hanya diteruskan ke penyedia infrastruktur penting untuk menjalankan fungsi aplikasi:
+          <ul>
+            <li><b>Google APIs & Gemini AI:</b> Untuk otorisasi akun, sinkronisasi Google Sheets, dan ekstraksi OCR struk.</li>
+            <li><b>Meta / WhatsApp Cloud API:</b> Untuk transmisi pesan interaksi dan pengiriman notifikasi pengingat ke nomor Anda.</li>
+          </ul>
+        </li>
+        <li><b>Kepatuhan Hukum:</b> Data hanya dapat diungkapkan apabila diwajibkan secara tegas oleh hukum atau proses peradilan yang sah.</li>
       </ul>
 
-      <h2>4. Kontak Kami</h2>
-      <p>Jika ada pertanyaan terkait privasi, hubungi pengembang melalui WhatsApp Bot (kirim <code>!help</code>) atau kunjungi <a href="https://erc.my.id/tools/">Portal Ercava</a>.</p>
+      <h2>4. Pernyataan Kepatuhan Penggunaan Terbatas (Limited Use Compliance Statement)</h2>
+      <p style="background: var(--bg-light); border-left: 4px solid var(--primary); padding: 12px 16px; border-radius: 4px;">
+        <b>Pernyataan Resmi:</b> Penggunaan data pengguna mentah maupun turunan yang diperoleh dari Google Workspace APIs akan sepenuhnya mematuhi <a href="https://developers.google.com/workspace/workspace-api-user-data-developer-policy" target="_blank" rel="noopener">Kebijakan Data Pengguna Google Workspace</a>, termasuk seluruh persyaratan <b>Limited Use</b>. Data pengguna Google tidak akan pernah digunakan, ditransfer, atau dijual untuk membuat, melatih, atau meningkatkan model machine learning (ML) maupun kecerdasan buatan (AI) tergeneralisasi atau fondasi.
+      </p>
+
+      <h2>5. Perlindungan & Keamanan Data (Data Protection Mechanisms)</h2>
+      <ul>
+        <li><b>Enkripsi Data:</b> Semua komunikasi data antara peramban, server Rarity, Google APIs, dan WhatsApp API menggunakan enkripsi standar industri HTTPS / TLS 1.3 saat transit (in-transit).</li>
+        <li><b>Penyimpanan Terdesentralisasi:</b> Seluruh data spreadsheet keuangan dan agenda tersimpan di Google Drive pribadi Anda, bukan pada database terpusat milik Rarity.</li>
+        <li><b>Pemrosesan Sementara (Ephemeral):</b> Gambar struk belanja hanya diproses secara instan di memori untuk keperluan OCR AI dan tidak diarsipkan atau disimpan permanen di server publik.</li>
+        <li><b>Kontrol Akses:</b> Token otorisasi OAuth dikelola dengan prinsip hak akses minimal dan disimpan secara aman di peramban lokal (localStorage) pengguna.</li>
+      </ul>
+
+      <h2>6. Retensi dan Penghapusan Data (Data Retention & Deletion)</h2>
+      <ul>
+        <li><b>Data Spreadsheet Google:</b> Disimpan di Google Drive Anda selama Anda memilih untuk menyimpannya. Anda memegang kendali penuh untuk mengedit atau menghapus baris maupun seluruh file spreadsheet kapan saja langsung dari Google Drive Anda.</li>
+        <li><b>Data Server:</b> Profil bot WhatsApp (nomor telepon dan pemetaan sheet ID) dapat dihapus seketika dengan mengirimkan perintah <code>!reset</code> ke WhatsApp Bot.</li>
+        <li><b>Pencabutan Akses Google:</b> Anda dapat mencabut izin akses Rarity ke Google Account Anda sewaktu-waktu melalui <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account Permissions</a>. Setelah dicabut, Rarity tidak dapat lagi membaca atau menulis data ke akun Anda.</li>
+      </ul>
+
+      <h2>7. Kontak Kami</h2>
+      <p>Jika ada pertanyaan terkait privasi atau permintaan penghapusan data, hubungi kami melalui WhatsApp Bot (kirim <code>!help</code>) atau kunjungi <a href="https://erc.my.id/tools/">Portal Ercava</a>.</p>
     </div>
 
     <!-- English Version -->
     <div id="lang-en" style="display: none;">
       <h1>Privacy Policy</h1>
-      <div class="date">Last updated: September 6, 2026</div>
+      <div class="date">Last updated: September 8, 2026</div>
 
       <p>Rarity is committed to protecting the privacy of users interacting with the Rarity web application and the official WhatsApp assistant.</p>
 
@@ -169,25 +194,50 @@
         <li><b>Account & Contact Data:</b> WhatsApp phone number and user display name registered during onboarding.</li>
         <li><b>Financial & Log Data:</b> Expense chat texts, uploaded receipt images, transaction dates, and categories.</li>
         <li><b>Reminders & Agendas:</b> Task names, scheduled timestamps, and notes requested for reminder delivery.</li>
-        <li><b>Google Sheets:</b> Connected Spreadsheet ID used to store personal data in your own Google Drive.</li>
+        <li><b>Google User Data (Google Sheets & Drive):</b> Connected Spreadsheet ID and file authorization to log budget records and agenda reminders directly in your personal storage.</li>
       </ul>
 
       <h2>2. How We Use Your Information</h2>
       <ul>
-        <li>Processing receipt images with Gemini AI to parse store name, date, items, and total amounts.</li>
-        <li>Appending transaction records and reminders directly to your personal Google Sheet.</li>
-        <li>Dispatching automated reminder alerts via WhatsApp Cloud API according to your schedule.</li>
-        <li><b>We do not sell</b> personal data, chat transcripts, or financial figures to any third parties.</li>
+        <li>Processing receipt images with Google Gemini AI to parse merchant name, date, line items, and total figures.</li>
+        <li>Appending transaction records and reminder items directly to your personal Google Sheet on Google Drive.</li>
+        <li>Dispatching automated scheduled notifications via WhatsApp Cloud API.</li>
       </ul>
 
-      <h2>3. Storage & Security</h2>
+      <h2>3. Sharing, Transfer, and Disclosure of Google User Data</h2>
       <ul>
-        <li>Spreadsheet data stays completely inside your personal Google Drive storage.</li>
-        <li>Receipt images are processed ephemerally during AI OCR and are not stored in permanent public storage.</li>
+        <li><b>No Sale of Data:</b> We do not sell, rent, lease, or trade Google user data or personal information to any third parties under any circumstances.</li>
+        <li><b>Third-Party Service Providers:</b> User data is only transferred to necessary infrastructure providers strictly to deliver application features:
+          <ul>
+            <li><b>Google APIs & Gemini AI:</b> For Google account authentication, Google Sheets synchronization, and receipt OCR parsing.</li>
+            <li><b>Meta / WhatsApp Cloud API:</b> For transmitting messages and delivering scheduled reminder alerts to your WhatsApp account.</li>
+          </ul>
+        </li>
+        <li><b>Legal Compliance:</b> We may disclose user data only when strictly required by applicable law, regulation, or legally binding court orders.</li>
       </ul>
 
-      <h2>4. Contact Us</h2>
-      <p>For questions regarding your privacy, contact us via WhatsApp Bot (send <code>!help</code>) or visit <a href="https://erc.my.id/tools/">Ercava Portal</a>.</p>
+      <h2>4. Limited Use Compliance Statement</h2>
+      <p style="background: var(--bg-light); border-left: 4px solid var(--primary); padding: 12px 16px; border-radius: 4px;">
+        <b>Affirmative Statement:</b> The use of raw or derived user data received from Workspace APIs will adhere to the <a href="https://developers.google.com/workspace/workspace-api-user-data-developer-policy" target="_blank" rel="noopener">Google User Data Policy</a>, including the <b>Limited Use requirements</b>. Google user data is not used, transferred, or sold to create, train, or improve foundational or generalized machine learning (ML) and artificial intelligence (AI) models.
+      </p>
+
+      <h2>5. Data Protection Mechanisms for Sensitive Data</h2>
+      <ul>
+        <li><b>Data Encryption:</b> All data communications between your browser, Rarity servers, Google APIs, and WhatsApp APIs are encrypted in transit using industry-standard HTTPS / TLS 1.3 protocols.</li>
+        <li><b>Decentralized Storage:</b> Your financial transactions and reminders are stored exclusively inside your personal Google Drive account, not on centralized Rarity databases.</li>
+        <li><b>Ephemeral Processing:</b> Receipt photos uploaded for AI extraction are processed in temporary memory and are never saved or archived to persistent public storage.</li>
+        <li><b>Access Control:</b> User credentials and OAuth tokens are strictly managed under minimum necessary privileges and stored securely on the client side (browser localStorage).</li>
+      </ul>
+
+      <h2>6. Data Retention and Deletion</h2>
+      <ul>
+        <li><b>Google Spreadsheet Data:</b> Data stays in your personal Google Drive for as long as you choose to keep it. You maintain complete control to edit, export, or delete individual rows or entire spreadsheets directly from Google Drive.</li>
+        <li><b>Server-Side Onboarding Data:</b> WhatsApp user mappings (phone number and sheet ID) can be immediately erased by sending the <code>!reset</code> command to the WhatsApp Bot.</li>
+        <li><b>Revoking Google Access:</b> You may revoke Rarity's access permissions to your Google Account at any time via <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account Permissions</a>. Once revoked, Rarity can no longer access or modify your files.</li>
+      </ul>
+
+      <h2>7. Contact Us</h2>
+      <p>For questions regarding your privacy, data handling, or deletion requests, contact us via WhatsApp Bot (send <code>!help</code>) or visit <a href="https://erc.my.id/tools/">Ercava Portal</a>.</p>
     </div>
 
     <div class="footer-nav">
