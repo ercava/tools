@@ -19,14 +19,14 @@
     .subtitle { font-size:0.9rem; color:var(--muted); margin-bottom:1.75rem; padding-bottom:1rem; border-bottom:1px solid var(--line); }
     .version-entry { margin-bottom:2rem; }
     .version-header { display:flex; align-items:baseline; gap:12px; margin-bottom:0.75rem; flex-wrap:wrap; }
-    .vtag { font-family:'Roboto Mono',monospace; font-size:0.95rem; font-weight:500; color:var(--primary); background:#eff6ff; border:1px solid #bfdbfe; border-radius:6px; padding:2px 10px; }
-    .vtag.current { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .vtag { font-family:'Roboto Mono',monospace; font-size:0.95rem; font-weight:600; color:var(--primary); background:#eff6ff; border:none; border-radius:6px; padding:3px 10px; }
+    .vtag.current { background:var(--primary); color:#fff; border:none; }
     .vdate { font-size:0.8rem; color:var(--muted); }
-    .vlabel { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); background:#eff6ff; border-radius:4px; padding:1px 6px; }
+    .vlabel { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); background:#eff6ff; border:none; border-radius:4px; padding:2px 8px; }
     ul { list-style:none; padding:0; }
     ul li { font-size:0.88rem; color:var(--text); padding:4px 0 4px 1.25rem; position:relative; }
     ul li::before { content:'–'; position:absolute; left:0; color:var(--muted); }
-    .tag { display:inline-block; font-size:0.68rem; font-weight:700; border-radius:4px; padding:1px 5px; margin-right:4px; vertical-align:middle; }
+    .tag { display:inline-block; font-size:0.68rem; font-weight:700; border:none; border-radius:4px; padding:2px 6px; margin-right:4px; vertical-align:middle; }
     .tag.feat { background:#dcfce7; color:#166534; }
     .tag.fix  { background:#fef9c3; color:#854d0e; }
     .tag.chore{ background:#f1f5f9; color:var(--muted); }
@@ -40,18 +40,33 @@
   <div class="container">
     <div class="top-bar">
       <a href="../index.html" class="brand"><span>🧾</span> RARITY</a>
-      <a href="../index.html" style="font-size:0.82rem;">Masuk ke Aplikasi →</a>
+      <a href="../index.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #ffffff; background: var(--primary); padding: 6px 14px; border-radius: 8px; text-decoration: none; transition: opacity 0.2s;">Masuk ke Aplikasi →</a>
     </div>
 
     <h1>Versi &amp; Changelog</h1>
     <div class="subtitle">Riwayat perubahan RARITY — terbaru di atas.</div>
 
+    <!-- v1.2.3 -->
+    <div class="version-entry">
+      <div class="version-header">
+        <span class="vtag current">v1.2.3</span>
+        <span class="vdate">8 September 2026</span>
+        <span class="vlabel">Latest</span>
+      </div>
+      <ul>
+        <li><span class="tag feat">feat</span> Tombol 'Masuk ke Aplikasi' dijadikan komponen tombol berlatar warna</li>
+        <li><span class="tag chore">chore</span> Menghapus teks copyright di seluruh footer</li>
+        <li><span class="tag chore">chore</span> Badge status dan tag versi dibuat tanpa garis tepi (borderless)</li>
+      </ul>
+    </div>
+
+    <hr>
+
     <!-- v1.2.2 -->
     <div class="version-entry">
       <div class="version-header">
-        <span class="vtag current">v1.2.2</span>
+        <span class="vtag">v1.2.2</span>
         <span class="vdate">8 September 2026</span>
-        <span class="vlabel">Latest</span>
       </div>
       <ul>
         <li><span class="tag fix">fix</span> Perbaikan SyntaxError redeclaration <code>TEMPLATE_SHEET_ID</code> yang memblokir tombol login</li>
@@ -133,8 +148,7 @@
         <a href="../about.html">About</a> &bull;
         <a href="../terms.html">Terms</a> &bull;
         <a href="../privacy.html">Privacy</a> &bull;
-        <a href="../status/">Status</a> &bull;
-        <span style="color:var(--muted);">© 2026 RARITY for Ercavians</span>
+        <a href="../status/">Status</a>
       </div>
     </div>
   </div>
