@@ -456,11 +456,11 @@ app.post('/api/copy-template', async (req, res) => {
     });
     const fileId = copy.data.id;
     // Owner is rarity.erc already, bot access inherent. Hand ownership to user.
+    // Note: sendNotificationEmail must stay enabled for ownership transfers (Google rule).
     await drive.permissions.create({
       fileId,
       transferOwnership: true,
       requestBody: { role: 'owner', type: 'user', emailAddress: userEmail },
-      sendNotificationEmail: false,
     });
     res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
