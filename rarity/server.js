@@ -434,12 +434,25 @@ app.post('/api/copy-template', async (req, res) => {
     });
     const fileId = copy.data.id;
 
-    // 2. Grant user editor access
+    // 2. Grant logged in user writer access
     await drive.permissions.create({
       fileId,
       requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
       sendNotificationEmail: false,
     });
+
+    // 3. Grant rarity.erc@gmail.com ownership (or writer) so quota is owned by master account
+    try {
+      if (userEmail !== 'rarity.erc@gmail.com') {
+        await drive.permissions.create({
+          fileId,
+          requestBody: { role: 'writer', type: 'user', emailAddress: 'rarity.erc@gmail.com' },
+          sendNotificationEmail: false,
+        });
+      }
+    } catch (err) {
+      console.warn('[copy-template] Master share warning:', err.message);
+    }
 
     console.log(`[copy-template] Copied ${TEMPLATE_SHEET_ID} → ${fileId} for ${userEmail}`);
     res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
