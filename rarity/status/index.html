@@ -106,7 +106,7 @@
     </a>
 
     <div class="header">
-      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧾</div>
+      <img class="logo" src="https://erc.my.id/tools/logo/favicon.ico" alt="Logo RARITY">
       <h1>Status Layanan RARITY</h1>
       <p class="subtitle">Pemantauan operasional real-time ekosistem Rarity & Google Sheets</p>
       <div id="overall-badge" class="overall-badge checking">
@@ -128,11 +128,11 @@
   <script>
     const d = s => atob(s);
     const SERVICES = [
-      { name: 'Rarity Web Dashboard',            url: 'https://erc.my.id/tools/rarity/',    desc: 'erc.my.id/tools/rarity' },
-      { name: 'Rarity WhatsApp Cloud Webhook',   url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vaGVhbHRo'), desc: 'rarity-kwn4.onrender.com/health', noLink: true },
-      { name: 'Rarity Users Registry API',       url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vYXBpL3VzZXJzP2tleT1yYXJpdHlfeDlrMm0='), desc: 'rarity-kwn4.onrender.com/api/users', noLink: true },
-      { name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec', desc: 'script.google.com (Apps Script)' },
-      { name: 'Ercava Tools Hub',                url: 'https://erc.my.id/tools/',           desc: 'erc.my.id/tools' }
+      { name: 'Rarity Web Dashboard',            url: 'https://erc.my.id/tools/rarity/' },
+      { name: 'Rarity WhatsApp Cloud Webhook',   url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vaGVhbHRo') },
+      { name: 'Rarity Users Registry API',       url: d('aHR0cHM6Ly9yYXJpdHkta3duNC5vbnJlbmRlci5jb20vYXBpL3VzZXJzP2tleT1yYXJpdHlfeDlrMm0=') },
+      { name: 'Google Sheets Apps Script Proxy', url: 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec' },
+      { name: 'Ercava Tools Hub',                url: 'https://erc.my.id/tools/' }
     ];
 
     async function checkService(svc) {
@@ -157,7 +157,6 @@
         <div class="service-card">
           <div class="service-info">
             <h3>${r.name}</h3>
-            <p>${r.noLink ? `<span>${r.desc}</span>` : `<a href="${r.url}" target="_blank" rel="noopener">${r.desc}</a>`}</p>
           </div>
           <span class="status-pill ${r.state}">
             <span class="dot"></span>${r.label}

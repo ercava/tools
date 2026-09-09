@@ -39,19 +39,34 @@
 <body>
   <div class="container">
     <div class="top-bar">
-      <a href="../index.html" class="brand"><span>🧾</span> RARITY</a>
-      <a href="../index.html" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #ffffff; background: var(--primary); padding: 6px 14px; border-radius: 8px; text-decoration: none; transition: opacity 0.2s;">Masuk ke Aplikasi →</a>
+      <a href="../index.html" class="brand"><img src="../../logo/favicon.ico" alt="Logo RARITY" style="height:1.4em;width:auto;"> RARITY</a>
+      <a href="../index.html" title="Masuk ke Aplikasi" aria-label="Masuk ke Aplikasi" style="font-size:1.25rem;font-weight:700;color:var(--primary);text-decoration:none;">→</a>
     </div>
 
     <h1>Versi &amp; Changelog</h1>
     <div class="subtitle">Riwayat perubahan RARITY — terbaru di atas.</div>
 
+    <!-- v1.2.5 -->
+    <div class="version-entry">
+      <div class="version-header">
+        <span class="vtag current">v1.2.5</span>
+        <span class="vdate">9 September 2026</span>
+        <span class="vlabel">Latest</span>
+      </div>
+      <ul>
+        <li><span class="tag feat">feat</span> Template disalin server-side sebagai owner lalu ownership ditransfer ke pengguna — frontend cukup scope <code>drive.file</code>, tanpa warning verifikasi & tanpa Picker</li>
+        <li><span class="tag feat">feat</span> Brand emoji 🧾 diganti logo Ercava + version logging di console halaman ini</li>
+        <li><span class="tag chore">chore</span> Halaman status tanpa URL terlihat, tombol 'Masuk ke Aplikasi' jadi ikon →</li>
+      </ul>
+    </div>
+
+    <hr>
+
     <!-- v1.2.4 -->
     <div class="version-entry">
       <div class="version-header">
-        <span class="vtag current">v1.2.4</span>
+        <span class="vtag">v1.2.4</span>
         <span class="vdate">9 September 2026</span>
-        <span class="vlabel">Latest</span>
       </div>
       <ul>
         <li><span class="tag feat">feat</span> Hapus Google Picker — template disalin otomatis via Drive API tanpa interaksi pengguna</li>
@@ -166,5 +181,8 @@
       </div>
     </div>
   </div>
+  <script>
+    console.log('[RARITY versions]', [...document.querySelectorAll('.version-entry .vtag')].map(el => el.textContent.trim()).join(', '));
+  </script>
 </body>
 </html>

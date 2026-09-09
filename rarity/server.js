@@ -414,18 +414,40 @@ function makeGCalLink(title, timestampMs, notes = '') {
 
 // POST /api/copy-template
 // Body: { userToken, userEmail, fileName }
-// SA cannot own Drive files on @gmail.com (0 quota). User OAuth only.
+// Copy runs as owner account (rarity.erc@gmail.com), then ownership
+// transfers to user. Frontend keeps drive.file scope: no warning, no Picker.
+// SA cannot own Drive files on @gmail.com (0 quota), so owner OAuth used.
+const OWNER_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '181034412045-4iu4f1msf66l6ok3nn0iujj3qj6lkamm.apps.googleusercontent.com';
+const OWNER_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+const OWNER_REFRESH_TOKEN = process.env.OWNER_REFRESH_TOKEN || '';
+
+function getOwnerDrive() {
+  const ownerAuth = new google.auth.OAuth2(OWNER_CLIENT_ID, OWNER_CLIENT_SECRET);
+  ownerAuth.setCredentials({ refresh_token: OWNER_REFRESH_TOKEN });
+  return google.drive({ version: 'v3', auth: ownerAuth });
+}
+
 app.post('/api/copy-template', async (req, res) => {
   const { userToken, userEmail, fileName } = req.body || {};
   console.log(`[copy-template DEBUG] userEmail: ${userEmail}, hasUserToken: ${!!userToken}`);
-  if (!userToken) {
-    return res.status(400).json({ error: 'userToken required (service account has no Drive quota)' });
+  if (!userToken || !userEmail) {
+    return res.status(400).json({ error: 'userToken and userEmail required' });
+  }
+  if (!OWNER_CLIENT_SECRET || !OWNER_REFRESH_TOKEN) {
+    return res.status(500).json({ error: 'Owner Drive not configured (GOOGLE_CLIENT_SECRET / OWNER_REFRESH_TOKEN missing)' });
   }
   try {
-    const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({ access_token: userToken });
-    const drive = google.drive({ version: 'v3', auth: oauth2Client });
+    // Abuse guard: token must belong to claimed email
+    const meRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { 'Authorization': `Bearer ${userToken}` }
+    });
+    if (!meRes.ok) return res.status(401).json({ error: 'Invalid userToken' });
+    const me = await meRes.json();
+    if ((me.email || '').toLowerCase() !== String(userEmail).toLowerCase()) {
+      return res.status(403).json({ error: 'Token/email mismatch' });
+    }
 
+    const drive = getOwnerDrive();
     const copy = await drive.files.copy({
       fileId: TEMPLATE_SHEET_ID,
       requestBody: { name: fileName || "Rarity Budget & Planning" },
@@ -433,17 +455,13 @@ app.post('/api/copy-template', async (req, res) => {
       supportsAllDrives: true,
     });
     const fileId = copy.data.id;
-    try {
-      if (userEmail && userEmail !== 'rarity.erc@gmail.com') {
-        await drive.permissions.create({
-          fileId,
-          requestBody: { role: 'writer', type: 'user', emailAddress: 'rarity.erc@gmail.com' },
-          sendNotificationEmail: false,
-        });
-      }
-    } catch (err) {
-      console.warn('[copy-template] master share:', err.message);
-    }
+    // Owner is rarity.erc already, bot access inherent. Hand ownership to user.
+    await drive.permissions.create({
+      fileId,
+      transferOwnership: true,
+      requestBody: { role: 'owner', type: 'user', emailAddress: userEmail },
+      sendNotificationEmail: false,
+    });
     res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
     console.error(`[copy-template DEBUG ERROR] Code: ${e.code}, Message: ${e.message}`, e.response?.data || e.stack);

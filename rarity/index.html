@@ -613,7 +613,7 @@
   <!-- Screen 1: Login -->
   <div id="screen-login" class="screen active">
     <div class="auth-container">
-      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🧾</div>
+      <img src="../logo/favicon.ico" alt="Logo RARITY" style="height:64px;margin-bottom:0.5rem;">
       <h1 class="title">RARITY</h1>
       <p class="desc">Scan struk belanja, verifikasi AI, catat otomatis ke Google Sheet.</p>
       
@@ -1033,7 +1033,7 @@
       if (!window.google || tokenClient) return;
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+        scope: "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
         callback: async (resp) => {
           if (resp.error) return alert("Login gagal: " + resp.error);
           accessToken = resp.access_token;
@@ -1084,13 +1084,14 @@
       if (!spreadsheetId) {
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          // Copy as the signed-in Gmail user (their quota). SA has 0 Drive quota.
+          // Copy runs server-side as owner, ownership transfers to user.
+          // Frontend keeps drive.file scope: no verification warning.
           const copyRes = await fetch(
-            `https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy?fields=id&supportsAllDrives=true`,
+            `${BACKEND_URL}/api/copy-template`,
             {
               method: "POST",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ name: sheetTitle })
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userToken: accessToken, userEmail: userProfile?.email, fileName: sheetTitle })
             }
           );
           const copyText = await copyRes.text();
@@ -1154,7 +1155,7 @@
           addBotMsg(`✅ Spreadsheet <b>${sheetTitle}</b> berhasil disalin dari template dengan format lengkap & terhubung ke WhatsApp Bot!`, false);
         } catch (e) {
           console.error("[DEBUG] Setup error:", e);
-          addBotMsg(`⚠️ Gagal menyiapkan spreadsheet: ${e.message}<br><small>Coba login ulang dan pilih template saat diminta.</small>`, false);
+          addBotMsg(`⚠️ Gagal menyiapkan spreadsheet: ${e.message}<br><small>Coba login ulang.</small>`, false);
           return;
         }
       } else {
