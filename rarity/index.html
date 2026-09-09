@@ -1084,11 +1084,11 @@
       if (!spreadsheetId) {
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          // Service account on backend copies template & grants user editor access
+          // Pass user accessToken so backend uses user token directly (uses user 300GB+ quota, no SA quota issues)
           const copyRes = await fetch(`${BACKEND_URL}/api/copy-template`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userEmail: userProfile.email, fileName: sheetTitle })
+            body: JSON.stringify({ userToken: accessToken, fileName: sheetTitle, userEmail: userProfile?.email })
           });
           const copyText = await copyRes.text();
           let copyData;

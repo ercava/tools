@@ -413,20 +413,27 @@ function makeGCalLink(title, timestampMs, notes = '') {
 // --- DRIVE TEMPLATE COPY API ---
 
 // POST /api/copy-template
-// Body: { userEmail, fileName }
-// Service account copies template → grants user editor → returns { id, webViewLink }
+// Body: { userToken, userEmail, fileName }
+// Uses userToken directly if passed (owned by user, 300GB+ quota), falls back to SA
 app.post('/api/copy-template', async (req, res) => {
-  const { userEmail, fileName, targetFolderId } = req.body || {};
-  if (!userEmail) return res.status(400).json({ error: 'userEmail required' });
+  const { userToken, userEmail, fileName, targetFolderId } = req.body || {};
   try {
-    const drive = getDriveClient();
+    let drive;
+    if (userToken) {
+      // Use user's OAuth access token directly — file is owned by user, uses user's 300GB+ quota
+      const oauth2Client = new google.auth.OAuth2();
+      oauth2Client.setCredentials({ access_token: userToken });
+      drive = google.drive({ version: 'v3', auth: oauth2Client });
+    } else {
+      drive = getDriveClient();
+    }
 
     const requestBody = { name: fileName || "Rarity Budget & Planning" };
     if (targetFolderId || process.env.SA_TARGET_FOLDER_ID) {
       requestBody.parents = [targetFolderId || process.env.SA_TARGET_FOLDER_ID];
     }
 
-    // 1. Copy template (uses target folder if provided to bypass SA 0-byte quota limit)
+    // 1. Copy template directly
     const copy = await drive.files.copy({
       fileId: TEMPLATE_SHEET_ID,
       requestBody,
@@ -434,14 +441,16 @@ app.post('/api/copy-template', async (req, res) => {
     });
     const fileId = copy.data.id;
 
-    // 2. Grant logged in user writer access
-    await drive.permissions.create({
-      fileId,
-      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
-      sendNotificationEmail: false,
-    });
+    // 2. Share with user (if SA copied)
+    if (!userToken && userEmail) {
+      await drive.permissions.create({
+        fileId,
+        requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
+        sendNotificationEmail: false,
+      });
+    }
 
-    // 3. Grant rarity.erc@gmail.com ownership (or writer) so quota is owned by master account
+    // 3. Share with rarity.erc@gmail.com (for WA bot access)
     try {
       if (userEmail !== 'rarity.erc@gmail.com') {
         await drive.permissions.create({
@@ -454,7 +463,7 @@ app.post('/api/copy-template', async (req, res) => {
       console.warn('[copy-template] Master share warning:', err.message);
     }
 
-    console.log(`[copy-template] Copied ${TEMPLATE_SHEET_ID} → ${fileId} for ${userEmail}`);
+    console.log(`[copy-template] Copied ${TEMPLATE_SHEET_ID} → ${fileId} (userToken: ${!!userToken})`);
     res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
     console.error('[copy-template] Error:', e.message);
