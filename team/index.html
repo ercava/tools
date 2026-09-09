@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Generator - Split into Teams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --primary: #26568c;
+      --accent: #152638;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --text: #1f2937;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --success: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23f0f4f8' fill-opacity='0.8' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E");
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(38, 86, 140, 0.1);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    .rail-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-light);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 600;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .rail-toggle:hover, .rail-toggle.open {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .layout {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+    }
+
+    .layout .grid {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    textarea {
+      background: var(--bg);
+      border: 2px solid var(--line);
+      color: var(--text);
+      padding: 0.8rem;
+      border-radius: 8px;
+      width: 100%;
+      height: 260px;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .stepper button {
+      width: 42px;
+      height: 44px;
+      background: var(--bg-light);
+      border: none;
+      color: var(--accent);
+      font-size: 1.25rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .stepper button:hover {
+      background: var(--line);
+    }
+
+    .stepper input {
+      width: 56px;
+      height: 44px;
+      border: none;
+      border-left: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: center;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--accent);
+      outline: none;
+      background: var(--bg);
+      -moz-appearance: textfield;
+    }
+
+    .stepper input::-webkit-outer-spin-button,
+    .stepper input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .count-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      flex: 1;
+      background: var(--accent);
+      color: #ffffff;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--bg-light);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: var(--line);
+    }
+
+    /* Results */
+    .results {
+      margin-top: 2rem;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .results-header h2 {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .summary {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: 'Roboto Mono', monospace;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      border: 2px dashed var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      background: var(--bg-light);
+    }
+
+    .teams-grid {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      perspective: 1200px;
+    }
+
+    @media (max-width: 768px) {
+      .teams-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .team-card {
+      position: relative;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.1rem 1.15rem 1rem;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.15s ease-out;
+      animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .team-card .team-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .team-card .team-name {
+      font-weight: 800;
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .team-card .team-size {
+      margin-left: auto;
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      padding: 0.1rem 0.45rem;
+      border-radius: 20px;
+    }
+
+    .team-card ul {
+      list-style: none;
+      margin: 0.9rem 0 0;
+      padding: 0.9rem 0 0;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .team-card li {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .empty-team {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    /* Collapsible history sidebar */
+    .history-rail {
+      width: 200px;
+      flex-shrink: 0;
+      background: var(--bg-light);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.8rem 0.8rem 0.9rem;
+      overflow: hidden;
+      transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease, border-color 0.25s ease;
+    }
+
+    .history-rail.collapsed {
+      width: 0;
+      padding: 0;
+      border-color: transparent;
+      opacity: 0;
+    }
+
+    @media (max-width: 768px) {
+      .history-rail {
+        width: 100%;
+      }
+      .history-rail.collapsed {
+        width: 0;
+      }
+    }
+
+    .rail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+      white-space: nowrap;
+    }
+
+    .rail-head h3 {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .rail-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 0.2rem;
+    }
+
+    .rail-close:hover {
+      color: var(--accent);
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    .history-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.5rem 0.65rem;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .history-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .history-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .history-empty {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: 'Roboto Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>ERC Team Generator</h1>
+      <button type="button" class="rail-toggle" id="rail-toggle" aria-expanded="false">
+        <span id="rail-toggle-label">History</span>
+      </button>
+    </div>
+
+    <div class="layout">
+      <div class="grid">
+        <div class="teams-preview" id="results"></div>
+
+        <div class="controls">
+          <div class="form-group">
+            <label>Player Names</label>
+            <textarea id="names-input" placeholder="Paste names or paragraph here...">Ali&#10;Budi&#10;Citra&#10;Dewi&#10;Eko&#10;Fani&#10;Gilang&#10;Hana&#10;Indra&#10;Joko&#10;Karin&#10;Laras</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Number of Teams</label>
+            <div class="count-row">
+              <div class="stepper">
+                <button type="button" id="dec-btn" aria-label="Decrease">&minus;</button>
+                <input type="number" id="team-count" value="3" min="1" max="20">
+                <button type="button" id="inc-btn" aria-label="Increase">+</button>
+              </div>
+              <div class="count-hint">Members are balanced<br>across teams automatically.</div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn" id="generate-btn">Generate Teams</button>
+            <button class="btn btn-secondary" id="reshuffle-btn">Reroll</button>
+            <button class="btn btn-secondary" id="clear-btn">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="history-rail" id="history-rail">
+        <div class="rail-head">
+          <h3>History</h3>
+          <button type="button" class="rail-close" id="rail-close" aria-label="Collapse history">&lsaquo;</button>
+        </div>
+        <ul class="history-list" id="history-list"></ul>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const textarea = document.getElementById('names-input');
+    const teamCountInput = document.getElementById('team-count');
+    const decBtn = document.getElementById('dec-btn');
+    const incBtn = document.getElementById('inc-btn');
+    const generateBtn = document.getElementById('generate-btn');
+    const reshuffleBtn = document.getElementById('reshuffle-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const resultsEl = document.getElementById('results');
+    const railToggle = document.getElementById('rail-toggle');
+    const railClose = document.getElementById('rail-close');
+    const rail = document.getElementById('history-rail');
+
+    const STORAGE_KEY = 'erc-team-generator';
+    let history = [];
+    let currentIndex = 0;
+    let railOpen = false;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          names: textarea.value,
+          teamCount: teamCountInput.value,
+          history,
+          railOpen
+        }));
+      } catch (e) {}
+    }
+
+    function setRailOpen(open) {
+      railOpen = open;
+      rail.classList.toggle('collapsed', !open);
+      railToggle.classList.toggle('open', open);
+      railToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      saveState();
+    }
+
+    // Auto Parse pasted paragraph or long string into entries list
+    textarea.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteText = (e.clipboardData || window.clipboardData).getData('text');
+      const parsed = pasteText
+        .split(/[\n,;\t•\d+\.]+/g)
+        .map(s => s.trim())
+        .filter(Boolean);
+      const current = getNames();
+      const updated = [...current, ...parsed];
+      textarea.value = updated.join('\n');
+      generate();
+    });
+
+    function getNames() {
+      return textarea.value.split('\n').map(s => s.trim()).filter(Boolean);
+    }
+
+    function getTeamCount() {
+      const v = parseInt(teamCountInput.value, 10);
+      if (isNaN(v)) return 1;
+      return Math.min(20, Math.max(1, v));
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function buildTeams() {
+      const names = shuffle(getNames());
+      const teamCount = getTeamCount();
+      const teams = Array.from({ length: teamCount }, () => []);
+      names.forEach((name, i) => {
+        teams[i % teamCount].push(name);
+      });
+      return teams;
+    }
+
+    function renderResults(teams, index = 0) {
+      const playerCount = teams.reduce((total, t) => total + t.length, 0);
+      const teamCount = teams.length;
+
+      if (playerCount === 0) {
+        resultsEl.innerHTML = '<div class="empty-state">Add player names above, then generate teams.</div>';
+        renderHistoryPanel();
+        return;
+      }
+
+      const minSize = Math.floor(playerCount / teamCount);
+      const maxSize = Math.ceil(playerCount / teamCount);
+
+      let html = `
+        <div class="results">
+          <div class="results-header">
+            <div class="header-left">
+              <h2>Teams</h2>
+              <span class="summary">${playerCount} players &middot; ${teamCount} teams &middot; ${minSize}&ndash;${maxSize} per team</span>
+            </div>
+          </div>
+
+          <div class="teams-grid">
+      `;
+
+      teams.forEach((team, i) => {
+        const members = team.length > 0
+          ? team.map(m => `<li>${m}</li>`).join('')
+          : '<li class="empty-team">— empty —</li>';
+        html += `
+            <div class="team-card">
+              <div class="team-head">
+                <span class="team-name">Team ${i + 1}</span>
+                <span class="team-size">${team.length}</span>
+              </div>
+              <ul>${members}</ul>
+            </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      resultsEl.innerHTML = html;
+
+      currentIndex = index;
+      renderHistoryPanel();
+      attachTilt();
+    }
+
+    function renderHistoryPanel() {
+      const toggle = document.getElementById('rail-toggle');
+      const toggleLabel = document.getElementById('rail-toggle-label');
+      const rail = document.getElementById('history-rail');
+      const list = document.getElementById('history-list');
+      if (!rail || !list) return;
+
+      if (history.length <= 1) {
+        toggle.style.display = 'none';
+        list.innerHTML = '<li class="history-empty">No history yet.</li>';
+        return;
+      }
+      toggle.style.display = '';
+
+      toggleLabel.textContent = `History (${history.length})`;
+
+      list.innerHTML = '';
+      history.forEach((h, i) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'history-btn' + (i === currentIndex ? ' active' : '');
+        const t = new Date(h.ts);
+        btn.textContent = `#${history.length - i} · ${t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        btn.onclick = () => renderResults(history[i].teams, i);
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function attachTilt() {
+      resultsEl.querySelectorAll('.team-card').forEach((card) => {
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width;
+          const py = (e.clientY - r.top) / r.height;
+          const rotateY = (px - 0.5) * 14;
+          const rotateX = (0.5 - py) * 14;
+          card.style.transform = `rotateY(${rotateY.toFixed(2)}deg) rotateX(${rotateX.toFixed(2)}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+    }
+
+    function generate() {
+      const names = getNames();
+      const teamCount = getTeamCount();
+
+      if (names.length === 0) {
+        history = [];
+        saveState();
+        renderResults([]);
+        return;
+      }
+      if (names.length < teamCount) {
+        resultsEl.innerHTML = `<div class="empty-state">Not enough players (${names.length}) for ${teamCount} teams. Add more names or reduce team count.</div>`;
+        return;
+      }
+
+      const teams = buildTeams();
+      history.unshift({ teams, ts: Date.now() });
+      history = history.slice(0, 10);
+      saveState();
+      renderResults(teams);
+
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+      }
+    }
+
+    decBtn.addEventListener('click', () => {
+      teamCountInput.value = Math.max(1, getTeamCount() - 1);
+      generate();
+    });
+
+    incBtn.addEventListener('click', () => {
+      teamCountInput.value = Math.min(20, getTeamCount() + 1);
+      generate();
+    });
+
+    teamCountInput.addEventListener('change', generate);
+
+    generateBtn.addEventListener('click', generate);
+    reshuffleBtn.addEventListener('click', generate);
+
+    clearBtn.addEventListener('click', () => {
+      textarea.value = '';
+      history = [];
+      saveState();
+      renderResults([]);
+      textarea.focus();
+    });
+
+    railToggle.addEventListener('click', () => setRailOpen(!railOpen));
+    railClose.addEventListener('click', () => setRailOpen(false));
+
+    textarea.addEventListener('input', () => {
+      saveState();
+      if (resultsEl.querySelector('.teams-grid')) return;
+      resultsEl.innerHTML = '<div class="empty-state">Add player names above, then generate teams.</div>';
+    });
+
+    const saved = loadState();
+    if (saved) {
+      if (saved.names !== undefined) textarea.value = saved.names;
+      if (saved.teamCount) teamCountInput.value = saved.teamCount;
+      if (Array.isArray(saved.history)) history = saved.history;
+      if (typeof saved.railOpen === 'boolean') railOpen = saved.railOpen;
+    }
+
+    setRailOpen(railOpen);
+
+    if (history.length > 0) {
+      renderResults(history[0].teams);
+    } else {
+      generate();
+    }
+  </script>
+</body>
+</html>

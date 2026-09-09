@@ -121,8 +121,9 @@
       color: var(--muted);
       padding: 0.5rem 0.9rem;
       border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 500;
+      font-size: 0.72rem;
       cursor: pointer;
       text-transform: uppercase;
       transition: all 0.2s;
@@ -204,8 +205,9 @@
       padding: 0.8rem;
       border: none;
       border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 600;
+      font-size: 0.8rem;
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -296,6 +298,7 @@
           <div class="btn-group">
             <button class="btn" id="spin-btn">Spin Wheel</button>
             <button class="btn btn-secondary" id="shuffle-btn">Shuffle</button>
+            <button class="btn btn-secondary" id="clear-btn">Clear</button>
           </div>
         </div>
 
@@ -324,6 +327,7 @@
     const textarea = document.getElementById('names-input');
     const spinBtn = document.getElementById('spin-btn');
     const shuffleBtn = document.getElementById('shuffle-btn');
+    const clearBtn = document.getElementById('clear-btn');
     const modal = document.getElementById('winner-modal');
     const winnerDisplay = document.getElementById('winner-display');
     const removeBtn = document.getElementById('remove-btn');
@@ -533,6 +537,13 @@
         [names[i], names[j]] = [names[j], names[i]];
       }
       textarea.value = names.join('\n');
+      drawWheel();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      textarea.value = '';
+      removedNames = [];
+      renderRemovedTab();
       drawWheel();
     });
 

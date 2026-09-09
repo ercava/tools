@@ -1086,6 +1086,8 @@
         try {
           // Copy runs server-side as owner, ownership transfers to user.
           // Frontend keeps drive.file scope: no verification warning.
+          const copyPayload = { userToken: accessToken ? accessToken.substring(0, 12) + "..." : null, userEmail: userProfile?.email, fileName: sheetTitle };
+          console.log("[DEBUG] copy-template request:", BACKEND_URL + "/api/copy-template", copyPayload);
           const copyRes = await fetch(
             `${BACKEND_URL}/api/copy-template`,
             {
@@ -1103,6 +1105,7 @@
             throw new Error(`Drive response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
           }
           if (!copyRes.ok) {
+            console.log("[DEBUG] copy-template error detail:", JSON.stringify({ code: copyData.code, error: copyData.error, details: copyData.details }));
             const msg = copyData.error?.message || copyData.error || ("HTTP " + copyRes.status);
             if (String(msg).includes("quota")) {
               throw new Error("Google Drive penuh. Kosongkan sampah di drive.google.com lalu login ulang.");
