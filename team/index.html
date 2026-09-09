@@ -37,6 +37,7 @@
     }
 
     .container {
+      position: relative;
       width: 100%;
       max-width: 900px;
       margin: 0 auto;
@@ -372,15 +373,21 @@
       font-size: 0.8rem;
     }
 
-    /* Collapsible history sidebar */
+    /* Collapsible history sidebar - overlays the main box */
     .history-rail {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 30;
       width: 200px;
-      flex-shrink: 0;
       background: var(--bg-light);
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 0 12px 12px 0;
       padding: 0.8rem 0.8rem 0.9rem;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: 0 10px 25px -5px rgba(38, 86, 140, 0.18);
       transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease, border-color 0.25s ease;
     }
 
@@ -389,15 +396,8 @@
       padding: 0;
       border-color: transparent;
       opacity: 0;
-    }
-
-    @media (max-width: 768px) {
-      .history-rail {
-        width: 100%;
-      }
-      .history-rail.collapsed {
-        width: 0;
-      }
+      pointer-events: none;
+      box-shadow: none;
     }
 
     .rail-head {
