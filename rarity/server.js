@@ -236,14 +236,12 @@ async function callGemini(contents) {
 // Users persistence: maps phone to { step, name, sheetId, plannerTab, lastSeen, lastAnnouncedVersion }
 const USERS_FILE = path.join(__dirname, 'users.json');
 const CURRENT_APP_VERSION = '2.2.0'; // Updated with Assignment list, GCal sync, Calendar view, and Undo
-const UPDATE_ANNOUNCEMENT = `📢 *PEMBARUAN RARITY v${CURRENT_APP_VERSION} Telah Rilis!* 🚀\n\n` +
-  `Halo! Rarity baru saja diperbarui dengan fitur baru:\n` +
-  `1️⃣ *Perintah !tugas* → Cek deadline tugas & assignment aktif.\n` +
-  `2️⃣ *Google Calendar Link* → Simpan jadwal ke Google Calendar dalam 1 klik.\n` +
-  `3️⃣ *Batalkan Entri (!batal / !undo)* → Batalkan catatan transaksi atau pengingat yang salah.\n` +
-  `4️⃣ *Kalender Interaktif di Web* → https://erc.my.id/tools/rarity\n\n` +
-  `⚠️ *PENTING:* Jika bot tidak bisa menulis ke Google Sheet Anda, pastikan buka Settings (⚙️) di web lalu klik *"Beri Izin Bot WhatsApp"*, atau kirim ulang Sheet ID Anda ke sini:\n` +
-  `\`!sheet [ID_GOOGLE_SHEET]\``;
+const UPDATE_ANNOUNCEMENT = `📢 *RARITY v${CURRENT_APP_VERSION} update!* 🚀\n\n` +
+  `*!tugas* → cek tugas\n` +
+  `Link Google Calendar → 1 klik simpan jadwal\n` +
+  `*!batal* → undo salah catat\n\n` +
+  `⚠️ Bot gak nulis ke Sheet? Buka ⚙️ di web → *"Beri Izin Bot WhatsApp"*, atau kirim:\n` +
+  `\`!sheet [ID_SHEET]\``;
 
 let users = {};
 try {
@@ -455,15 +453,21 @@ app.post('/api/copy-template', async (req, res) => {
       supportsAllDrives: true,
     });
     const fileId = copy.data.id;
-    // Ownership transfer between consumer accounts needs recipient consent
-    // (Google rule since 2022), so backend alone can't finish it.
-    // Instead: owner keeps file, user gets writer. File created by same
-    // Cloud project, so user's drive.file scope still sees it.
-    await drive.permissions.create({
+    // Consumer transfer needs recipient consent (Google rule since 2022).
+    // Step 1 (owner): writer share + pendingOwner invite. Step 2 (frontend
+    // as user): accept ownership. File parked in owner Drive meanwhile.
+    const perm = await drive.permissions.create({
       fileId,
       requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
+      fields: 'id',
     });
-    res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
+    await drive.permissions.update({
+      fileId,
+      permissionId: perm.data.id,
+      transferOwnership: true,
+      requestBody: { role: 'writer', pendingOwner: true },
+    });
+    res.json({ id: fileId, permissionId: perm.data.id, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
     console.error(`[copy-template DEBUG ERROR] Code: ${e.code}, Message: ${e.message}`, e.response?.data || e.stack);
     res.status(500).json({ error: e.message, code: e.code, details: e.response?.data?.error || null });
@@ -525,7 +529,7 @@ app.post('/webhook', async (req, res) => {
 
         // A. Image Receipt OCR
         if (msgType === 'image') {
-          await sendWhatsAppMessage(from, '🔍 Membaca struk dengan AI...');
+          await sendWhatsAppMessage(from, '🔍 Baca struk...');
           try {
             const { base64Data, mimeType } = await downloadMedia(msg.image.id);
             const today = new Date().toISOString().split('T')[0];
@@ -557,13 +561,13 @@ app.post('/webhook', async (req, res) => {
               saveUsers();
             }
 
-            let reply = `🧾 *HASIL STRUK BELANJA*\n📅 Tanggal: ${parsed.date}\n🏪 Toko: ${parsed.merchant || 'Umum'}\n💰 Total: ${rupiah(parsed.amount, user.currency)}\n🏷️ Kategori: ${parsed.category}\n`;
-            if (parsed.notes) reply += `📝 Catatan: ${parsed.notes}\n`;
-            reply += sheetRes.success ? `\n✅ *Tercatat di Sheet baris ${sheetRes.row}*\n_Ketik "!batal" jika salah mencatat._` : `\n⚠️ Status Sheet: ${sheetRes.reason}`;
+            let reply = `🧾 *${parsed.merchant || 'Umum'}* — ${rupiah(parsed.amount, user.currency)}\n📅 ${parsed.date} | 🏷️ ${parsed.category}\n`;
+            if (parsed.notes) reply += `📝 ${parsed.notes}\n`;
+            reply += sheetRes.success ? `\n✅ Masuk baris ${sheetRes.row}. Salah? *!batal*` : `\n⚠️ ${sheetRes.reason}`;
             await sendWhatsAppMessage(from, reply);
           } catch (e) {
             console.error('[OCR Error]:', e.message);
-            await sendWhatsAppMessage(from, `❌ Gagal memproses struk: ${e.message}`);
+            await sendWhatsAppMessage(from, `❌ Gagal baca struk: ${e.message}`);
           }
           continue;
         }
@@ -575,44 +579,26 @@ app.post('/webhook', async (req, res) => {
           // 1. Explicit Help / Info Commands
           // Help Command
           if (/^(!help|help|\/help|!rarity|info)/i.test(text)) {
-            const reply = `👋 *Halo ${user.name || 'di Rarity'}!*\n\n` +
-              `Saya asisten keuangan & pengingat WhatsApp terintegrasi Google Sheet.\n` +
-              `🌐 *Web App:* https://erc.my.id/tools/rarity\n\n` +
-              `📌 *Format & Syntax Chat:*\n` +
-              `1️⃣ *Foto Struk Belanja*\n` +
-              `   Kirim langsung foto struk/nota. AI membaca item, harga, tanggal, & toko otomatis.\n\n` +
-              `2️⃣ *Catat Transaksi Finansial (4 Kategori):*\n` +
-              `   • *Pengeluaran*: _Beli [item] [harga] [toko]_\n` +
-              `     Contoh: *Beli nasi padang 20rb* atau *Beli bensin 50000 di Shell*\n` +
-              `   • *Pemasukan*: _Dapat [item/gaji] [nominal]_\n` +
-              `     Contoh: *Dapat gaji bulanan 5jt* atau *Dapat transferan 200rb*\n` +
-              `   • *Tabungan*: _Nabung / investasi [nominal] ke [wadah]_\n` +
-              `     Contoh: *Nabung 500rb di Bibit* atau *Simpan uang 1jt*\n` +
-              `   • *Tagihan*: _Bayar tagihan [item] [nominal]_\n` +
-              `     Contoh: *Bayar tagihan wifi 350rb* atau *Bayar listrik 200rb*\n\n` +
-              `3️⃣ *Pengingat Agenda & Jadwal*\n` +
-              `   • Buat: _Ingatkan [acara/tugas] [waktu]_\n` +
-              `     Contoh: *Ingatkan meeting besok jam 2 siang* atau *Ingatkan deadline tugas web tgl 10 jam 23:59*\n` +
-              `   • Cek jadwal lengkap: ketik *!jadwal*\n` +
-              `   • Cek daftar tugas saja: ketik *!tugas*\n` +
-              `   • Selesai: _selesai [nama agenda]_\n\n` +
-              `⚙️ *Perintah Sistem:*\n` +
-              `• *!tugas* → Lihat daftar tugas & assignment aktif\n` +
-              `• *!jadwal* → Lihat seluruh daftar pengingat & agenda aktif\n` +
-              `• *!batal* / *!undo* → Batalkan & hapus transaksi/agenda terakhir jika salah\n` +
-              `• *!status* → Cek status profil, mata uang, & koneksi Sheet\n` +
-              `• *!currency [IDR|AUD]* → Ganti format mata uang\n` +
-              `• *!sheet [ID_SHEET]* → Sambungkan Google Sheet pribadi\n` +
-              `• *!reset* → Ulangi proses pendaftaran profil`;
+            const reply = `👋 *Halo ${user.name || 'bro'}! Gue RARITY.*\n\n` +
+              `🌐 Web: https://erc.my.id/tools/rarity\n\n` +
+              `📷 Kirim foto struk → auto scan\n` +
+              `💸 *Beli kopi 20rb* → catat jajan\n` +
+              `💰 *Dapat gaji 5jt* → catat masuk\n` +
+              `🏦 *Nabung 500rb* → catat nabung\n` +
+              `🧾 *Bayar wifi 350rb* → catat tagihan\n` +
+              `⏰ *Ingatkan meeting besok jam 2* → pengingat\n\n` +
+              `*!tugas* → list tugas\n` +
+              `*!jadwal* → list agenda\n` +
+              `*!batal* → undo terakhir\n` +
+              `*!status* → cek profil & sheet`;
             await sendWhatsAppMessage(from, reply);
             continue;
           }
 
           // 2. Status Command
           if (/^!status/i.test(text)) {
-            const sheetMsg = user.sheetId ? `✅ Terhubung ke ID: \`${user.sheetId}\`` : `⚠️ Belum terhubung. Kirim \`!sheet [ID_GOOGLE_SHEET]\``;
-            const currMsg = user.currency || 'IDR';
-            await sendWhatsAppMessage(from, `👤 *Profil User:*\nNama: ${user.name || 'Belum diatur'}\nMata Uang: *${currMsg}*\nSheet: ${sheetMsg}\n\n_Ganti mata uang: ketik "!currency AUD" atau "!currency IDR"_`);
+            const sheetMsg = user.sheetId ? `✅ Sheet nyambung` : `⚠️ Sheet belum nyambung. Kirim \`!sheet [ID]\``;
+            await sendWhatsAppMessage(from, `👤 *${user.name || 'Anon'}* | ${user.currency || 'IDR'}\n${sheetMsg}`);
             continue;
           }
 
@@ -620,7 +606,7 @@ app.post('/webhook', async (req, res) => {
           if (/^(!jadwal|!reminders|!agenda|jadwal|agenda)/i.test(text)) {
             const activeReminders = reminders.filter(r => !r.done && (r.phone === from));
             if (activeReminders.length === 0) {
-              await sendWhatsAppMessage(from, `📅 *Jadwal & Agenda Aktif:*\nTidak ada agenda aktif saat ini.\n\n_Buat pengingat baru: "Ingatkan [agenda] [waktu]"_`);
+              await sendWhatsAppMessage(from, `📅 Gak ada agenda. Santai!`);
             } else {
               const nowMs = Date.now();
               let msg = `📅 *Jadwal & Agenda Aktif (${activeReminders.length}):*\n\n`;
@@ -647,7 +633,7 @@ app.post('/webhook', async (req, res) => {
           if (/^(!tugas|!assignments?|!pr|tugas)/i.test(text)) {
             const activeTasks = reminders.filter(r => !r.done && (r.phone === from) && (r.category === 'Tugas' || /tugas|pr|assignment|proyek/i.test(r.name)));
             if (activeTasks.length === 0) {
-              await sendWhatsAppMessage(from, `📚 *Daftar Tugas & Assignment:*\nTidak ada tugas yang sedang aktif! 🎉\n\n_Catat tugas baru: "Ingatkan tugas kalkulus besok jam 23:59"_`);
+              await sendWhatsAppMessage(from, `📚 Gak ada tugas. Santai! 🎉`);
             } else {
               const nowMs = Date.now();
               let msg = `📚 *Daftar Tugas & Assignment (${activeTasks.length}):*\n\n`;
@@ -674,7 +660,7 @@ app.post('/webhook', async (req, res) => {
           // 2d. Undo / Delete Previous Entry Command (!batal / !undo / !hapus)
           if (/^(!batal|!undo|!hapus|batalkan|hapus terakhir)/i.test(text)) {
             if (!user.lastEntry) {
-              await sendWhatsAppMessage(from, '⚠️ Tidak ada transaksi atau agenda terakhir yang bisa dibatalkan.');
+              await sendWhatsAppMessage(from, '⚠️ Gak ada yang bisa di-undo.');
             } else {
               const last = user.lastEntry;
               user.lastEntry = null;
@@ -682,16 +668,16 @@ app.post('/webhook', async (req, res) => {
 
               if (last.type === 'expense') {
                 const delRes = await deleteExpenseFromSheet(last.row, last.sheetId, last.tab);
-                await sendWhatsAppMessage(from, `🗑️ *Transaksi Dibatalkan!*\nBaris ${last.row} (${last.desc}) telah dihapus dari Google Sheet.`);
+                await sendWhatsAppMessage(from, `🗑️ Baris ${last.row} (${last.desc}) kehapus.`);
               } else if (last.type === 'reminder') {
                 const remIdx = reminders.findIndex(r => r.id === last.id);
                 if (remIdx !== -1) {
                   const deletedName = reminders[remIdx].name;
                   reminders.splice(remIdx, 1);
                   saveReminders();
-                  await sendWhatsAppMessage(from, `🗑️ *Pengingat Dibatalkan!*\nAgenda *${deletedName}* telah dihapus.`);
+                  await sendWhatsAppMessage(from, `🗑️ *${deletedName}* kehapus.`);
                 } else {
-                  await sendWhatsAppMessage(from, `🗑️ Pengingat sebelumnya telah dibatalkan.`);
+                  await sendWhatsAppMessage(from, `🗑️ Udah kehapus.`);
                 }
               }
             }
@@ -704,9 +690,9 @@ app.post('/webhook', async (req, res) => {
             if (arg === 'AUD' || arg === 'IDR') {
               user.currency = arg;
               saveUsers();
-              await sendWhatsAppMessage(from, `✅ Mata uang berhasil diubah ke *${arg}*!`);
+              await sendWhatsAppMessage(from, `✅ Mata uang → *${arg}*`);
             } else {
-              await sendWhatsAppMessage(from, 'Pilihan mata uang: *!currency IDR* atau *!currency AUD*');
+              await sendWhatsAppMessage(from, '*!currency IDR* / *!currency AUD*');
             }
             continue;
           }
@@ -717,7 +703,7 @@ app.post('/webhook', async (req, res) => {
             user.name = '';
             user.sheetId = '';
             saveUsers();
-            await sendWhatsAppMessage(from, '🔄 Data profil direset. Siapa nama panggilan Anda?');
+            await sendWhatsAppMessage(from, '🔄 Reset. Nama lo siapa?');
             continue;
           }
 
@@ -728,9 +714,9 @@ app.post('/webhook', async (req, res) => {
               user.sheetId = extracted;
               user.step = 'READY';
               saveUsers();
-              await sendWhatsAppMessage(from, `✅ Google Sheet ID berhasil disimpan:\n\`${extracted}\`\n\nSekarang Anda siap mencatat transaksi & agenda!`);
+              await sendWhatsAppMessage(from, `✅ Sheet nyambung! Gas catat.`);
             } else {
-              await sendWhatsAppMessage(from, 'Format Sheet ID tidak valid. Contoh: `!sheet 1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4`');
+              await sendWhatsAppMessage(from, 'ID-nya gak valid. Contoh: `!sheet 1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4`');
             }
             continue;
           }
@@ -739,7 +725,7 @@ app.post('/webhook', async (req, res) => {
           if (user.step === 'GREETING') {
             user.step = 'ASK_NAME';
             saveUsers();
-            const greetingMsg = `Halo! 👋 Aku *RARITY*, asisten budgeting dan agenda kamu yang terhubung langsung dengan Google Sheets (https://erc.my.id/tools/rarity).\n\nSebelum kita mulai, *siapa nama panggilan Anda?*`;
+            const greetingMsg = `Halo! 👋 Gue *RARITY*. Nama lo siapa?`;
             await sendWhatsAppMessage(from, greetingMsg);
             continue;
           }
@@ -749,14 +735,7 @@ app.post('/webhook', async (req, res) => {
             user.name = text.trim();
             user.step = 'ASK_SHEET';
             saveUsers();
-            const welcome = `Salam kenal, *${user.name}*! 👋\n\n` +
-              `🌟 *Langkah 2 dari 2: Hubungkan Google Sheet Anda*\n` +
-              `Demi privasi dan keamanan data Anda, Rarity mewajibkan setiap pengguna menghubungkan Google Sheet pribadinya.\n\n` +
-              `Cara mudah:\n` +
-              `1️⃣ Buka https://erc.my.id/tools/rarity\n` +
-              `2️⃣ Buka menu *Settings* (⚙️) lalu buat/salin Sheet ID Anda.\n` +
-              `3️⃣ Tempelkan Sheet ID atau link Google Sheet Anda ke sini!\n\n` +
-              `Contoh kirim:\n\`1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4\``;
+            const welcome = `Oke *${user.name}*! 👋\n\nTempel link / ID Google Sheet lo ke sini.\nGak punya? Bikin otomatis di https://erc.my.id/tools/rarity`;
             await sendWhatsAppMessage(from, welcome);
             continue;
           }
@@ -768,16 +747,16 @@ app.post('/webhook', async (req, res) => {
               user.sheetId = extracted;
               user.step = 'READY';
               saveUsers();
-              await sendWhatsAppMessage(from, `🎉 Mantap *${user.name}*! Google Sheet pribadi terhubung:\n\`${extracted}\`\n\nDashboard: https://erc.my.id/tools/rarity\n\n💡 Ketik *!help* sekarang untuk melihat seluruh format chat & contoh penggunaan.`);
+              await sendWhatsAppMessage(from, `🎉 Gas *${user.name}*! Sheet nyambung. Ketik *!help* buat contekan.`);
             } else {
-              await sendWhatsAppMessage(from, `⚠️ Google Sheet ID wajib dihubungkan terlebih dahulu sebelum memakai Rarity.\n\nBuka https://erc.my.id/tools/rarity lalu salin Sheet ID dari menu Settings (⚙️) dan tempel di sini.\n\n_Atau ketik "!sheet [ID_GOOGLE_SHEET]"_`);
+              await sendWhatsAppMessage(from, `⚠️ Tempel ID Sheet dulu. Bikin di https://erc.my.id/tools/rarity`);
             }
             continue;
           }
 
           // STRICT SHEET GATE: User must have valid sheetId to log data or reminders
           if (!user.sheetId || user.step !== 'READY') {
-            await sendWhatsAppMessage(from, `⚠️ *Google Sheet Belum Terhubung*\n\nAnda belum menyambungkan Google Sheet pribadi.\n1. Buka https://erc.my.id/tools/rarity\n2. Salin Sheet ID dari Settings (⚙️)\n3. Kirim ke chat ini:\n\`!sheet [ID_GOOGLE_SHEET]\``);
+            await sendWhatsAppMessage(from, `⚠️ Sheet belum nyambung. Kirim:\n\`!sheet [ID_SHEET]\``);
             continue;
           }
 
@@ -788,9 +767,9 @@ app.post('/webhook', async (req, res) => {
             if (target) {
               target.done = true;
               saveReminders();
-              await sendWhatsAppMessage(from, `🎉 Agenda *${target.name}* telah diselesaikan!`);
+              await sendWhatsAppMessage(from, `🎉 *${target.name}* beres!`);
             } else {
-              await sendWhatsAppMessage(from, 'Tidak ada pengingat aktif yang cocok.');
+              await sendWhatsAppMessage(from, 'Gak ketemu pengingatnya.');
             }
             continue;
           }
@@ -827,7 +806,7 @@ Output JSON only.`;
               const cleanedDt = parsed.datetime.trim().replace(' ', 'T');
               const targetTime = new Date(`${cleanedDt}:00+07:00`).getTime();
               if (isNaN(targetTime)) {
-                await sendWhatsAppMessage(from, 'Format waktu belum jelas. Contoh: *Ingatkan ujian kalkulus besok jam 08:00* atau *Ingatkan meeting 30 menit lagi*');
+                await sendWhatsAppMessage(from, 'Waktunya kurang jelas. Contoh: *Ingatkan ujian besok jam 8*');
                 continue;
               }
               const nowMs = Date.now();
@@ -858,21 +837,21 @@ Output JSON only.`;
 
               const gcalUrl = makeGCalLink(newRem.name, targetTime, newRem.notes || newRem.category);
               const formattedDT = new Date(targetTime).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-              let reply = `⏰ *PENGINGAT TERSIMPAN*\n📌 *${newRem.name}* [${newRem.category}]\n🗓️ Waktu: *${formattedDT}*\n🔔 Pengingat aktif bertahap.\n\n📅 *Tambah ke Google Calendar:*\n${gcalUrl}\n\n_Ketik "!batal" jika salah atau "selesai ${newRem.name}" jika sudah beres._`;
+              let reply = `⏰ *${newRem.name}* [${newRem.category}]\n🗓️ *${formattedDT}*\n\n📅 ${gcalUrl}\n\n_Salah? *!batal*_`;
               await sendWhatsAppMessage(from, reply);
             } else if (['pengeluaran', 'expense', 'pemasukan', 'tabungan', 'tagihan'].includes(parsed.type) && parsed.amount) {
-              let headerTitle = '💸 *CATATAN PENGELUARAN*';
+              let headerTitle = '💸 *Keluar*';
               let emojiPrefix = '🏷️';
               if (parsed.type === 'pemasukan') {
-                headerTitle = '💰 *CATATAN PEMASUKAN*';
+                headerTitle = '💰 *Masuk*';
                 emojiPrefix = '💵';
                 if (!parsed.category || parsed.category === 'Lainnya') parsed.category = 'Pemasukan';
               } else if (parsed.type === 'tabungan') {
-                headerTitle = '🏦 *CATATAN TABUNGAN & INVESTASI*';
+                headerTitle = '🏦 *Nabung*';
                 emojiPrefix = '📈';
                 if (!parsed.category || parsed.category === 'Lainnya') parsed.category = 'Tabungan & Investasi';
               } else if (parsed.type === 'tagihan') {
-                headerTitle = '🧾 *CATATAN TAGIHAN*';
+                headerTitle = '🧾 *Tagihan*';
                 emojiPrefix = '📑';
                 if (!parsed.category || parsed.category === 'Lainnya') parsed.category = 'Tagihan';
               } else {
@@ -891,17 +870,17 @@ Output JSON only.`;
                 saveUsers();
               }
 
-              let reply = `${headerTitle}\n🏢 Sumber/Toko: ${parsed.merchant || 'Umum'}\n💵 Jumlah: ${rupiah(parsed.amount, user.currency)}\n${emojiPrefix} Kategori: ${parsed.category}\n`;
-              reply += sheetRes.success ? `✅ *Tercatat di Sheet baris ${sheetRes.row}*\n_Ketik "!batal" jika salah mencatat._` : `⚠️ Status Sheet: ${sheetRes.reason}`;
+              let reply = `${headerTitle}\n${parsed.merchant || 'Umum'} — ${rupiah(parsed.amount, user.currency)}\n${emojiPrefix} ${parsed.category}\n`;
+              reply += sheetRes.success ? `✅ Masuk baris ${sheetRes.row}. Salah? *!batal*` : `⚠️ ${sheetRes.reason}`;
               await sendWhatsAppMessage(from, reply);
             } else {
               // Casual chit-chat or unrecognized
-              const reply = parsed.reply || `Halo ${user.name || 'Ercavian'}! Aku RARITY, asisten budgeting & agenda kamu. Buka web di https://erc.my.id/tools/rarity atau ketik *!help* untuk panduan lengkap ya!`;
+              const reply = parsed.reply || `Halo ${user.name || 'bro'}! Gue RARITY. Ketik *!help* buat contekan.`;
               await sendWhatsAppMessage(from, reply);
             }
           } catch (e) {
             console.error('[Gemini / Parse Error]:', e.message);
-            await sendWhatsAppMessage(from, 'Format belum terbaca. Kirim transaksi belanja, pemasukan, tabungan, foto struk, atau ketik *!help* untuk bantuan.');
+            await sendWhatsAppMessage(from, 'Gak kebaca. Kirim struk / transaksi / *!help*.');
           }
         }
       }
