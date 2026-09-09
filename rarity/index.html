@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js"></script>
   
   <style>
     :root {
@@ -627,7 +626,7 @@
         <a href="terms.html" style="color: var(--muted); text-decoration: underline;">Terms</a> &bull; 
         <a href="privacy.html" style="color: var(--muted); text-decoration: underline;">Privacy</a> &bull;
         <a href="status/" style="color: var(--muted); text-decoration: underline;">Status</a> &bull;
-        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.3</a>
+        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.4</a>
       </div>
     </div>
   </div>
@@ -1082,50 +1081,10 @@
       const sheetTitle = getUserSheetTitle();
       
       if (!spreadsheetId) {
-        addBotMsg(`📂 Pilih template Rarity di Google Drive untuk menyalin spreadsheet...`, false);
+        addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          // 1. Load gapi picker library
-          await new Promise((res, rej) => {
-            if (window.google?.picker) return res();
-            gapi.load("picker", { callback: res, onerror: rej });
-          });
-
-          // Pre-open template so it registers in user's Google account & appears in Picker
-          const templateUrl = `https://docs.google.com/spreadsheets/d/${TEMPLATE_SHEET_ID}/edit`;
-          const templateTab = window.open(templateUrl, "_blank");
-          await new Promise(r => setTimeout(r, 2500)); // wait for Drive to register it
-          if (templateTab) templateTab.close();
-
-          // 2. Show Picker — user picks the template file
-          const pickedId = await new Promise((res, rej) => {
-            const view = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS)
-              .setIncludeFolders(false)
-              .setSelectFolderEnabled(false);
-            // Also show shared-with-me so template appears
-            const sharedView = new google.picker.DocsView(google.picker.ViewId.SPREADSHEETS)
-              .setOwnedByMe(false)
-              .setIncludeFolders(false);
-
-            const picker = new google.picker.PickerBuilder()
-              .setTitle("Pilih template Rarity Budget (buka link template dulu jika tidak muncul)")
-              .addView(view)
-              .addView(sharedView)
-              .setOAuthToken(accessToken)
-              .setCallback((data) => {
-                if (data.action === google.picker.Action.PICKED) {
-                  res(data.docs[0].id);
-                } else if (data.action === google.picker.Action.CANCEL) {
-                  rej(new Error("Pemilihan template dibatalkan"));
-                }
-              })
-              .build();
-            picker.setVisible(true);
-          });
-
-          console.log("[DEBUG] Template picked:", pickedId);
-
-          // 3. Copy the picked file — now permitted under drive.file because user opened it
-          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${pickedId}/copy`, {
+          // Copy template directly — drive.file scope grants full access to app-created files
+          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
             body: JSON.stringify({ name: sheetTitle })
