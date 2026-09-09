@@ -455,12 +455,13 @@ app.post('/api/copy-template', async (req, res) => {
       supportsAllDrives: true,
     });
     const fileId = copy.data.id;
-    // Owner is rarity.erc already, bot access inherent. Hand ownership to user.
-    // Note: sendNotificationEmail must stay enabled for ownership transfers (Google rule).
+    // Ownership transfer between consumer accounts needs recipient consent
+    // (Google rule since 2022), so backend alone can't finish it.
+    // Instead: owner keeps file, user gets writer. File created by same
+    // Cloud project, so user's drive.file scope still sees it.
     await drive.permissions.create({
       fileId,
-      transferOwnership: true,
-      requestBody: { role: 'owner', type: 'user', emailAddress: userEmail },
+      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
     });
     res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
