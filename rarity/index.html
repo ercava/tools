@@ -1084,23 +1084,29 @@
       if (!spreadsheetId) {
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          console.log("[DEBUG] Sending setup request to /api/copy-template...", { hasToken: !!accessToken, email: userProfile?.email });
-          const copyRes = await fetch(`${BACKEND_URL}/api/copy-template`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userToken: accessToken, fileName: sheetTitle, userEmail: userProfile?.email })
-          });
+          // Copy as the signed-in Gmail user (their quota). SA has 0 Drive quota.
+          const copyRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy?fields=id&supportsAllDrives=true`,
+            {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ name: sheetTitle })
+            }
+          );
           const copyText = await copyRes.text();
-          console.log("[DEBUG] /api/copy-template raw response:", copyRes.status, copyText);
+          console.log("[DEBUG] drive.files.copy:", copyRes.status, copyText);
           let copyData;
           try {
             copyData = JSON.parse(copyText);
           } catch (err) {
-            throw new Error(`Server response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
+            throw new Error(`Drive response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
           }
           if (!copyRes.ok) {
-            console.error("[DEBUG] Copy failed backend data:", copyData);
-            throw new Error(copyData.error || ('HTTP ' + copyRes.status));
+            const msg = copyData.error?.message || copyData.error || ("HTTP " + copyRes.status);
+            if (String(msg).includes("quota")) {
+              throw new Error("Google Drive penuh. Kosongkan sampah di drive.google.com lalu login ulang.");
+            }
+            throw new Error(msg);
           }
 
           spreadsheetId = copyData.id;
@@ -1133,7 +1139,7 @@
             await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
               method: "POST",
               headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity-erc@gmail.com" })
+              body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity.erc@gmail.com" })
             });
           } catch (e) { console.warn("[DEBUG] bot share:", e); }
 
