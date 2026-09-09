@@ -416,15 +416,20 @@ function makeGCalLink(title, timestampMs, notes = '') {
 // Body: { userEmail, fileName }
 // Service account copies template → grants user editor → returns { id, webViewLink }
 app.post('/api/copy-template', async (req, res) => {
-  const { userEmail, fileName } = req.body || {};
+  const { userEmail, fileName, targetFolderId } = req.body || {};
   if (!userEmail) return res.status(400).json({ error: 'userEmail required' });
   try {
     const drive = getDriveClient();
 
-    // 1. Copy template (service account owns the copy)
+    const requestBody = { name: fileName || "Rarity Budget & Planning" };
+    if (targetFolderId || process.env.SA_TARGET_FOLDER_ID) {
+      requestBody.parents = [targetFolderId || process.env.SA_TARGET_FOLDER_ID];
+    }
+
+    // 1. Copy template (uses target folder if provided to bypass SA 0-byte quota limit)
     const copy = await drive.files.copy({
       fileId: TEMPLATE_SHEET_ID,
-      requestBody: { name: fileName || "Rarity Budget & Planning" },
+      requestBody,
       fields: 'id',
     });
     const fileId = copy.data.id;
