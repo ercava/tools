@@ -1032,7 +1032,7 @@
       if (!window.google || tokenClient) return;
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GOOGLE_CLIENT_ID,
-        scope: "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+        scope: "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
         callback: async (resp) => {
           if (resp.error) return alert("Login gagal: " + resp.error);
           accessToken = resp.access_token;
@@ -1083,14 +1083,14 @@
       if (!spreadsheetId) {
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          // Copy template directly — drive.file scope grants full access to app-created files
-          const copyRes = await fetch(`https://www.googleapis.com/drive/v3/files/${TEMPLATE_SHEET_ID}/copy`, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({ name: sheetTitle })
+          // Service account on backend copies template & grants user editor access
+          const copyRes = await fetch('/api/copy-template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userEmail: userProfile.email, fileName: sheetTitle })
           });
           const copyData = await copyRes.json();
-          if (!copyRes.ok) throw new Error(copyData.error?.message || "HTTP " + copyRes.status);
+          if (!copyRes.ok) throw new Error(copyData.error || 'HTTP ' + copyRes.status);
 
           spreadsheetId = copyData.id;
           localStorage.setItem("rarity_sheet_id", spreadsheetId);

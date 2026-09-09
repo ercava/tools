@@ -17,8 +17,27 @@ if (fs.existsSync(envPath)) {
   });
 }
 
+const { google } = require('googleapis');
+
 const app = express();
 app.use(express.json());
+
+// Service Account Drive client — key loaded from env (JSON string) or file path
+let _driveClient = null;
+function getDriveClient() {
+  if (_driveClient) return _driveClient;
+  const keyEnv = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  if (!keyEnv) throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY not set');
+  const key = JSON.parse(keyEnv);
+  const auth = new google.auth.GoogleAuth({
+    credentials: key,
+    scopes: ['https://www.googleapis.com/auth/drive'],
+  });
+  _driveClient = google.drive({ version: 'v3', auth });
+  return _driveClient;
+}
+
+const TEMPLATE_SHEET_ID = process.env.TEMPLATE_SHEET_ID || '1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU';
 
 const PORT = process.env.PORT || 3000;
 
@@ -374,7 +393,42 @@ function makeGCalLink(title, timestampMs, notes = '') {
   }
 }
 
+// --- DRIVE TEMPLATE COPY API ---
+
+// POST /api/copy-template
+// Body: { userEmail, fileName }
+// Service account copies template → grants user editor → returns { id, webViewLink }
+app.post('/api/copy-template', async (req, res) => {
+  const { userEmail, fileName } = req.body || {};
+  if (!userEmail) return res.status(400).json({ error: 'userEmail required' });
+  try {
+    const drive = getDriveClient();
+
+    // 1. Copy template (service account owns the copy)
+    const copy = await drive.files.copy({
+      fileId: TEMPLATE_SHEET_ID,
+      requestBody: { name: fileName || "Rarity Budget & Planning" },
+      fields: 'id',
+    });
+    const fileId = copy.data.id;
+
+    // 2. Grant user editor access
+    await drive.permissions.create({
+      fileId,
+      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
+      sendNotificationEmail: false,
+    });
+
+    console.log(`[copy-template] Copied ${TEMPLATE_SHEET_ID} → ${fileId} for ${userEmail}`);
+    res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
+  } catch (e) {
+    console.error('[copy-template] Error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // --- WEBHOOK ROUTES FOR META CLOUD API ---
+
 
 // GET /webhook (Meta verification handshake)
 app.get('/webhook', (req, res) => {
