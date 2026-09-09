@@ -1089,7 +1089,13 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userEmail: userProfile.email, fileName: sheetTitle })
           });
-          const copyData = await copyRes.json();
+          const copyText = await copyRes.text();
+          let copyData;
+          try {
+            copyData = JSON.parse(copyText);
+          } catch (err) {
+            throw new Error(`Server response was not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
+          }
           if (!copyRes.ok) throw new Error(copyData.error || 'HTTP ' + copyRes.status);
 
           spreadsheetId = copyData.id;
