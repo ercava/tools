@@ -1084,20 +1084,24 @@
       if (!spreadsheetId) {
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
-          // Pass user accessToken so backend uses user token directly (uses user 300GB+ quota, no SA quota issues)
+          console.log("[DEBUG] Sending setup request to /api/copy-template...", { hasToken: !!accessToken, email: userProfile?.email });
           const copyRes = await fetch(`${BACKEND_URL}/api/copy-template`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userToken: accessToken, fileName: sheetTitle, userEmail: userProfile?.email })
           });
           const copyText = await copyRes.text();
+          console.log("[DEBUG] /api/copy-template raw response:", copyRes.status, copyText);
           let copyData;
           try {
             copyData = JSON.parse(copyText);
           } catch (err) {
-            throw new Error(`Server response was not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
+            throw new Error(`Server response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
           }
-          if (!copyRes.ok) throw new Error(copyData.error || 'HTTP ' + copyRes.status);
+          if (!copyRes.ok) {
+            console.error("[DEBUG] Copy failed backend data:", copyData);
+            throw new Error(copyData.error || ('HTTP ' + copyRes.status));
+          }
 
           spreadsheetId = copyData.id;
           localStorage.setItem("rarity_sheet_id", spreadsheetId);

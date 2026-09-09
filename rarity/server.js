@@ -417,32 +417,40 @@ function makeGCalLink(title, timestampMs, notes = '') {
 // Uses userToken directly if passed (owned by user, 300GB+ quota), falls back to SA
 app.post('/api/copy-template', async (req, res) => {
   const { userToken, userEmail, fileName, targetFolderId } = req.body || {};
+  console.log(`[copy-template DEBUG] Request received. userEmail: ${userEmail}, hasUserToken: ${!!userToken}, targetFolderId: ${targetFolderId || process.env.SA_TARGET_FOLDER_ID || 'NONE'}`);
   try {
     let drive;
+    let authMode = 'SERVICE_ACCOUNT';
     if (userToken) {
-      // Use user's OAuth access token directly — file is owned by user, uses user's 300GB+ quota
+      authMode = 'USER_OAUTH_TOKEN';
       const oauth2Client = new google.auth.OAuth2();
       oauth2Client.setCredentials({ access_token: userToken });
       drive = google.drive({ version: 'v3', auth: oauth2Client });
     } else {
       drive = getDriveClient();
     }
+    console.log(`[copy-template DEBUG] Using authMode: ${authMode}`);
 
     const requestBody = { name: fileName || "Rarity Budget & Planning" };
-    if (targetFolderId || process.env.SA_TARGET_FOLDER_ID) {
-      requestBody.parents = [targetFolderId || process.env.SA_TARGET_FOLDER_ID];
+    const folder = targetFolderId || process.env.SA_TARGET_FOLDER_ID;
+    if (folder) {
+      requestBody.parents = [folder];
+      console.log(`[copy-template DEBUG] Setting parent folder: ${folder}`);
+    } else {
+      console.log(`[copy-template DEBUG] No parent folder specified.`);
     }
 
-    // 1. Copy template directly
+    console.log(`[copy-template DEBUG] Attempting drive.files.copy of template: ${TEMPLATE_SHEET_ID}...`);
     const copy = await drive.files.copy({
       fileId: TEMPLATE_SHEET_ID,
       requestBody,
       fields: 'id',
     });
     const fileId = copy.data.id;
+    console.log(`[copy-template DEBUG] Copy success! Created fileId: ${fileId}`);
 
-    // 2. Share with user (if SA copied)
     if (!userToken && userEmail) {
+      console.log(`[copy-template DEBUG] Sharing file ${fileId} with userEmail: ${userEmail}...`);
       await drive.permissions.create({
         fileId,
         requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
@@ -450,9 +458,9 @@ app.post('/api/copy-template', async (req, res) => {
       });
     }
 
-    // 3. Share with rarity.erc@gmail.com (for WA bot access)
     try {
       if (userEmail !== 'rarity.erc@gmail.com') {
+        console.log(`[copy-template DEBUG] Sharing file ${fileId} with master rarity.erc@gmail.com...`);
         await drive.permissions.create({
           fileId,
           requestBody: { role: 'writer', type: 'user', emailAddress: 'rarity.erc@gmail.com' },
@@ -460,14 +468,14 @@ app.post('/api/copy-template', async (req, res) => {
         });
       }
     } catch (err) {
-      console.warn('[copy-template] Master share warning:', err.message);
+      console.warn('[copy-template DEBUG] Master share warning:', err.message);
     }
 
-    console.log(`[copy-template] Copied ${TEMPLATE_SHEET_ID} → ${fileId} (userToken: ${!!userToken})`);
-    res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
+    console.log(`[copy-template DEBUG] All steps completed successfully for fileId: ${fileId}`);
+    res.json({ id: fileId, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit`, authMode });
   } catch (e) {
-    console.error('[copy-template] Error:', e.message);
-    res.status(500).json({ error: e.message });
+    console.error(`[copy-template DEBUG ERROR] Code: ${e.code}, Message: ${e.message}`, e.response?.data || e.stack);
+    res.status(500).json({ error: e.message, code: e.code, details: e.response?.data?.error || null });
   }
 });
 
