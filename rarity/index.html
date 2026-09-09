@@ -843,6 +843,7 @@
     const GEMINI_API_KEY = localStorage.getItem("rarity_gemini_key") || _defKey;
     const GEMINI_MODEL = "gemini-3.5-flash-lite";
     const TEMPLATE_SHEET_ID = "1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU";
+    const BACKEND_URL = "https://rarity-kwn4.onrender.com";
 
     let accessToken = localStorage.getItem("rarity_access_token");
     let tokenExpiry = parseInt(localStorage.getItem("rarity_token_expiry") || "0", 10);
@@ -1084,7 +1085,7 @@
         addBotMsg(`⏳ Menyalin template spreadsheet...`, false);
         try {
           // Service account on backend copies template & grants user editor access
-          const copyRes = await fetch('/api/copy-template', {
+          const copyRes = await fetch(`${BACKEND_URL}/api/copy-template`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userEmail: userProfile.email, fileName: sheetTitle })
