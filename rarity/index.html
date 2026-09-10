@@ -789,13 +789,15 @@
       <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Terima kepemilikan sheet</h3>
       <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Sheet lo sudah jadi. Jadikan milik akun Google lo dulu (WAJIB, kalau tidak data tidak bisa masuk). Caranya lihat gambar di bawah.</p>
       <a id="own-sheet-link" href="#" target="_blank" class="btn-action" style="margin: 0 0 4px; width: 100%; padding: 10px; background: var(--primary); color: #fff; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; box-sizing: border-box;">Buka Sheet</a>
-      <div>
-        <img src="img/own-step1.png" alt="Langkah 1: klik Share" class="own-shot" onerror="this.style.display='none'">
-        <div class="own-cap">1. Di sheet, klik tombol <b>Share</b> kanan atas.</div>
+      <div style="height:180px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;overflow:hidden;position:relative;">
+        <div style="position:absolute;left:12px;top:12px;font-size:0.7rem;color:var(--muted);">Langkah 1: klik Share</div>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;bottom:12px;"><path d="M5 3a2 2 0 0 1 2 2h3a2 2 0 0 1 2-2 2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M11 4h2a2 2 0 0 1 2 2v2"/><path d="M18 4h2a2 2 0 0 1 2 2v6"/><path d="M6 10h4"/><path d="M16 16h4"/></svg>
+        <div class="own-cap" style="margin-top:60px;">1. Di sheet, klik <b>Share</b> kanan atas.</div>
       </div>
-      <div>
-        <img src="img/own-step2.png" alt="Langkah 2: klik Accept ownership" class="own-shot" onerror="this.style.display='none'">
-        <div class="own-cap">2. Klik <b>Accept ownership?</b> di nama lo.</div>
+      <div style="height:180px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;overflow:hidden;position:relative;">
+        <div style="position:absolute;left:12px;top:12px;font-size:0.7rem;color:var(--muted);">Langkah 2: terima milik</div>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;bottom:12px;"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M2 12s3 2 12 3 12-3 12-3"/></svg>
+        <div class="own-cap" style="margin-top:60px;">2. Klik <b>Accept ownership?</b> di nama lo.</div>
       </div>
       <button id="own-accept-btn" class="btn-action" style="margin: 12px 0 0; width: 100%; padding: 10px; background: #16a34a; color: #fff; border-radius: 8px; font-weight: 600;">Saya sudah terima — lanjutkan</button>
       <div id="own-err" class="own-err"></div>
