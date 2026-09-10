@@ -124,10 +124,11 @@ async function syncRemindersFromCloud() {
 syncRemindersFromCloud();
 
 function formatCurrency(n, curr = 'IDR') {
-  if (curr === 'AUD') {
-    return 'A$ ' + (Number(n) || 0).toLocaleString('en-AU', { minimumFractionDigits: 2 });
-  }
-  return 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
+  const v = Number(n) || 0;
+  if (curr === 'AUD') return 'A$ ' + v.toLocaleString('en-AU', { minimumFractionDigits: 2 });
+  if (curr === 'KRW') return '₩ ' + v.toLocaleString('ko-KR', { maximumFractionDigits: 0 });
+  if (curr === 'SAR') return 'SAR ' + v.toLocaleString('en-SA', { minimumFractionDigits: 2 });
+  return 'Rp ' + v.toLocaleString('id-ID');
 }
 const rupiah = formatCurrency;
 
@@ -425,9 +426,19 @@ function getOwnerDrive() {
   return google.drive({ version: 'v3', auth: ownerAuth });
 }
 
+// ponytail: email→sheet map on disk; Render disk wipe → recopy. localStorage still binds same browser.
+const WEB_SHEETS_FILE = path.join(__dirname, 'web-sheets.json');
+let webSheets = {};
+try {
+  if (fs.existsSync(WEB_SHEETS_FILE)) webSheets = JSON.parse(fs.readFileSync(WEB_SHEETS_FILE, 'utf-8'));
+} catch (e) { webSheets = {}; }
+function saveWebSheets() {
+  fs.writeFileSync(WEB_SHEETS_FILE, JSON.stringify(webSheets, null, 2));
+}
+
 app.post('/api/copy-template', async (req, res) => {
-  const { userToken, userEmail, fileName } = req.body || {};
-  console.log(`[copy-template DEBUG] userEmail: ${userEmail}, hasUserToken: ${!!userToken}`);
+  const { userToken, userEmail, fileName, recreate } = req.body || {};
+  console.log(`[copy-template DEBUG] userEmail: ${userEmail}, hasUserToken: ${!!userToken}, recreate: ${!!recreate}`);
   if (!userToken || !userEmail) {
     return res.status(400).json({ error: 'userToken and userEmail required' });
   }
@@ -435,14 +446,29 @@ app.post('/api/copy-template', async (req, res) => {
     return res.status(500).json({ error: 'Owner Drive not configured (GOOGLE_CLIENT_SECRET / OWNER_REFRESH_TOKEN missing)' });
   }
   try {
-    // Abuse guard: token must belong to claimed email
     const meRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { 'Authorization': `Bearer ${userToken}` }
     });
     if (!meRes.ok) return res.status(401).json({ error: 'Invalid userToken' });
     const me = await meRes.json();
-    if ((me.email || '').toLowerCase() !== String(userEmail).toLowerCase()) {
+    const email = String(userEmail).toLowerCase();
+    if ((me.email || '').toLowerCase() !== email) {
       return res.status(403).json({ error: 'Token/email mismatch' });
+    }
+
+    if (recreate && webSheets[email]) {
+      delete webSheets[email];
+      saveWebSheets();
+    }
+
+    const existing = webSheets[email];
+    if (!recreate && existing?.sheetId) {
+      return res.json({
+        id: existing.sheetId,
+        permissionId: existing.permissionId || '',
+        existing: true,
+        webViewLink: `https://docs.google.com/spreadsheets/d/${existing.sheetId}/edit`
+      });
     }
 
     const drive = getOwnerDrive();
@@ -453,20 +479,15 @@ app.post('/api/copy-template', async (req, res) => {
       supportsAllDrives: true,
     });
     const fileId = copy.data.id;
-    // Consumer transfer needs recipient consent (Google rule since 2022).
-    // Step 1 (owner): writer share + pendingOwner invite. Step 2 (frontend
-    // as user): accept ownership. File parked in owner Drive meanwhile.
+    // Consumer Gmail: pendingOwner invite only. User accepts with transferOwnership.
     const perm = await drive.permissions.create({
       fileId,
-      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
+      sendNotificationEmail: true,
+      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail, pendingOwner: true },
       fields: 'id',
     });
-    await drive.permissions.update({
-      fileId,
-      permissionId: perm.data.id,
-      transferOwnership: true,
-      requestBody: { role: 'writer', pendingOwner: true },
-    });
+    webSheets[email] = { sheetId: fileId, permissionId: perm.data.id };
+    saveWebSheets();
     res.json({ id: fileId, permissionId: perm.data.id, webViewLink: `https://docs.google.com/spreadsheets/d/${fileId}/edit` });
   } catch (e) {
     console.error(`[copy-template DEBUG ERROR] Code: ${e.code}, Message: ${e.message}`, e.response?.data || e.stack);
@@ -687,12 +708,12 @@ app.post('/webhook', async (req, res) => {
           // Currency Command
           if (/^!currency\s*/i.test(text)) {
             const arg = text.replace(/^!currency\s*/i, '').trim().toUpperCase();
-            if (arg === 'AUD' || arg === 'IDR') {
+            if (['IDR', 'AUD', 'KRW', 'SAR'].includes(arg)) {
               user.currency = arg;
               saveUsers();
               await sendWhatsAppMessage(from, `✅ Mata uang → *${arg}*`);
             } else {
-              await sendWhatsAppMessage(from, '*!currency IDR* / *!currency AUD*');
+              await sendWhatsAppMessage(from, '*!currency IDR* / *!currency AUD* / *!currency KRW* / *!currency SAR*');
             }
             continue;
           }

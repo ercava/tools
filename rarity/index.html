@@ -185,6 +185,30 @@
     #loader .dots span:nth-child(3) { animation-delay: 0.3s; }
     #loader-text { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
 
+    .chat-loader {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px 12px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .chat-loader-spinner {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 3px solid var(--line); border-top-color: var(--primary);
+      animation: spin 0.8s linear infinite;
+    }
+    .chat-loader-dots { display: flex; gap: 5px; }
+    .chat-loader-dots span {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--primary);
+      animation: bounceDots 1.2s infinite;
+    }
+    .chat-loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .chat-loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+
     .msg {
       max-width: 85%;
       padding: 8px 12px 6px 12px;
@@ -317,10 +341,25 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 1.5rem;
-      max-width: 380px;
+      max-width: 420px;
       width: 100%;
       box-shadow: var(--shadow);
     }
+    .settings-body { display: flex; align-items: stretch; gap: 8px; }
+    .settings-panes { flex: 1; min-width: 0; }
+    .settings-pane { display: none; }
+    .settings-pane.active { display: block; }
+    .settings-arrow {
+      flex-shrink: 0; width: 32px; border: 1px solid var(--line); background: #fff;
+      border-radius: 8px; cursor: pointer; color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .settings-arrow:hover { background: var(--bg-light); }
+    .settings-arrow svg { transition: transform 0.15s; }
+    .settings-guide { font-size: 0.72rem; color: var(--muted); margin: 8px 0 12px; line-height: 1.45; }
+    .settings-guide ol { margin: 4px 0 0 1.1rem; padding: 0; }
+    .msg.bot.typing { display: flex; align-items: center; padding: 10px 14px; }
+    .own-err { font-size: 0.75rem; color: #991b1b; margin-top: 8px; min-height: 1em; }
     .modal-content h3 { margin: 0 0 1rem 0; color: var(--accent); font-size: 1.15rem; }
     .status-item {
       display: flex;
@@ -660,72 +699,95 @@
 
   <!-- Settings Modal -->
   <div id="settings-modal" class="modal hidden">
-    <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 400px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+    <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 440px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
         <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Pengaturan & Status</h3>
         <button id="close-settings-btn" style="background: none; border: none; font-size: 1.25rem; color: var(--muted); cursor: pointer; padding: 4px; line-height: 1;">✕</button>
       </div>
-
-      <!-- Clean Status Rows -->
-      <div style="display: flex; flex-direction: column; gap: 2px; margin-bottom: 1.25rem;">
-        <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
-          <span style="color: var(--muted); font-size: 0.85rem;">Akun Google</span>
-          <span class="badge badge-ok">Terhubung</span>
+      <div class="settings-body">
+        <div class="settings-panes">
+          <div id="settings-pane-wa" class="settings-pane active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 0.8rem; font-weight: 600; color: var(--text);">WhatsApp Bot Sheet ID</span>
+              <a id="wa-bot-link" href="https://wa.me/6285810629900?text=!help" target="_blank" style="font-size: 0.75rem; color: #16a34a; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <span>Buka Chat</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <input type="text" id="wa-sheet-id-input" readonly style="flex: 1; font-size: 0.75rem; font-family: monospace; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: var(--text);" value="Belum ada sheet">
+              <button style="border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px; padding: 0 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="copyWaSheetId()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span>Salin</span>
+              </button>
+            </div>
+            <div style="font-size: 0.7rem; color: var(--muted); margin-top: 4px;">Kirim ke bot di WA: <code>!sheet &lt;ID&gt;</code></div>
+            <div class="settings-guide">
+              Hubungkan bot WA:
+              <ol>
+                <li>Salin Sheet ID di atas.</li>
+                <li>Buka Chat, kirim <code>!sheet &lt;ID&gt;</code>.</li>
+                <li>Klik Beri Izin Bot WhatsApp (rarity-erc).</li>
+                <li>Refresh kalau ID belum muncul.</li>
+              </ol>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <button id="btn-grant-bot" class="btn-action" style="margin: 0; padding: 9px; font-size: 0.8rem; border-radius: 8px; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600;" onclick="grantBotEditorAccess()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                <span>Beri Izin Bot WhatsApp (rarity-erc)</span>
+              </button>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-action btn-edit" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="checkSystemStatus()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Refresh</span>
+                </button>
+                <button class="btn-action" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="reinitializeSheet()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                  <span>Buat Ulang Sheet</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="settings-pane-status" class="settings-pane">
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+              <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
+                <span style="color: var(--muted); font-size: 0.85rem;">Akun Google</span>
+                <span class="badge badge-ok">Terhubung</span>
+              </div>
+              <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
+                <span style="color: var(--muted); font-size: 0.85rem;">Google Sheets</span>
+                <span id="sheet-status" class="badge badge-pending">Memeriksa...</span>
+              </div>
+              <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
+                <span style="color: var(--muted); font-size: 0.85rem;">Gemini AI</span>
+                <span id="gemini-status" class="badge badge-pending">Memeriksa...</span>
+              </div>
+              <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
+                <span style="color: var(--muted); font-size: 0.85rem;">Mata Uang</span>
+                <select id="currency-select" style="font-size: 0.8rem; font-weight: 600; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; color: var(--text);" onchange="changeCurrency(this.value)">
+                  <option value="IDR">IDR (Rp)</option>
+                  <option value="AUD">AUD ($)</option>
+                  <option value="KRW">KRW (₩)</option>
+                  <option value="SAR">SAR (﷼)</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
-          <span style="color: var(--muted); font-size: 0.85rem;">Google Sheets</span>
-          <span id="sheet-status" class="badge badge-pending">Memeriksa...</span>
-        </div>
-        <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0;">
-          <span style="color: var(--muted); font-size: 0.85rem;">Gemini AI</span>
-          <span id="gemini-status" class="badge badge-pending">Memeriksa...</span>
-        </div>
-        <div class="status-item" style="border-bottom: 1px solid var(--line); padding: 8px 0; display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--muted); font-size: 0.85rem;">Mata Uang</span>
-          <select id="currency-select" style="font-size: 0.8rem; font-weight: 600; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; color: var(--text);" onchange="changeCurrency(this.value)">
-            <option value="IDR">IDR (Rp)</option>
-            <option value="AUD">AUD ($)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Minimal WhatsApp Card -->
-      <div style="margin-bottom: 1.25rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <span style="font-size: 0.8rem; font-weight: 600; color: var(--text);">WhatsApp Bot Sheet ID</span>
-          <a id="wa-bot-link" href="https://wa.me/6285810629900?text=!help" target="_blank" style="font-size: 0.75rem; color: #16a34a; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-            <span>Buka Chat</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
-        </div>
-        <div style="display: flex; gap: 6px;">
-          <input type="text" id="wa-sheet-id-input" readonly style="flex: 1; font-size: 0.75rem; font-family: monospace; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: #f8fafc; color: var(--text);" value="Belum ada sheet">
-          <button style="border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px; padding: 0 12px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" onclick="copyWaSheetId()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Salin</span>
-          </button>
-        </div>
-        <div style="font-size: 0.7rem; color: var(--muted); margin-top: 4px;">Kirim ke bot di WA: <code>!sheet &lt;ID&gt;</code></div>
-      </div>
-
-      <!-- Clean Actions -->
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <button id="btn-grant-bot" class="btn-action" style="margin: 0; padding: 9px; font-size: 0.8rem; border-radius: 8px; background: #16a34a; color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600;" onclick="grantBotEditorAccess()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          <span>Beri Izin Bot WhatsApp (rarity-erc)</span>
+        <button type="button" class="settings-arrow" id="settings-arrow-btn" title="Status & mata uang" aria-label="Status dan mata uang">
+          <svg id="settings-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
-
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-action btn-edit" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="checkSystemStatus()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            <span>Refresh</span>
-          </button>
-          <button class="btn-action" style="margin: 0; padding: 8px; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: 1;" onclick="reinitializeSheet()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-            <span>Buat Ulang Sheet</span>
-          </button>
-        </div>
       </div>
+    </div>
+  </div>
+
+  <div id="own-modal" class="modal hidden">
+    <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 400px;">
+      <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Terima kepemilikan sheet</h3>
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Rarity sudah salin & rename sheet. Klik Terima kepemilikan supaya file jadi milik akun Google lo.</p>
+      <a id="own-sheet-link" href="#" target="_blank" style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; margin-bottom: 12px;">Buka Sheet</a>
+      <button id="own-accept-btn" class="btn-action" style="margin: 0; width: 100%; padding: 10px; background: var(--primary); color: #fff; border-radius: 8px; font-weight: 600;">Terima kepemilikan</button>
+      <div id="own-err" class="own-err"></div>
     </div>
   </div>
 
@@ -874,8 +936,8 @@
 
     let accessToken = localStorage.getItem("rarity_access_token");
     let tokenExpiry = parseInt(localStorage.getItem("rarity_token_expiry") || "0", 10);
-    let spreadsheetId = localStorage.getItem("rarity_sheet_id");
     let userProfile = JSON.parse(localStorage.getItem("rarity_user_profile") || "null");
+    let spreadsheetId = null;
     let pendingReceipt = null;
     let tokenClient = null;
     let isModelReady = false;
@@ -891,10 +953,17 @@
     // Currency formatter supporting IDR and AUD
     let currentCurrency = localStorage.getItem("rarity_currency") || "IDR";
     function formatCurrency(val) {
+      const n = val || 0;
       if (currentCurrency === "AUD") {
-        return new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 2 }).format(val || 0);
+        return new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 2 }).format(n);
       }
-      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(val || 0);
+      if (currentCurrency === "KRW") {
+        return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 }).format(n);
+      }
+      if (currentCurrency === "SAR") {
+        return new Intl.NumberFormat("en-SA", { style: "currency", currency: "SAR", minimumFractionDigits: 2 }).format(n);
+      }
+      return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
     }
     const rupiah = formatCurrency;
 
@@ -987,6 +1056,7 @@
 
     async function loadChatFromSheet() {
       if (!spreadsheetId || !accessToken) return;
+      showChatLoading(true);
       try {
         const encRange = encodeURIComponent("_ChatState!A1");
         const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}`, {
@@ -1003,6 +1073,28 @@
         }
       } catch (e) {
         console.warn("[DEBUG] Could not load chat from sheet:", e);
+      } finally {
+        showChatLoading(false);
+      }
+    }
+
+    function showChatLoading(show) {
+      let loader = document.getElementById("chat-loader");
+      if (show) {
+        if (!loader) {
+          loader = document.createElement("div");
+          loader.id = "chat-loader";
+          loader.className = "chat-loader";
+          loader.innerHTML = `
+            <div class="chat-loader-spinner"></div>
+            <div class="chat-loader-dots"><span></span><span></span><span></span></div>
+            <span class="chat-loader-text">Memuat riwayat chat...</span>
+          `;
+          chatBox.appendChild(loader);
+        }
+        loader.style.display = "flex";
+      } else if (loader) {
+        loader.style.display = "none";
       }
     }
 
@@ -1052,6 +1144,23 @@
       playSound('send');
     }
 
+    function showBotTyping(show) {
+      let el = document.getElementById("bot-typing");
+      if (show) {
+        if (!el) {
+          el = document.createElement("div");
+          el.id = "bot-typing";
+          el.className = "msg bot typing";
+          el.innerHTML = `<div class="chat-loader-dots"><span></span><span></span><span></span></div>`;
+          chatBox.appendChild(el);
+        }
+        el.style.display = "flex";
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } else if (el) {
+        el.remove();
+      }
+    }
+
     function isTokenValid() {
       return accessToken && Date.now() < (tokenExpiry - 60000);
     }
@@ -1070,6 +1179,7 @@
           localStorage.setItem("rarity_token_expiry", tokenExpiry.toString());
 
           await fetchUserProfile();
+          bindSheetFromEmail();
           screenLogin.classList.remove("active");
           screenApp.classList.add("active");
           await setupUserSheet();
@@ -1105,6 +1215,117 @@
       return `${name}'s Budget and Planning!`;
     }
 
+    function sheetEmailKey() {
+      return (userProfile?.email || "").toLowerCase();
+    }
+    function loadSheetMap() {
+      try { return JSON.parse(localStorage.getItem("rarity_sheet_by_email") || "{}"); } catch (e) { return {}; }
+    }
+    function saveSheetMap(m) {
+      localStorage.setItem("rarity_sheet_by_email", JSON.stringify(m));
+    }
+    function bindSheetFromEmail() {
+      const rec = loadSheetMap()[sheetEmailKey()];
+      spreadsheetId = rec?.sheetId || null;
+      if (rec?.plannerTab) {
+        window.PLANNER_TAB = rec.plannerTab;
+        localStorage.setItem("rarity_planner_tab", rec.plannerTab);
+      }
+      if (spreadsheetId) localStorage.setItem("rarity_sheet_id", spreadsheetId);
+      else localStorage.removeItem("rarity_sheet_id");
+    }
+    function persistSheetForEmail(permissionId) {
+      const k = sheetEmailKey();
+      if (!k || !spreadsheetId) return;
+      const m = loadSheetMap();
+      m[k] = {
+        sheetId: spreadsheetId,
+        permissionId: permissionId || m[k]?.permissionId || "",
+        plannerTab: window.PLANNER_TAB || localStorage.getItem("rarity_planner_tab") || ""
+      };
+      saveSheetMap(m);
+      localStorage.setItem("rarity_sheet_id", spreadsheetId);
+    }
+
+    function waitForOwnershipAccept(copyData) {
+      return new Promise((resolve) => {
+        const modal = document.getElementById("own-modal");
+        const link = document.getElementById("own-sheet-link");
+        const err = document.getElementById("own-err");
+        const btn = document.getElementById("own-accept-btn");
+        link.href = copyData.webViewLink || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+        err.textContent = "";
+        modal.classList.remove("hidden");
+        btn.onclick = async () => {
+          btn.disabled = true;
+          err.textContent = "";
+          try {
+            const acceptRes = await fetch(
+              `https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions/${copyData.permissionId}?transferOwnership=true`,
+              {
+                method: "PATCH",
+                headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ role: "owner" })
+              }
+            );
+            if (!acceptRes.ok) {
+              const t = await acceptRes.text();
+              throw new Error(t.substring(0, 180) || ("HTTP " + acceptRes.status));
+            }
+            const ownRes = await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}?fields=owners`, {
+              headers: { "Authorization": `Bearer ${accessToken}` }
+            });
+            const ownData = await ownRes.json();
+            const email = sheetEmailKey();
+            const isOwner = (ownData.owners || []).some(o => (o.emailAddress || "").toLowerCase() === email);
+            if (!isOwner) throw new Error("Belum jadi owner. Buka sheet, terima undangan Drive, lalu klik lagi.");
+            modal.classList.add("hidden");
+            resolve();
+          } catch (e) {
+            err.textContent = e.message;
+          } finally {
+            btn.disabled = false;
+          }
+        };
+      });
+    }
+
+    async function finishNewSheetSetup(sheetTitle) {
+      const metaCopy = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
+        headers: { "Authorization": `Bearer ${accessToken}` }
+      });
+      const metaCopyData = await metaCopy.json();
+      const budgetSheet = metaCopyData.sheets?.find(s =>
+        s.properties.title.toLowerCase().includes("budget") || s.properties.index === 0
+      );
+      const copiedTabTitle = budgetSheet?.properties?.title || "Budget";
+      window.PLANNER_TAB = copiedTabTitle;
+      localStorage.setItem("rarity_planner_tab", copiedTabTitle);
+      try {
+        await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ requests: [{ addSheet: { properties: { title: "_ChatState", hidden: true } } }] })
+        });
+      } catch (e) { console.warn("[DEBUG] _ChatState:", e); }
+      try {
+        await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity.erc@gmail.com" })
+        });
+      } catch (e) { console.warn("[DEBUG] bot share:", e); }
+      try {
+        await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ role: "editor", type: "anyone" })
+        });
+      } catch (e) { console.warn("[DEBUG] anyone share:", e); }
+      persistSheetForEmail();
+      addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
+    }
+
     function showLoader(t = "Bentar ya...") {
       const l = document.getElementById("loader");
       if (!l) return;
@@ -1113,100 +1334,66 @@
     }
     function hideLoader() { document.getElementById("loader")?.classList.add("hidden"); }
 
-    async function setupUserSheet() {
+    async function setupUserSheet(recreate = false) {
       const sheetTitle = getUserSheetTitle();
+      if (!recreate) bindSheetFromEmail();
+      else {
+        const m = loadSheetMap();
+        delete m[sheetEmailKey()];
+        saveSheetMap(m);
+        spreadsheetId = null;
+        localStorage.removeItem("rarity_sheet_id");
+        localStorage.removeItem("rarity_planner_tab");
+      }
+
+      if (spreadsheetId) {
+        try {
+          const probe = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=spreadsheetId`, {
+            headers: { "Authorization": `Bearer ${accessToken}` }
+          });
+          if (!probe.ok) spreadsheetId = null;
+        } catch (e) { spreadsheetId = null; }
+      }
 
       if (!spreadsheetId) {
         showLoader("Siapin sheet lo...");
         addBotMsg(`⏳ Siapin sheet lo...`, false);
         try {
-          // Copy runs server-side as owner, ownership transfers to user.
-          // Frontend keeps drive.file scope: no verification warning.
-          const copyPayload = { userToken: accessToken ? accessToken.substring(0, 12) + "..." : null, userEmail: userProfile?.email, fileName: sheetTitle };
-          console.log("[DEBUG] copy-template request:", BACKEND_URL + "/api/copy-template", copyPayload);
-          const copyRes = await fetch(
-            `${BACKEND_URL}/api/copy-template`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userToken: accessToken, userEmail: userProfile?.email, fileName: sheetTitle })
-            }
-          );
+          const copyRes = await fetch(`${BACKEND_URL}/api/copy-template`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userToken: accessToken,
+              userEmail: userProfile?.email,
+              fileName: sheetTitle,
+              recreate: !!recreate
+            })
+          });
           const copyText = await copyRes.text();
           console.log("[DEBUG] drive.files.copy:", copyRes.status, copyText);
           let copyData;
-          try {
-            copyData = JSON.parse(copyText);
-          } catch (err) {
-            throw new Error(`Drive response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`);
-          }
+          try { copyData = JSON.parse(copyText); }
+          catch (err) { throw new Error(`Drive response not JSON (HTTP ${copyRes.status}): ${copyText.substring(0, 100)}`); }
           if (!copyRes.ok) {
-            console.log("[DEBUG] copy-template error detail:", JSON.stringify({ code: copyData.code, error: copyData.error, details: copyData.details }));
             const msg = copyData.error?.message || copyData.error || ("HTTP " + copyRes.status);
             if (String(msg).includes("quota")) {
               throw new Error("Google Drive penuh. Kosongkan sampah di drive.google.com lalu login ulang.");
             }
             throw new Error(msg);
           }
-
           spreadsheetId = copyData.id;
-          localStorage.setItem("rarity_sheet_id", spreadsheetId);
-          console.log("[DEBUG] Spreadsheet copied:", spreadsheetId);
-
-          // Step 2: accept ownership transfer as user (auto, no click needed)
-          try {
-            const acceptRes = await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions/${copyData.permissionId}?transferOwnership=true`, {
-              method: "PATCH",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ role: "owner" })
-            });
-            console.log("[DEBUG] ownership accept:", acceptRes.status);
-          } catch (e) { console.warn("[DEBUG] ownership accept:", e); }
-
-          // Detect Budget tab name from copy
-          const metaCopy = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
-            headers: { "Authorization": `Bearer ${accessToken}` }
-          });
-          const metaCopyData = await metaCopy.json();
-          const budgetSheet = metaCopyData.sheets?.find(s =>
-            s.properties.title.toLowerCase().includes("budget") || s.properties.index === 0
-          );
-          const copiedTabTitle = budgetSheet?.properties?.title || "Budget";
-          window.PLANNER_TAB = copiedTabTitle;
-          localStorage.setItem("rarity_planner_tab", copiedTabTitle);
-
-          // 4. Add hidden _ChatState tab
-          try {
-            await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`, {
-              method: "POST",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ requests: [{ addSheet: { properties: { title: "_ChatState", hidden: true } } }] })
-            });
-          } catch (e) { console.warn("[DEBUG] _ChatState:", e); }
-
-          // 5. Share with bot + anyone
-          try {
-            await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
-              method: "POST",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity.erc@gmail.com" })
-            });
-          } catch (e) { console.warn("[DEBUG] bot share:", e); }
-
-          try {
-            await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
-              method: "POST",
-              headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ role: "editor", type: "anyone" })
-            });
-          } catch (e) { console.warn("[DEBUG] anyone share:", e); }
-
-          addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
+          persistSheetForEmail(copyData.permissionId);
+          if (!copyData.existing) {
+            hideLoader();
+            await waitForOwnershipAccept(copyData);
+            showLoader("Lanjutin setup...");
+          }
+          await finishNewSheetSetup(sheetTitle);
           hideLoader();
         } catch (e) {
           console.error("[DEBUG] Setup error:", e);
           hideLoader();
-          addBotMsg(`⚠️ Gagal bikin sheet: ${e.message}<br><small>Login ulang gih.</small>`, false);
+          addBotMsg(`⚠️ Gagal bikin sheet: ${e.message}<br><small>Klik login lagi.</small>`, false);
           return;
         }
       } else {
@@ -1233,7 +1420,7 @@
             });
           }
         } catch (e) {}
-
+        persistSheetForEmail();
         if (!localStorage.getItem("rarity_chat_html")) {
           await loadChatFromSheet();
         }
@@ -1252,6 +1439,13 @@
     };
     document.getElementById("close-settings-btn").onclick = () => {
       settingsModal.classList.add("hidden");
+    };
+    let settingsPage = 0;
+    document.getElementById("settings-arrow-btn").onclick = () => {
+      settingsPage = settingsPage ? 0 : 1;
+      document.getElementById("settings-pane-wa").classList.toggle("active", settingsPage === 0);
+      document.getElementById("settings-pane-status").classList.toggle("active", settingsPage === 1);
+      document.getElementById("settings-arrow-icon").style.transform = settingsPage ? "rotate(180deg)" : "";
     };
 
     function copyWaSheetId() {
@@ -1305,11 +1499,9 @@
 
     async function reinitializeSheet() {
       if (!confirm("Buat ulang spreadsheet baru dari template dan sambungkan ke bot WhatsApp?")) return;
-      localStorage.removeItem("rarity_sheet_id");
-      localStorage.removeItem("rarity_planner_tab");
-      spreadsheetId = null;
       settingsModal.classList.add("hidden");
-      await setupUserSheet();
+      addBotMsg("🔄 Menginisialisasi ulang spreadsheet...");
+      await setupUserSheet(true);
       checkSystemStatus();
     }
 
@@ -1336,17 +1528,6 @@
       }
     }
 
-    // Reinitialize Sheet Action from Settings Modal
-    async function reinitializeSheet() {
-      localStorage.removeItem("rarity_sheet_id");
-      spreadsheetId = null;
-      addBotMsg("🔄 Menginisialisasi ulang spreadsheet...");
-      settingsModal.classList.add("hidden");
-      await setupUserSheet();
-      await checkSystemStatus();
-    }
-
-    // Concise, token-optimized LLM call with clean JSON parsing
     async function callGemini(contents, jsonMode = true) {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
         method: "POST",
@@ -1388,6 +1569,7 @@
 }`;
       
       try {
+        showBotTyping(true);
         const jsonText = await callGemini([{
           parts: [
             { text: prompt },
@@ -1397,8 +1579,10 @@
         console.log("[DEBUG] Gemini OCR Response:", jsonText);
         pendingReceipt = JSON.parse(jsonText);
         if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category)) pendingReceipt.category = "Lainnya";
+        showBotTyping(false);
         showReceiptVerification(pendingReceipt);
       } catch (e) {
+        showBotTyping(false);
         console.error("[DEBUG] parseReceipt failed:", e);
         addBotMsg("❌ Struk kurang jelas. Coba foto ulang atau ketik manual.");
       }
@@ -1531,21 +1715,23 @@
       }
     };
 
-    async function handleUserChat() {
+async function handleUserChat() {
       const text = userInput.value.trim();
       if (!text || !isModelReady) return;
       userInput.value = "";
       addUserMsg(text);
 
       if (pendingReceipt) {
-        addBotMsg("Bentar...");
+        showBotTyping(true);
         const prompt = `Current: ${JSON.stringify(pendingReceipt)}. Edit instruction: "${text}". JSON only with date, merchant, amount(IDR number), category, notes.`;
         try {
           const updatedJson = await callGemini([{ parts: [{ text: prompt }] }]);
           pendingReceipt = JSON.parse(updatedJson);
+          showBotTyping(false);
           showReceiptVerification(pendingReceipt);
         } catch (e) {
-          addBotMsg("❌ Gagal edit. Coba lagi.");
+          showBotTyping(false);
+          addBotMsg("Gagal edit. Coba lagi.");
         }
         return;
       }
@@ -1661,8 +1847,9 @@ Output JSON only:
 }`;
 
       try {
-        addBotMsg("Memproses...");
+        showBotTyping(true);
         const rawJson = await callGemini([{ parts: [{ text: classifierPrompt }] }]);
+        showBotTyping(false);
         const parsed = JSON.parse(rawJson);
 
         if (parsed.type === "reminder" && parsed.datetime) {
@@ -2284,19 +2471,15 @@ Output JSON only:
       }
 
       if (isTokenValid()) {
+        await fetchUserProfile();
+        bindSheetFromEmail();
         updateGreeting();
         screenLogin.classList.remove("active");
         screenApp.classList.add("active");
         setupUserSheet();
         warmUpGemini();
-      } else if (accessToken) {
-        const checkGoogle = setInterval(() => {
-          if (window.google) {
-            clearInterval(checkGoogle);
-            triggerLogin('');
-          }
-        }, 100);
       }
+      // Expired token: stay on login. User clicks again (GIS popup blocked without gesture).
     });
   </script>
 </body>
