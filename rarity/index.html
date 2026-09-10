@@ -784,9 +784,10 @@
   <div id="own-modal" class="modal hidden">
     <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 400px;">
       <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Terima kepemilikan sheet</h3>
-      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Rarity sudah salin & rename sheet. Langkah: 1) klik Buka Sheet, buka di Drive (terima undangan owner bila ada), 2) balik sini, klik Terima kepemilikan.</p>
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Rarity sudah salin & rename sheet. Langkah: 1) klik Buka Sheet, di Drive terima banner "Accept ownership", 2) balik sini, klik Terima kepemilikan. Stuck? Lanjut sebagai editor — app tetap jalan.</p>
       <a id="own-sheet-link" href="#" target="_blank" style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; margin-bottom: 12px;">Buka Sheet</a>
       <button id="own-accept-btn" class="btn-action" style="margin: 0; width: 100%; padding: 10px; background: var(--primary); color: #fff; border-radius: 8px; font-weight: 600;">Terima kepemilikan</button>
+      <button id="own-skip-btn" class="btn-action" style="margin: 8px 0 0; width: 100%; padding: 8px; background: none; border: none; color: var(--muted); font-size: 0.78rem; cursor: pointer;">Lanjut sebagai editor</button>
       <div id="own-err" class="own-err"></div>
     </div>
   </div>
@@ -1253,9 +1254,14 @@
         const link = document.getElementById("own-sheet-link");
         const err = document.getElementById("own-err");
         const btn = document.getElementById("own-accept-btn");
+        const skip = document.getElementById("own-skip-btn");
         link.href = copyData.webViewLink || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
         err.textContent = "";
         modal.classList.remove("hidden");
+        skip.onclick = () => {
+          modal.classList.add("hidden");
+          resolve();
+        };
         btn.onclick = async () => {
           btn.disabled = true;
           err.textContent = "";
@@ -1284,7 +1290,10 @@
             );
             if (!acceptRes.ok) {
               if (acceptRes.status === 404) {
-                throw new Error("File belum kelihatan (404). Klik Buka Sheet dulu, buka di Drive & terima undangan owner, lalu klik Terima lagi.");
+                throw new Error("File belum kelihatan (404). Klik Buka Sheet dulu, buka di Drive & terima banner ownership, lalu klik Terima lagi.");
+              }
+              if (acceptRes.status === 403) {
+                throw new Error("Ditolak (403). Terima via banner Drive di tab Sheet, lalu klik Terima lagi. Atau Lanjut sebagai editor.");
               }
               const t = await acceptRes.text();
               throw new Error(t.substring(0, 180) || ("HTTP " + acceptRes.status));

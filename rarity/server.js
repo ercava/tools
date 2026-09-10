@@ -480,11 +480,19 @@ app.post('/api/copy-template', async (req, res) => {
     });
     const fileId = copy.data.id;
     // Consumer Gmail: pendingOwner invite only. User accepts with transferOwnership.
+    // NOTE: pendingOwner:true on create is silently ignored (stays false, no mail).
+    // Create plain writer first, then flip pendingOwner via update — that makes it real.
     const perm = await drive.permissions.create({
       fileId,
-      sendNotificationEmail: true,
-      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail, pendingOwner: true },
+      sendNotificationEmail: false,
+      requestBody: { role: 'writer', type: 'user', emailAddress: userEmail },
       fields: 'id',
+    });
+    await drive.permissions.update({
+      fileId,
+      permissionId: perm.data.id,
+      sendNotificationEmail: true,
+      requestBody: { role: 'writer', pendingOwner: true },
     });
     webSheets[email] = { sheetId: fileId, permissionId: perm.data.id };
     saveWebSheets();
