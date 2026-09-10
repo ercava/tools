@@ -352,8 +352,6 @@
     .settings-pane.active.pane-back { animation-name: paneInBack; }
     @keyframes paneIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
     @keyframes paneInBack { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
-    .own-shot { width: 100%; border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; }
-    .own-cap { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
     .settings-arrow {
       flex-shrink: 0; width: 32px; border: 1px solid var(--line); background: #fff;
       border-radius: 8px; cursor: pointer; color: var(--accent);
@@ -364,7 +362,8 @@
     .settings-guide { font-size: 0.72rem; color: var(--muted); margin: 8px 0 12px; line-height: 1.45; }
     .settings-guide ol { margin: 4px 0 0 1.1rem; padding: 0; }
     .msg.bot.typing { display: flex; align-items: center; padding: 10px 14px; }
-    .own-err { font-size: 0.75rem; color: #991b1b; margin-top: 8px; min-height: 1em; }
+    .own-shot { width: 100%; border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; }
+    .own-cap { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
     .modal-content h3 { margin: 0 0 1rem 0; color: var(--accent); font-size: 1.15rem; }
     .status-item {
       display: flex;
@@ -787,20 +786,17 @@
   <div id="own-modal" class="modal hidden">
     <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 440px; max-height: 90vh; overflow-y: auto;">
       <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Terima kepemilikan sheet</h3>
-      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Sheet lo sudah jadi. Jadikan milik akun Google lo dulu (WAJIB, kalau tidak data tidak bisa masuk). Caranya lihat gambar di bawah.</p>
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Sheet lo sudah jadi. Jadikan milik akun Google lo dulu supaya AI bisa nulis ke sheet. Ikuti gambar:</p>
       <a id="own-sheet-link" href="#" target="_blank" class="btn-action" style="margin: 0 0 4px; width: 100%; padding: 10px; background: var(--primary); color: #fff; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; box-sizing: border-box;">Buka Sheet</a>
-      <div style="height:180px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;overflow:hidden;position:relative;">
-        <div style="position:absolute;left:12px;top:12px;font-size:0.7rem;color:var(--muted);">Langkah 1: klik Share</div>
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;bottom:12px;"><path d="M5 3a2 2 0 0 1 2 2h3a2 2 0 0 1 2-2 2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M11 4h2a2 2 0 0 1 2 2v2"/><path d="M18 4h2a2 2 0 0 1 2 2v6"/><path d="M6 10h4"/><path d="M16 16h4"/></svg>
-        <div class="own-cap" style="margin-top:60px;">1. Di sheet, klik <b>Share</b> kanan atas.</div>
+      <div>
+        <img src="img/own-step1.png" alt="Langkah 1: klik Share" class="own-shot" onerror="this.parentElement.style.display='none'">
+        <div class="own-cap">1. Di sheet, klik tombol <b>Share</b> kanan atas.</div>
       </div>
-      <div style="height:180px;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:12px;overflow:hidden;position:relative;">
-        <div style="position:absolute;left:12px;top:12px;font-size:0.7rem;color:var(--muted);">Langkah 2: terima milik</div>
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;right:12px;bottom:12px;"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M2 12s3 2 12 3 12-3 12-3"/></svg>
-        <div class="own-cap" style="margin-top:60px;">2. Klik <b>Accept ownership?</b> di nama lo.</div>
+      <div>
+        <img src="img/own-step2.png" alt="Langkah 2: klik Accept ownership" class="own-shot" onerror="this.parentElement.style.display='none'">
+        <div class="own-cap">2. Klik <b>Accept ownership?</b> di nama lo, lalu Done.</div>
       </div>
-      <button id="own-accept-btn" class="btn-action" style="margin: 12px 0 0; width: 100%; padding: 10px; background: #16a34a; color: #fff; border-radius: 8px; font-weight: 600;">Saya sudah terima — lanjutkan</button>
-      <div id="own-err" class="own-err"></div>
+      <button id="own-accept-btn" class="btn-action" style="margin: 12px 0 0; width: 100%; padding: 10px; background: #16a34a; color: #fff; border-radius: 8px; font-weight: 600;">Lanjutkan</button>
     </div>
   </div>
 
@@ -1260,41 +1256,19 @@
       localStorage.setItem("rarity_sheet_id", spreadsheetId);
     }
 
-    async function sheetVisibleToUser() {
-      try {
-        const r = await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}?fields=id`, {
-          headers: { "Authorization": `Bearer ${accessToken}` }
-        });
-        return r.ok;
-      } catch (e) { return false; }
-    }
-
-    // Blocking gate: resolves only when user's token can see the file.
-    // Ownership accept happens in Drive UI (see tutorial images). No API PATCH:
-    // PATCH transferOwnership is flaky under drive.file scope (404/403).
+    // Ownership accept happens in Drive UI (see tutorial images). No check
+    // afterward: on Lanjutkan the app just continues. finishNewSheetSetup
+    // shares rarity.erc@gmail.com as writer so the AI can edit the sheet.
     function waitForOwnershipAccept(copyData) {
       return new Promise((resolve) => {
         const modal = document.getElementById("own-modal");
         const link = document.getElementById("own-sheet-link");
-        const err = document.getElementById("own-err");
         const btn = document.getElementById("own-accept-btn");
         link.href = copyData.webViewLink || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
-        err.textContent = "";
         modal.classList.remove("hidden");
-        btn.onclick = async () => {
-          btn.disabled = true;
-          err.textContent = "";
-          try {
-            if (!await sheetVisibleToUser()) {
-              throw new Error("Sheet belum bisa diakses. Ikuti gambar: Buka Sheet → Share → Accept ownership, lalu klik lagi.");
-            }
-            modal.classList.add("hidden");
-            resolve();
-          } catch (e) {
-            err.textContent = e.message;
-          } finally {
-            btn.disabled = false;
-          }
+        btn.onclick = () => {
+          modal.classList.add("hidden");
+          resolve();
         };
       });
     }
@@ -1332,7 +1306,6 @@
         });
       } catch (e) { console.warn("[DEBUG] anyone share:", e); }
       persistSheetForEmail();
-      addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
     }
 
     function showLoader(t = "Bentar ya...") {
@@ -1355,7 +1328,7 @@
         localStorage.removeItem("rarity_planner_tab");
       }
 
-      // Bound id invisible to this token (stale pending invite): drop it and force
+      // Bound id dead (throwaway copy never accepted): drop it and force
       // recreate, else the server keeps returning the same dead existing id.
       let staleId = false;
       if (spreadsheetId) {
@@ -1402,6 +1375,7 @@
           }
           await finishNewSheetSetup(sheetTitle);
           hideLoader();
+          addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
         } catch (e) {
           console.error("[DEBUG] Setup error:", e);
           hideLoader();

@@ -412,9 +412,9 @@ function makeGCalLink(title, timestampMs, notes = '') {
 // --- DRIVE TEMPLATE COPY API ---
 
 // POST /api/copy-template
-// Body: { userToken, userEmail, fileName }
-// Copy runs as owner account (rarity.erc@gmail.com), then ownership
-// transfers to user. Frontend keeps drive.file scope: no warning, no Picker.
+// Body: { userToken, userEmail, fileName, recreate }
+// rarity.erc copies the template, shares it with the user as pending owner.
+// User accepts ownership in Drive UI, then the app continues. No API PATCH.
 // SA cannot own Drive files on @gmail.com (0 quota), so owner OAuth used.
 const OWNER_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '181034412045-4iu4f1msf66l6ok3nn0iujj3qj6lkamm.apps.googleusercontent.com';
 const OWNER_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
@@ -479,9 +479,9 @@ app.post('/api/copy-template', async (req, res) => {
       supportsAllDrives: true,
     });
     const fileId = copy.data.id;
-    // Consumer Gmail: pendingOwner invite only. User accepts with transferOwnership.
-    // NOTE: pendingOwner:true on create is silently ignored (stays false, no mail).
-    // Create plain writer first, then flip pendingOwner via update — that makes it real.
+    // Consumer Gmail: writer share first (pendingOwner:true on create is
+    // silently ignored), then flip pendingOwner via update — that makes the
+    // "Accept ownership?" button appear in the user's Drive UI.
     const perm = await drive.permissions.create({
       fileId,
       sendNotificationEmail: false,
