@@ -784,7 +784,7 @@
   <div id="own-modal" class="modal hidden">
     <div class="modal-content" style="border-radius: 16px; padding: 1.5rem; max-width: 400px;">
       <h3 style="margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--accent);">Terima kepemilikan sheet</h3>
-      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Rarity sudah salin & rename sheet. Klik Terima kepemilikan supaya file jadi milik akun Google lo.</p>
+      <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 1rem; line-height: 1.45;">Rarity sudah salin & rename sheet. Langkah: 1) klik Buka Sheet, buka di Drive (terima undangan owner bila ada), 2) balik sini, klik Terima kepemilikan.</p>
       <a id="own-sheet-link" href="#" target="_blank" style="font-size: 0.8rem; font-weight: 600; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; margin-bottom: 12px;">Buka Sheet</a>
       <button id="own-accept-btn" class="btn-action" style="margin: 0; width: 100%; padding: 10px; background: var(--primary); color: #fff; border-radius: 8px; font-weight: 600;">Terima kepemilikan</button>
       <div id="own-err" class="own-err"></div>
@@ -1260,6 +1260,20 @@
           btn.disabled = true;
           err.textContent = "";
           try {
+            const email = sheetEmailKey();
+            const checkOwned = async () => {
+              const ownRes = await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}?fields=owners`, {
+                headers: { "Authorization": `Bearer ${accessToken}` }
+              });
+              if (!ownRes.ok) return false;
+              const ownData = await ownRes.json();
+              return (ownData.owners || []).some(o => (o.emailAddress || "").toLowerCase() === email);
+            };
+            if (await checkOwned()) {
+              modal.classList.add("hidden");
+              resolve();
+              return;
+            }
             const acceptRes = await fetch(
               `https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions/${copyData.permissionId}?transferOwnership=true`,
               {
@@ -1269,16 +1283,13 @@
               }
             );
             if (!acceptRes.ok) {
+              if (acceptRes.status === 404) {
+                throw new Error("File belum kelihatan (404). Klik Buka Sheet dulu, buka di Drive & terima undangan owner, lalu klik Terima lagi.");
+              }
               const t = await acceptRes.text();
               throw new Error(t.substring(0, 180) || ("HTTP " + acceptRes.status));
             }
-            const ownRes = await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}?fields=owners`, {
-              headers: { "Authorization": `Bearer ${accessToken}` }
-            });
-            const ownData = await ownRes.json();
-            const email = sheetEmailKey();
-            const isOwner = (ownData.owners || []).some(o => (o.emailAddress || "").toLowerCase() === email);
-            if (!isOwner) throw new Error("Belum jadi owner. Buka sheet, terima undangan Drive, lalu klik lagi.");
+            if (!await checkOwned()) throw new Error("Belum jadi owner. Buka sheet, terima undangan Drive, lalu klik lagi.");
             modal.classList.add("hidden");
             resolve();
           } catch (e) {
