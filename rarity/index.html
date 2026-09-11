@@ -683,7 +683,7 @@
   <!-- Screen 1: Login -->
   <div id="screen-login" class="screen active">
     <div class="auth-container">
-      <img src="../logo/favicon.ico" alt="Logo RARITY" style="height:64px;margin-bottom:0.5rem;">
+      <img src="logo.png" alt="Logo RARITY" style="height:64px;margin-bottom:0.5rem;">
       <h1 class="title">RARITY</h1>
       <p class="desc">Scan struk belanja, verifikasi AI, catat otomatis ke Google Sheet.</p>
       
@@ -940,7 +940,7 @@
     const _defKey = atob("QVEuQWI4Uk42SnJ4ai05emFQRFlQYjF4Vmtob3pzRE9kWXZzcjZNLURVSmwzR1JYalE2WFE=");
     const GEMINI_API_KEY = localStorage.getItem("rarity_gemini_key") || _defKey;
     const GEMINI_MODEL = "gemini-3.5-flash-lite";
-    const TEMPLATE_SHEET_ID = "1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU";
+    const TEMPLATE_SHEET_ID = "1dpwkCJj2tfVDi4cORA49vZ_BWvGGXjdpfLGppw1dPl0";
     const BACKEND_URL = "https://rarity-kwn4.onrender.com";
 
     let accessToken = localStorage.getItem("rarity_access_token");
@@ -1563,6 +1563,118 @@
       "transport", "Gadget", "Pakaian", "Lainnya"
     ];
 
+    // Hardcoded fallback geometry (original template). Auto-detect tries first.
+    const FALLBACK_LAYOUT = {
+      monthCell: 'C10', yearCell: 'C12',
+      tables: {
+        pengeluaran: { startRow: 66, colStart: 'F', colEnd: 'J', order: ['date', 'merchant', 'category', 'amount', 'notes'] },
+        pemasukan:   { startRow: 48, colStart: 'M', colEnd: 'P', order: ['date', 'merchant', 'amount', 'notes'] },
+        tabungan:    { startRow: 10, colStart: 'F', colEnd: 'J', order: ['date', 'merchant', 'category', 'amount', 'notes'] },
+        tagihan:     { startRow: 10, colStart: 'M', colEnd: 'P', order: ['date', 'merchant', 'amount', 'notes'] },
+      },
+      tracker: { startRow: 3, colStart: 'B', colEnd: 'E' },
+    };
+    const TABLE_SCAN_DEPTH = 250;
+    const colL = i => { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+    const normCell = v => String(v || '').toLowerCase().replace(/[^a-z0-9&]/g, '');
+    function fieldOf(h) {
+      const t = normCell(h);
+      if (/^(tanggal|tgl|date)$/.test(t)) return 'date';
+      if (/merchant|toko|sumber|tempat|penjual|pemberi|wadah/.test(t)) return 'merchant';
+      if (/kategori|category/.test(t)) return 'category';
+      if (/jumlah|nominal|amount|total|bayar|nilai|harga/.test(t)) return 'amount';
+      if (/catatan|notes|keterangan|barang|menu|deskripsi/.test(t)) return 'notes';
+      return '';
+    }
+    function sectionOf(t) {
+      if (t === 'pemasukan') return 'pemasukan';
+      if (t === 'pengeluaran') return 'pengeluaran';
+      if (t === 'tagihan') return 'tagihan';
+      if (t === 'tabungan' || t === 'tabungan&investasi') return 'tabungan';
+      return '';
+    }
+    // Scan tab geometry once, cache per sheet+tab. Falls back to hardcoded.
+    async function detectSheetLayout(tab) {
+      const key = `rarity_layout_${spreadsheetId}_${tab}`;
+      try {
+        const cached = JSON.parse(localStorage.getItem(key) || 'null');
+        if (cached && cached.tables) return cached;
+      } catch (e) {}
+      const layout = JSON.parse(JSON.stringify(FALLBACK_LAYOUT));
+      try {
+        const enc = encodeURIComponent(`'${tab}'!A1:Z300`);
+        const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${enc}`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        if (!res.ok) throw new Error('scan HTTP ' + res.status);
+        const grid = (await res.json()).values || [];
+        const cell = (r, c) => (grid[r] && grid[r][c]) || '';
+        // Month cell: first cell matching an Indonesian month name; year 2 rows below.
+        outer: for (let r = 0; r < grid.length; r++) {
+          for (let c = 0; c < (grid[r] || []).length; c++) {
+            if (MONTH_NAMES.some(mn => normCell(cell(r, c)) === normCell(mn))) {
+              layout.monthCell = colL(c) + (r + 1);
+              layout.yearCell = colL(c) + (r + 3);
+              break outer;
+            }
+          }
+        }
+        // Tables: section title → header row (tanggal + jumlah) → data below it.
+        const found = {};
+        for (let r = 0; r < grid.length; r++) {
+          for (let c = 0; c < (grid[r] || []).length; c++) {
+            const sec = sectionOf(normCell(cell(r, c)));
+            if (!sec || found[sec]) continue;
+            for (let hr = r + 1; hr < Math.min(r + 13, grid.length); hr++) {
+              const row = grid[hr] || [];
+              const order = row.map(fieldOf);
+              if (order.includes('date') && order.includes('amount')) {
+                let first = -1, last = -1;
+                row.forEach((v, i) => { if (String(v).trim() !== '') { if (first < 0) first = i; last = i; } });
+                layout.tables[sec] = { startRow: hr + 2, colStart: colL(first), colEnd: colL(last), order: order.slice(first, last + 1) };
+                found[sec] = true;
+                break;
+              }
+            }
+          }
+        }
+        // Tracker tab: header row with a date-ish cell → data below it.
+        try {
+          const tenc = encodeURIComponent("'Tracker'!A1:Z60");
+          const tres = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${tenc}`, {
+            headers: { "Authorization": `Bearer ${accessToken}` }
+          });
+          if (tres.ok) {
+            const tgrid = (await tres.json()).values || [];
+            for (let hr = 0; hr < tgrid.length; hr++) {
+              const row = tgrid[hr] || [];
+              if (row.some(v => /^(tanggal|tgl|date|waktu|datetime)$/.test(normCell(v)))) {
+                layout.tracker = { startRow: hr + 2, colStart: 'B', colEnd: 'E' };
+                break;
+              }
+            }
+          }
+        } catch (e) {}
+        // Sanity: detected month/year cells must look like C10/C12 pattern users.
+        if (!/^[A-Z]+[0-9]+$/.test(layout.monthCell)) layout.monthCell = 'C10';
+        if (!/^[A-Z]+[0-9]+$/.test(layout.yearCell)) layout.yearCell = 'C12';
+        localStorage.setItem(key, JSON.stringify(layout));
+        console.log('[DEBUG] layout detected:', JSON.stringify(layout));
+      } catch (e) {
+        console.warn('[DEBUG] layout detect failed, hardcoded fallback:', e.message);
+      }
+      return layout;
+    }
+    function layoutTable(layout, k) { return (layout.tables && layout.tables[k]) || FALLBACK_LAYOUT.tables[k]; }
+    async function putSingleCell(tab, a1, value) {
+      const enc = encodeURIComponent(`'${tab}'!${a1}`);
+      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${enc}?valueInputOption=USER_ENTERED`, {
+        method: "PUT",
+        headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ values: [[value]] })
+      });
+    }
+
     // Ultra-terse prompt aligned with exact template categories
     async function parseReceipt(base64Data, mimeType) {
       const catList = EXPENSE_CATEGORIES.join(', ');
@@ -1627,20 +1739,17 @@
       
       const cat = pendingReceipt.category;
       let targetTable = 'Pengeluaran';
-      let startRow = 66, endRow = 121, colStart = 'F', colEnd = 'J';
-      let is4Col = false;
+      let tableKey = 'pengeluaran';
 
       if (cat === 'Pemasukan' || pendingReceipt.type === 'pemasukan') {
         targetTable = 'Pemasukan';
-        startRow = 48; endRow = 85; colStart = 'M'; colEnd = 'P';
-        is4Col = true;
+        tableKey = 'pemasukan';
       } else if (cat === 'Tabungan & Investasi' || pendingReceipt.type === 'tabungan') {
         targetTable = 'Tabungan & Investasi';
-        startRow = 10; endRow = 42; colStart = 'F'; colEnd = 'J';
+        tableKey = 'tabungan';
       } else if (cat === 'Tagihan' || pendingReceipt.type === 'tagihan') {
         targetTable = 'Tagihan';
-        startRow = 10; endRow = 42; colStart = 'M'; colEnd = 'P';
-        is4Col = true;
+        tableKey = 'tagihan';
       }
 
       addBotMsg(`💾 Nyimpen ke ${targetTable}...`);
@@ -1649,21 +1758,15 @@
         const txMonthName = MONTH_NAMES[txDate.getMonth()] || "Januari";
         const txYear = txDate.getFullYear().toString();
         const tab = window.PLANNER_TAB || localStorage.getItem("rarity_planner_tab") || "[ISI DISINI]";
+        const layout = await detectSheetLayout(tab);
+        const T = layoutTable(layout, tableKey);
+        const startRow = T.startRow, endRow = startRow + TABLE_SCAN_DEPTH;
+        const colStart = T.colStart, colEnd = T.colEnd;
 
-        // Update active Month (C10) & Year (C12) so template formulas compute correctly
+        // Update active Month & Year so template formulas compute correctly
         try {
-          const encRange = encodeURIComponent(`'${tab}'!C10:C12`);
-          await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}?valueInputOption=USER_ENTERED`, {
-            method: "PUT",
-            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-              values: [
-                [txMonthName],
-                [""],
-                [txYear]
-              ]
-            })
-          });
+          await putSingleCell(tab, layout.monthCell, txMonthName);
+          await putSingleCell(tab, layout.yearCell, txYear);
         } catch (e) {
           console.warn("[DEBUG] Month/Year header sync error:", e);
         }
@@ -1673,7 +1776,7 @@
         const getUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encGetRange}`;
         const getRes = await fetch(getUrl, { headers: { "Authorization": `Bearer ${accessToken}` } });
         const getData = await getRes.json();
-        
+
         const existingRows = getData.values || [];
         let emptyOffset = existingRows.findIndex(row => !row || !row[0] || String(row[0]).trim() === "");
         if (emptyOffset === -1) emptyOffset = existingRows.length;
@@ -1684,20 +1787,14 @@
           return;
         }
 
-        const rowValues = is4Col
-          ? [
-              pendingReceipt.date || new Date().toISOString().split('T')[0],
-              pendingReceipt.merchant || "Umum",
-              pendingReceipt.amount || 0,
-              pendingReceipt.notes || ""
-            ]
-          : [
-              pendingReceipt.date || new Date().toISOString().split('T')[0],
-              pendingReceipt.merchant || "Umum",
-              pendingReceipt.category || "Lainnya",
-              pendingReceipt.amount || 0,
-              pendingReceipt.notes || ""
-            ];
+        const fieldVal = {
+          date: pendingReceipt.date || new Date().toISOString().split('T')[0],
+          merchant: pendingReceipt.merchant || "Umum",
+          category: pendingReceipt.category || "Lainnya",
+          amount: pendingReceipt.amount || 0,
+          notes: pendingReceipt.notes || ""
+        };
+        const rowValues = T.order.map(f => fieldVal[f] !== undefined ? fieldVal[f] : "");
 
         const encWriteRange = encodeURIComponent(`'${tab}'!${colStart}${nextRow}:${colEnd}${nextRow}`);
         const writeUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWriteRange}?valueInputOption=USER_ENTERED`;
@@ -2245,7 +2342,11 @@ Output JSON only:
         const dateTimeFormatted = `${y}-${m}-${d} ${hh}:${mm}`;
         const timeNote = `Jam: ${hh}:${mm}${rem.notes ? ' • ' + rem.notes : ''}`;
 
-        const encRange = encodeURIComponent("'Tracker'!B3:E50");
+        const tab = window.PLANNER_TAB || localStorage.getItem("rarity_planner_tab") || "[ISI DISINI]";
+        const layout = await detectSheetLayout(tab);
+        const TR = layout.tracker || FALLBACK_LAYOUT.tracker;
+        const trEnd = TR.startRow + TABLE_SCAN_DEPTH;
+        const encRange = encodeURIComponent(`'Tracker'!${TR.colStart}${TR.startRow}:${TR.colEnd}${trEnd}`);
         const getRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRange}`, {
           headers: { "Authorization": `Bearer ${accessToken}` }
         });
@@ -2254,9 +2355,9 @@ Output JSON only:
           const existing = getData.values || [];
           let offset = existing.findIndex(r => !r || !r[0]);
           if (offset === -1) offset = existing.length;
-          const nextRow = 3 + offset;
+          const nextRow = TR.startRow + offset;
 
-          const encWrite = encodeURIComponent(`'Tracker'!B${nextRow}:E${nextRow}`);
+          const encWrite = encodeURIComponent(`'Tracker'!${TR.colStart}${nextRow}:${TR.colEnd}${nextRow}`);
           await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encWrite}?valueInputOption=USER_ENTERED`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
@@ -2312,18 +2413,24 @@ Output JSON only:
       periodLabel.innerText = "Memperbarui data...";
 
       try {
+        const layout = await detectSheetLayout(tab);
+        const T = layoutTable(layout, 'pengeluaran');
+        const expStart = T.startRow, expEnd = expStart + TABLE_SCAN_DEPTH;
+        const di = T.order.indexOf('date'), mi = T.order.indexOf('merchant');
+        const ci = T.order.indexOf('category'), ai = T.order.indexOf('amount'), ni = T.order.indexOf('notes');
         // 1. Get Month & Year header info
-        const encHeader = encodeURIComponent(`'${tab}'!C10:C12`);
+        const encHeader = encodeURIComponent(`'${tab}'!${layout.monthCell}:${layout.yearCell}`);
         const headerRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encHeader}`, {
           headers: { "Authorization": `Bearer ${accessToken}` }
         });
         const headerData = await headerRes.json();
-        const curMonth = headerData.values?.[0]?.[0] || "";
-        const curYear = headerData.values?.[2]?.[0] || "";
+        const hvals = headerData.values || [];
+        const curMonth = hvals[0]?.[0] || "";
+        const curYear = hvals[hvals.length - 1]?.[0] || "";
         periodLabel.innerText = `Periode: ${curMonth} ${curYear}`;
 
-        // 2. Fetch expense records from F66:J121
-        const encRows = encodeURIComponent(`'${tab}'!F66:J121`);
+        // 2. Fetch expense records from detected Pengeluaran table
+        const encRows = encodeURIComponent(`'${tab}'!${T.colStart}${expStart}:${T.colEnd}${expEnd}`);
         const rowsRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encRows}`, {
           headers: { "Authorization": `Bearer ${accessToken}` }
         });
@@ -2336,13 +2443,14 @@ Output JSON only:
         const catMap = {};
 
         rawRows.forEach((r, idx) => {
-          if (!r || !r[0] || !r[3]) return;
-          const date = r[0];
-          const merchant = r[1] || "Umum";
-          const category = r[2] || "Lainnya";
-          const amountStr = String(r[3]).replace(/[^0-9]/g, "");
+          if (!r) return;
+          const date = di >= 0 ? r[di] : "";
+          const amountStr = ai >= 0 ? String(r[ai] || "").replace(/[^0-9]/g, "") : "";
+          if (!date || !amountStr) return;
+          const merchant = mi >= 0 ? (r[mi] || "Umum") : "Umum";
+          const category = ci >= 0 ? (r[ci] || "Lainnya") : "Lainnya";
           const amount = parseInt(amountStr, 10) || 0;
-          const notes = r[4] || "";
+          const notes = ni >= 0 ? (r[ni] || "") : "";
 
           if (amount > 0) {
             grandTotal += amount;
@@ -2360,7 +2468,7 @@ Output JSON only:
           recentList.innerHTML = `<span style="color: var(--muted); font-size: 0.8rem;">Belum ada transaksi di periode ini</span>`;
         } else {
           recentList.innerHTML = recent5.map(tx => {
-            const actualRow = 66 + tx.index;
+            const actualRow = expStart + tx.index;
             return `
               <div class="tx-item" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
@@ -2369,7 +2477,7 @@ Output JSON only:
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
                   <div class="tx-amt">${rupiah(tx.amount)}</div>
-                  <button title="Hapus transaksi ini" style="background:#fee2e2; border:none; color:#dc2626; border-radius:6px; padding:4px 6px; cursor:pointer; font-size:0.7rem; font-weight:700;" onclick="deleteTransactionRow(${actualRow}, '${tx.merchant.replace(/'/g, "\\'")}')">✕</button>
+                  <button title="Hapus transaksi ini" style="background:#fee2e2; border:none; color:#dc2626; border-radius:6px; padding:4px 6px; cursor:pointer; font-size:0.7rem; font-weight:700;" onclick="deleteTransactionRow(${actualRow}, '${tx.merchant.replace(/'/g, "\\'")}', '${T.colStart}', '${T.colEnd}')">✕</button>
                 </div>
               </div>
             `;

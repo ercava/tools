@@ -54,7 +54,7 @@ function getDriveClient() {
   return _driveClient;
 }
 
-const TEMPLATE_SHEET_ID = process.env.TEMPLATE_SHEET_ID || '1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU';
+const TEMPLATE_SHEET_ID = process.env.TEMPLATE_SHEET_ID || '1dpwkCJj2tfVDi4cORA49vZ_BWvGGXjdpfLGppw1dPl0';
 
 const PORT = process.env.PORT || 3000;
 
@@ -65,7 +65,7 @@ const CONFIG = {
   PHONE_NUMBER_ID: process.env.PHONE_NUMBER_ID || '', // WhatsApp Phone Number ID
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || Buffer.from('QVEuQWI4Uk42SnJ4ai05emFQRFlQYjF4Vmtob3pzRE9kWXZzcjZNLURVSmwzR1JYalE2WFE=', 'base64').toString(),
   GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-1.5-flash-latest',
-  APPS_SCRIPT_URL: process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbw1L3SYdGadXzfzv80othCcuajT-mtPfN7DdLt3OuHNbWbOMVB9Ym25ZRjxZ773TlYA/exec',
+  APPS_SCRIPT_URL: process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbx7LW240hXQPKCOSxNKm8tKn2MF46HylodOk55tIbhAb2yn-idXnDoYzwhIYxtENOGV/exec',
   ADMIN_SECRET: process.env.ADMIN_SECRET || 'rarity_x9k2m',
   SPREADSHEET_ID: process.env.SPREADSHEET_ID || '1le2VC_ASrU1YVebKmuJUyLivPfvKA3kLW5KUUjKSrN4',
   GOOGLE_ACCESS_TOKEN: process.env.GOOGLE_ACCESS_TOKEN || '',

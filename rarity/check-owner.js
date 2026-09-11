@@ -23,7 +23,7 @@ if (fs.existsSync(envPath)) {
     const drive = google.drive({ version: 'v3', auth });
     try {
       const f = await drive.files.get({
-        fileId: process.env.TEMPLATE_SHEET_ID || '1HEGvMhnwjhvcnoZOvamLgJVmNU5iy2hiYRMFXQgsmkU',
+        fileId: process.env.TEMPLATE_SHEET_ID || '1dpwkCJj2tfVDi4cORA49vZ_BWvGGXjdpfLGppw1dPl0',
         fields: 'id,name,owners',
       });
       console.log('Template visible. Name:', f.data.name, '| Owners:', (f.data.owners || []).map((o) => o.emailAddress).join(','));

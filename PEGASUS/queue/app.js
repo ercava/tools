@@ -32,7 +32,7 @@
 */
 
 const ADMIN_USERNAME = "quickwork";
-const ADMIN_PASSWORD = atob("UEVHQVNVUzAwODM0NTQ2NA=="); // PEGASUS008345464
+const ADMIN_PASSWORD = atob("UEVHQVNVUzAwODM0NTQ2NA=="); 
 
 const firebaseConfig = {
   apiKey: "AIzaSyDWQzXQfCXWhNQ6zCoEIhRj689-xLAgslA",
