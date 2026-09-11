@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGASUS Support · Admin</title>
+  <link rel="icon" type="image/x-icon" href="https://erc.my.id/tools/logo/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loading-screen" class="screen active">
+    <div style="text-align: center; margin-top: 25vh;">
+      <h1 class="brand-name" style="font-size: 2rem;">PEGASUS <small>Support</small></h1>
+      <p class="desc" style="color: var(--muted); margin: 0.5rem 0 1.5rem;">Memuat admin...</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div id="login-screen" class="screen">
+    <div class="auth-container">
+      <div class="brand" style="justify-content: center; margin-bottom: 1rem;">
+        <img src="../assets/logo.png" alt="PEGASUS Logo" style="height: 90px;">
+      </div>
+      <h2 class="auth-title">Admin Queue</h2>
+      <p class="auth-desc">Login untuk mengelola antrian.</p>
+
+      <div class="input-group" style="text-align: left;">
+        <label for="admin-user" class="input-label">Username</label>
+        <input type="text" id="admin-user" class="input-field" placeholder="Username" autocomplete="off">
+      </div>
+      <div class="input-group" style="text-align: left;">
+        <label for="admin-pass" class="input-label">Password</label>
+        <input type="password" id="admin-pass" class="input-field" placeholder="Password">
+      </div>
+      <button id="admin-login-btn" class="btn">Login</button>
+      <div id="login-error" class="error-msg">Username atau password salah.</div>
+
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="admin-screen" class="screen">
+    <div class="page-wrap">
+
+      <div class="header-bar">
+        <a class="brand" href="../index.html">
+          <img src="../assets/logo.png" alt="PEGASUS Logo">
+          <span class="brand-name">PEGASUS <small>Support · Admin</small></span>
+        </a>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a class="logout-btn" href="index.html">Lihat Antrian</a>
+          <button id="logout-btn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card s-waiting">
+          <span class="stat-value" id="st-waiting">0</span>
+          <span class="stat-label">Menunggu</span>
+        </div>
+        <div class="stat-card s-ongoing">
+          <span class="stat-value" id="st-ongoing">0</span>
+          <span class="stat-label">Sedang Dilayani</span>
+        </div>
+        <div class="stat-card s-finished">
+          <span class="stat-value" id="st-finished">0</span>
+          <span class="stat-label">Selesai</span>
+        </div>
+      </div>
+
+      <!-- Add -->
+      <div class="card">
+        <h3>Tambah Antrian</h3>
+        <div class="add-row">
+          <div class="input-group">
+            <label for="new-name" class="input-label">Name</label>
+            <input type="text" id="new-name" class="input-field" placeholder="Nama" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="new-number" class="input-label">Number</label>
+            <input type="number" id="new-number" class="input-field" placeholder="Nomor antrian">
+          </div>
+          <button id="add-btn" class="btn">Tambah</button>
+        </div>
+        <div id="add-error" class="error-msg">Isi nama dan nomor antrian.</div>
+      </div>
+
+      <!-- List -->
+      <div id="queue-list" class="queue-list">
+        <div class="empty-state">Memuat antrian...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Edit modal -->
+  <div id="edit-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Edit Antrian</h3>
+        <button type="button" class="modal-close" id="edit-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="edit-name" class="input-label">Name</label>
+          <input type="text" id="edit-name" class="input-field">
+        </div>
+        <div class="input-group">
+          <label for="edit-number" class="input-label">Number</label>
+          <input type="number" id="edit-number" class="input-field">
+        </div>
+        <div class="input-group">
+          <label for="edit-status" class="input-label">Status</label>
+          <select id="edit-status" class="input-field">
+            <option value="waiting">Menunggu</option>
+            <option value="ongoing">Sedang Dilayani</option>
+            <option value="finished">Selesai</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit-save" class="btn">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
