@@ -946,6 +946,22 @@
     let accessToken = localStorage.getItem("rarity_access_token");
     let tokenExpiry = parseInt(localStorage.getItem("rarity_token_expiry") || "0", 10);
     let userProfile = JSON.parse(localStorage.getItem("rarity_user_profile") || "null");
+    // All Drive/Sheets traffic runs as rarity.erc@gmail.com via server proxy.
+    // The login token (drive.file scope) cannot see server-created files even
+    // after Drive-UI ownership accept → 404. Gemini/backend/userinfo pass through.
+    const _gfetch = window.fetch.bind(window);
+    window.fetch = (url, opts = {}) => {
+      const u = String(url);
+      const m = u.match(/^https:\/\/(www\.googleapis\.com\/drive\/v3|sheets\.googleapis\.com\/v4)(\/.*)$/);
+      if (!m || !accessToken || !userProfile?.email) return _gfetch(url, opts);
+      let body;
+      try { body = opts.body ? JSON.parse(opts.body) : undefined; } catch (e) { body = undefined; }
+      return _gfetch(`${BACKEND_URL}/api/google-proxy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userToken: accessToken, userEmail: userProfile.email, api: m[1].charAt(0) === 'w' ? 'drive' : 'sheets', path: m[2], method: opts.method || 'GET', body })
+      }).then(async r => new Response(await r.text(), { status: r.status, headers: { 'Content-Type': 'application/json' } }));
+    };
     let spreadsheetId = null;
     let pendingReceipt = null;
     let tokenClient = null;

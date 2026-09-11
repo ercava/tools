@@ -420,11 +420,68 @@ const OWNER_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '181034412045-4iu4f1msf6
 const OWNER_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const OWNER_REFRESH_TOKEN = process.env.OWNER_REFRESH_TOKEN || '';
 
-function getOwnerDrive() {
+function getOwnerAuth() {
   const ownerAuth = new google.auth.OAuth2(OWNER_CLIENT_ID, OWNER_CLIENT_SECRET);
   ownerAuth.setCredentials({ refresh_token: OWNER_REFRESH_TOKEN });
-  return google.drive({ version: 'v3', auth: ownerAuth });
+  return ownerAuth;
 }
+function getOwnerDrive() {
+  return google.drive({ version: 'v3', auth: getOwnerAuth() });
+}
+
+// POST /api/google-proxy
+// Forwards Drive/Sheets reads+writes as rarity.erc@gmail.com. The browser
+// token (drive.file scope) cannot see server-created files even after
+// Drive-UI ownership accept → 404 everywhere. rarity.erc stays writer after
+// transfer, so it can read/write values. Each call is constrained to a file
+// where the requester is on the ACL (or in the onboarding map).
+app.post('/api/google-proxy', async (req, res) => {
+  const { userToken, userEmail, api, path, method, body } = req.body || {};
+  if (!userToken || !userEmail || !api || !path) {
+    return res.status(400).json({ error: 'userToken, userEmail, api, path required' });
+  }
+  if (api !== 'drive' && api !== 'sheets') {
+    return res.status(400).json({ error: 'api must be drive|sheets' });
+  }
+  if (!OWNER_CLIENT_SECRET || !OWNER_REFRESH_TOKEN) {
+    return res.status(500).json({ error: 'Owner Drive not configured' });
+  }
+  try {
+    const meRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { 'Authorization': `Bearer ${userToken}` }
+    });
+    if (!meRes.ok) return res.status(401).json({ error: 'Invalid userToken' });
+    const me = await meRes.json();
+    const email = String(userEmail).toLowerCase();
+    if ((me.email || '').toLowerCase() !== email) {
+      return res.status(403).json({ error: 'Token/email mismatch' });
+    }
+    const m = String(path).match(/(?:files|spreadsheets)\/([^/?:]+)/);
+    const fileId = m && m[1];
+    if (!fileId) return res.status(400).json({ error: 'No file id in path' });
+    const drive = getOwnerDrive();
+    let allowed = webSheets[email]?.sheetId === fileId;
+    if (!allowed) {
+      try {
+        const perms = await drive.permissions.list({ fileId, fields: 'permissions(emailAddress)' });
+        allowed = (perms.data.permissions || []).some(p => (p.emailAddress || '').toLowerCase() === email);
+      } catch (e) { allowed = false; }
+    }
+    if (!allowed) return res.status(403).json({ error: 'Requester not on file ACL' });
+    const { token } = await getOwnerAuth().getAccessToken();
+    const base = api === 'sheets' ? 'https://sheets.googleapis.com' : 'https://www.googleapis.com';
+    const f = await fetch(base + path, {
+      method: method || 'GET',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await f.text();
+    res.status(f.status).type('application/json').send(text);
+  } catch (e) {
+    console.error(`[google-proxy DEBUG ERROR] ${e.message}`);
+    res.status(500).json({ error: e.message });
+  }
+});
 
 // ponytail: email→sheet map on disk; Render disk wipe → recopy. localStorage still binds same browser.
 const WEB_SHEETS_FILE = path.join(__dirname, 'web-sheets.json');

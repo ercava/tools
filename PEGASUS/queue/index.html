@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGASUS Support</title>
+  <link rel="icon" type="image/x-icon" href="https://erc.my.id/tools/logo/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="screen active">
+    <div style="text-align: center; margin-top: 25vh;">
+      <h1 class="title">PEGASUS Support</h1>
+      <p class="desc">Connecting to database & resources...</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen">
+    <div class="auth-container">
+      <div class="logo">
+        <img src="../assets/logo.png" alt="Ercava Logo">
+      </div>
+      <h1 class="title">PEGASUS Support</h1>
+      <p class="desc">Track your ticket queue or manage working queue, boss.</p>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-mode="user">User</button>
+        <button type="button" class="auth-tab" data-mode="admin">Admin</button>
+      </div>
+
+      <!-- User login -->
+      <div id="user-login">
+        <div class="input-group">
+          <label for="user-name-input" class="input-label">Nama Kamu</label>
+          <input type="text" id="user-name-input" class="input-field" placeholder="Insert your name" autocomplete="off">
+        </div>
+        <button id="user-login-btn" class="btn">Login</button>
+      </div>
+
+      <!-- Admin login -->
+      <div id="admin-login" style="display: none;">
+        <div class="input-group">
+          <label for="admin-user-input" class="input-label">Username</label>
+          <input type="text" id="admin-user-input" class="input-field" placeholder="Admin username" autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label for="admin-pass-input" class="input-label">Password</label>
+          <input type="password" id="admin-pass-input" class="input-field" placeholder="Admin password">
+        </div>
+        <button id="admin-login-btn" class="btn">Login as Admin</button>
+      </div>
+
+      <div id="login-error" class="error-msg">Login failed. Please check your credential.</div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Screen -->
+  <div id="admin-screen" class="screen">
+    <div class="dashboard-wrap">
+      <!-- Header bar -->
+      <div class="header-bar">
+        <div class="user-info">
+          <h2 id="admin-name">Admin</h2>
+          <p id="admin-role">PEGASUS Support &middot; Working Queue Management</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <button id="back-to-site-btn" class="logout-btn">PEGASUS</button>
+          <button id="add-ticket-btn" class="logout-btn" style="border-color: var(--primary); color: var(--primary); font-weight: 600;">+ Add Ticket</button>
+          <button id="admin-logout-btn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
+
+      <!-- Stats overview -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="stat-total">0</span>
+          <span class="stat-label">Total Queue</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="stat-open">0</span>
+          <span class="stat-label">Open</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="stat-progress">0</span>
+          <span class="stat-label">In Progress</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="stat-resolved">0</span>
+          <span class="stat-label">Resolved</span>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="menu-tabs" id="admin-filters">
+          <button class="tab-btn active" data-status="all">All</button>
+          <button class="tab-btn" data-status="open">Open</button>
+          <button class="tab-btn" data-status="progress">In Progress</button>
+          <button class="tab-btn" data-status="resolved">Resolved</button>
+        </div>
+        <input type="text" id="admin-search" class="input-field" style="max-width: 240px;" placeholder="Search name / subject / ticket no...">
+      </div>
+
+      <!-- Queue list -->
+      <div id="admin-list" class="queue-list">
+        <div class="empty-state">Loading working queue...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Dashboard Screen -->
+  <div id="user-screen" class="screen">
+    <div class="dashboard-wrap">
+      <!-- Header bar -->
+      <div class="header-bar">
+        <div class="user-info">
+          <h2 id="user-name">Loading...</h2>
+          <p id="user-meta">PEGASUS Support &middot; Your current condition</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <button id="back-to-site-btn-2" class="logout-btn">PEGASUS</button>
+          <button id="user-logout-btn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
+
+      <!-- User status overview -->
+      <div class="overview-card">
+        <h3>My Working Queue</h3>
+        <div class="stats-grid compact" id="user-stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="user-stat-total">0</span>
+            <span class="stat-label">Total Ticket</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="user-stat-open">0</span>
+            <span class="stat-label">Open</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="user-stat-progress">0</span>
+            <span class="stat-label">In Progress</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="user-stat-resolved">0</span>
+            <span class="stat-label">Resolved</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- User tickets -->
+      <div id="user-list" class="queue-list">
+        <div class="empty-state">Loading your tickets...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Modal -->
+  <div id="ticket-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Ticket</h3>
+        <button type="button" class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="ticket-name" class="input-label">Name</label>
+          <input type="text" id="ticket-name" class="input-field" placeholder="Name of the person">
+        </div>
+        <div class="input-group">
+          <label for="ticket-subject" class="input-label">Subject</label>
+          <input type="text" id="ticket-subject" class="input-field" placeholder="Short subject">
+        </div>
+        <div class="input-group">
+          <label for="ticket-desc" class="input-label">Description</label>
+          <textarea id="ticket-desc" class="input-field" rows="3" placeholder="What is the issue / request?"></textarea>
+        </div>
+        <div class="modal-row">
+          <div class="input-group">
+            <label for="ticket-priority" class="input-label">Priority</label>
+            <select id="ticket-priority" class="input-field">
+              <option value="low">Low</option>
+              <option value="normal" selected>Normal</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="ticket-status" class="input-label">Status</label>
+            <select id="ticket-status" class="input-field">
+              <option value="open" selected>Open</option>
+              <option value="progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="ticket-notes" class="input-label">Note for User (optional)</label>
+          <textarea id="ticket-notes" class="input-field" rows="2" placeholder="Update / reply shown to the user"></textarea>
+        </div>
+        <div id="ticket-modal-error" class="error-msg">Please fill in Name and Subject.</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="ticket-save-btn" class="btn">Save Ticket</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
