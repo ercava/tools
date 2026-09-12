@@ -1293,6 +1293,10 @@
       const metaCopy = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
         headers: { "Authorization": `Bearer ${accessToken}` }
       });
+      if (!metaCopy.ok) {
+        const errTxt = await metaCopy.text();
+        throw new Error(`Sheets API metadata HTTP ${metaCopy.status}: ${errTxt.substring(0, 100)}`);
+      }
       const metaCopyData = await metaCopy.json();
       const budgetSheet = metaCopyData.sheets?.find(s =>
         s.properties.title.toLowerCase().includes("budget") || s.properties.index === 0
@@ -1405,6 +1409,7 @@
           const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`, {
             headers: { "Authorization": `Bearer ${accessToken}` }
           });
+          if (!metaRes.ok) throw new Error("metaRes HTTP " + metaRes.status);
           const metaData = await metaRes.json();
           const chatSheet = metaData.sheets?.find(s => s.properties.title === "_ChatState");
           if (chatSheet && !chatSheet.properties.hidden) {
