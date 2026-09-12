@@ -696,7 +696,7 @@
         <a href="terms.html" style="color: var(--muted); text-decoration: underline;">Terms</a> &bull; 
         <a href="privacy.html" style="color: var(--muted); text-decoration: underline;">Privacy</a> &bull;
         <a href="status/" style="color: var(--muted); text-decoration: underline;">Status</a> &bull;
-        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.5</a>
+        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.6</a>
       </div>
     </div>
   </div>
@@ -1442,6 +1442,56 @@
       window._sheetOk = true;
     }
 
+    async function connectCustomSheet(input) {
+      if (!input) return false;
+      const match = input.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/) || input.match(/^([a-zA-Z0-9-_]{20,})$/);
+      const newId = match ? (match[1] || match[0]) : null;
+      if (!newId) return false;
+
+      showLoader("Menyambungkan sheet...");
+      try {
+        const metaRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${newId}?fields=properties.title,sheets.properties`, {
+          headers: { "Authorization": `Bearer ${accessToken}` }
+        });
+        if (!metaRes.ok) throw new Error("Akses ditolak atau sheet tidak ditemukan (HTTP " + metaRes.status + ")");
+        const meta = await metaRes.json();
+        const sheetTitle = meta.properties?.title || "Google Sheet";
+        const budgetSheet = meta.sheets?.find(s => s.properties.title.toLowerCase().includes("budget") || s.properties.index === 0);
+        const tabTitle = budgetSheet?.properties?.title || meta.sheets?.[0]?.properties?.title || "Budget";
+
+        spreadsheetId = newId;
+        window.PLANNER_TAB = tabTitle;
+        localStorage.setItem("rarity_sheet_id", newId);
+        localStorage.setItem("rarity_planner_tab", tabTitle);
+        persistSheetForEmail();
+
+        const sheetLink = document.getElementById("sheet-link");
+        if (sheetLink) {
+          sheetLink.href = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
+          sheetLink.classList.remove("hidden");
+        }
+        window._sheetOk = true;
+
+        // Invalidate cached layout for new sheet
+        try { localStorage.removeItem(`rarity_layout_${newId}_${tabTitle}`); } catch(e) {}
+
+        // Share to bot if possible
+        try {
+          await fetch(`https://www.googleapis.com/drive/v3/files/${spreadsheetId}/permissions`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ role: "editor", type: "user", emailAddress: "rarity.erc@gmail.com" })
+          });
+        } catch (e) {}
+
+        hideLoader();
+        return { success: true, title: sheetTitle, tab: tabTitle, id: newId };
+      } catch (err) {
+        hideLoader();
+        return { success: false, error: err.message };
+      }
+    }
+
     // Status modal logic
     const settingsModal = document.getElementById("settings-modal");
     document.getElementById("settings-btn").onclick = () => {
@@ -1902,6 +1952,26 @@ async function handleUserChat() {
         return;
       }
 
+      // Command / intent to set / switch sheet via chat
+      const sheetUrlMatch = text.match(/https:\/\/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/i);
+      const isSheetCmd = /^(!sheet|\/sheet|set sheet|ganti sheet|sambung sheet|ubah sheet)/i.test(text);
+      if (sheetUrlMatch || isSheetCmd) {
+        const potentialId = sheetUrlMatch ? sheetUrlMatch[0] : text.replace(/^(!sheet|\/sheet|set sheet|ganti sheet|sambung sheet|ubah sheet)\s*/i, '').trim();
+        if (!potentialId || /^(baru|new|\?)$/i.test(potentialId)) {
+          addBotMsg(`📋 <b>Cara Ganti / Set Sheet:</b><br><br>Kirim link Google Sheet kamu langsung ke sini atau ketik:<br><code>set sheet [link / ID Spreadsheet]</code><br><br><small>Pastikan Google Sheet sudah diberi akses editor ke <code>rarity.erc@gmail.com</code> ya!</small>`);
+          return;
+        }
+        addBotMsg("🔄 Menyambungkan ke Google Sheet pilihan kamu...");
+        const res = await connectCustomSheet(potentialId);
+        if (res && res.success) {
+          addBotMsg(`✅ Berhasil tersambung ke Sheet <b>${res.title}</b> (Tab: <i>${res.tab}</i>)!<br><small>Catatan transaksi berikutnya bakal masuk ke sheet ini.</small>`);
+          playSound('success');
+        } else {
+          addBotMsg(`❌ Gagal menyambungkan sheet: ${res ? res.error : 'Link/ID tidak valid'}.<br><small>Pastikan link valid dan sheet dapat diakses oleh akun Google kamu.</small>`);
+        }
+        return;
+      }
+
       // Check Notification Permission on first chat interaction
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
@@ -1913,10 +1983,23 @@ async function handleUserChat() {
       const expenseCats = EXPENSE_CATEGORIES.join('/');
       const trackerCats = "Tugas/Jadwal Kumpul/Ujian/Event/Lainnya";
 
-      const classifierPrompt = `Determine intent and extract JSON for Indonesian user prompt: "${text}".
+      const classifierPrompt = `You are Rarity, an Indonesian personal budget & task assistant persona.
+Analyze Indonesian user prompt: "${text}".
 Current time: ${todayISO} ${timeStr}.
-Output JSON only:
-1. If prompt is a reminder/task/event/deadline (e.g. ingatkan, ujian, tugas, deadline, jadwal, rapat):
+Determine intent carefully. Do NOT treat general conversation, questions, or greetings as reminders or expenses!
+
+Output JSON only in one of these structures:
+1. If the user wants to set, change, or asks about Google Sheet (e.g. "aku mau set sheet baru", "ganti spreadsheet", "cara sambungin sheet"):
+{
+  "type": "chat",
+  "reply": "Kirim aja link Google Spreadsheet atau ID-nya ke sini ya, formatnya:\\n<code>set sheet https://docs.google.com/spreadsheets/d/...</code>\\n\\nNanti langsung aku hubungkan!"
+}
+2. If the user is just chatting, asking a question, saying hello, or intent is unclear/not a transaction or reminder:
+{
+  "type": "chat",
+  "reply": "Terse, friendly response as Rarity (Indonesian, helpful assistant). Ask for clarification if needed."
+}
+3. If prompt is EXPLICITLY a reminder/task/event/deadline (e.g. 'ingatkan...', 'jadwal ujian...', 'ada tugas besok jam 8', 'deadline pr...'):
 {
   "type": "reminder",
   "name": "Nama agenda/tugas",
@@ -1924,7 +2007,7 @@ Output JSON only:
   "category": "${trackerCats}",
   "notes": "Keterangan tambahan atau kosongkan"
 }
-2. If prompt is income/pemasukan (gaji, transfer masuk, uang jajan, bonus):
+4. If prompt is income/pemasukan (gaji, transfer masuk, uang jajan, bonus):
 {
   "type": "expense",
   "date": "YYYY-MM-DD",
@@ -1933,7 +2016,7 @@ Output JSON only:
   "category": "Pemasukan",
   "notes": "Pemasukan"
 }
-3. If prompt is savings/investment (nabung, investasi, reksadana, bibit, simpan uang):
+5. If prompt is savings/investment (nabung, investasi, reksadana, bibit, simpan uang):
 {
   "type": "expense",
   "date": "YYYY-MM-DD",
@@ -1942,7 +2025,7 @@ Output JSON only:
   "category": "Tabungan & Investasi",
   "notes": "Tabungan"
 }
-4. If prompt is bill payment (bayar tagihan, wifi, listrik, air, kos, pulsa):
+6. If prompt is bill payment (bayar tagihan, wifi, listrik, air, kos, pulsa):
 {
   "type": "expense",
   "date": "YYYY-MM-DD",
@@ -1951,7 +2034,7 @@ Output JSON only:
   "category": "Tagihan",
   "notes": "Tagihan"
 }
-5. Else (general expense/pengeluaran belanja):
+7. If prompt is general expense/pengeluaran belanja (beli kopi, jajan cilok, makan siang, beli bensin, dll):
 {
   "type": "expense",
   "date": "YYYY-MM-DD",
@@ -1966,6 +2049,11 @@ Output JSON only:
         const rawJson = await callGemini([{ parts: [{ text: classifierPrompt }] }]);
         showBotTyping(false);
         const parsed = JSON.parse(rawJson);
+
+        if (parsed.type === "chat" && parsed.reply) {
+          addBotMsg(parsed.reply);
+          return;
+        }
 
         if (parsed.type === "reminder" && parsed.datetime) {
           const targetTime = new Date(parsed.datetime.replace(' ', 'T')).getTime();
@@ -2462,10 +2550,14 @@ Output JSON only:
           const category = ci >= 0 ? (r[ci] || "Lainnya") : "Lainnya";
           const notes = ni >= 0 ? (r[ni] || "") : "";
 
-          // Skip formula/summary rows like "Total", "Grand Total", or rows where date is a label
+          // Skip formula/summary rows like "Total", "Grand Total", or rows where date/merchant/category/notes is a summary label
+          const rowText = r.map(c => String(c || "").trim().toLowerCase()).join(" ");
           if (/^(total|jumlah|grand total|subtotal)$/i.test(merchant.trim()) ||
               /^(total|jumlah|grand total|subtotal)$/i.test(category.trim()) ||
-              /^(total|jumlah|grand total|subtotal)$/i.test(date.trim())) return;
+              /^(total|jumlah|grand total|subtotal)$/i.test(date.trim()) ||
+              /^(total|jumlah|grand total|subtotal)$/i.test(notes.trim()) ||
+              rowText.includes("grand total") ||
+              rowText === "total" || rowText.startsWith("total ")) return;
           // Verify date contains numbers or date delimiter
           if (!/[0-9]/.test(date)) return;
 
