@@ -1392,10 +1392,13 @@
             hideLoader();
             await waitForOwnershipAccept(copyData);
             showLoader("Lanjutin setup...");
+            await finishNewSheetSetup(sheetTitle);
+            hideLoader();
+            addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
+          } else {
+            hideLoader();
+            addBotMsg(`✅ Sheet <b>${sheetTitle}</b> terhubung kembali!`, false);
           }
-          await finishNewSheetSetup(sheetTitle);
-          hideLoader();
-          addBotMsg(`✅ Sheet <b>${sheetTitle}</b> jadi, udah milik lo!`, false);
         } catch (e) {
           console.error("[DEBUG] Setup error:", e);
           hideLoader();
@@ -2452,14 +2455,21 @@ Output JSON only:
 
         rawRows.forEach((r, idx) => {
           if (!r) return;
-          const date = di >= 0 ? r[di] : "";
+          const date = di >= 0 ? String(r[di] || "").trim() : "";
           const amountStr = ai >= 0 ? String(r[ai] || "").replace(/[^0-9]/g, "") : "";
           if (!date || !amountStr) return;
           const merchant = mi >= 0 ? (r[mi] || "Umum") : "Umum";
           const category = ci >= 0 ? (r[ci] || "Lainnya") : "Lainnya";
-          const amount = parseInt(amountStr, 10) || 0;
           const notes = ni >= 0 ? (r[ni] || "") : "";
 
+          // Skip formula/summary rows like "Total", "Grand Total", or rows where date is a label
+          if (/^(total|jumlah|grand total|subtotal)$/i.test(merchant.trim()) ||
+              /^(total|jumlah|grand total|subtotal)$/i.test(category.trim()) ||
+              /^(total|jumlah|grand total|subtotal)$/i.test(date.trim())) return;
+          // Verify date contains numbers or date delimiter
+          if (!/[0-9]/.test(date)) return;
+
+          const amount = parseInt(amountStr, 10) || 0;
           if (amount > 0) {
             grandTotal += amount;
             catMap[category] = (catMap[category] || 0) + amount;
