@@ -469,8 +469,9 @@ app.post('/api/google-proxy', async (req, res) => {
     }
     if (!allowed) return res.status(403).json({ error: 'Requester not on file ACL' });
     const { token } = await getOwnerAuth().getAccessToken();
-    const base = api === 'sheets' ? 'https://sheets.googleapis.com' : 'https://www.googleapis.com';
-    const f = await fetch(base + path, {
+    const base = api === 'sheets' ? 'https://sheets.googleapis.com/v4' : 'https://www.googleapis.com/drive/v3';
+    const targetUrl = base + (path.startsWith('/') ? path : '/' + path);
+    const f = await fetch(targetUrl, {
       method: method || 'GET',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body),
