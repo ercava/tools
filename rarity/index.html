@@ -1632,11 +1632,14 @@
             if (!sec || found[sec]) continue;
             for (let hr = r + 1; hr < Math.min(r + 13, grid.length); hr++) {
               const row = grid[hr] || [];
-              const order = row.map(fieldOf);
+              let first = c;
+              while (first > 0 && String(row[first - 1] || '').trim() !== '') first--;
+              let last = c;
+              while (last < row.length - 1 && String(row[last + 1] || '').trim() !== '') last++;
+              const subRow = row.slice(first, last + 1);
+              const order = subRow.map(fieldOf);
               if (order.includes('date') && order.includes('amount')) {
-                let first = -1, last = -1;
-                row.forEach((v, i) => { if (String(v).trim() !== '') { if (first < 0) first = i; last = i; } });
-                layout.tables[sec] = { startRow: hr + 2, colStart: colL(first), colEnd: colL(last), order: order.slice(first, last + 1) };
+                layout.tables[sec] = { startRow: hr + 2, colStart: colL(first), colEnd: colL(last), order };
                 found[sec] = true;
                 break;
               }
