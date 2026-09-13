@@ -896,10 +896,6 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
             LinkedIn
           </button>
-          <a href="queue/index.html" class="logout-btn" style="display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Support
-          </a>
           <button id="logout-btn" class="logout-btn">Log Out</button>
         </div>
       </div>
@@ -1003,16 +999,16 @@
         { id: 'paskibra', col: 'PASKIBRA', file: null, label: 'Paskibra' }
       ],
       'PROJECTS': [
-        { id: 'magnet33', col: 'MAGNET 33', file: null, label: 'Magnet Edisi 33' },
-        { id: 'magnet34', col: 'MAGNET 34', file: null, label: 'Magnet Edisi 34' },
-        { id: 'drama', col: 'DRAMA', file: null, label: 'Drama' },
-        { id: 'cerpen', col: 'CERPEN', file: null, label: 'Cerpen' },
-        { id: 'rasa_asa', col: '29 RASA DAN ASA', file: null, label: '29 Rasa dan Asa' },
-        { id: 'exhibition', col: 'EXHIBITION KESENIAN', file: null, label: 'Exhibition Kesenian' },
-        { id: 'p5_lingkungan', col: 'P5 LINGKUNGAN', file: null, label: 'P5 Lingkungan' },
-        { id: 'p5_wirausaha', col: 'P5 KEWIRAUSAHAAN', file: null, label: 'P5 Kewirausahaan' },
-        { id: 'p5_teknologi', col: 'P5 TEKNOLOGI', file: null, label: 'P5 Teknologi' },
-        { id: 'fisika', col: 'FISIKA', file: null, label: 'Fisika' }
+        { id: 'magnet33', col: 'MAGNET 33', file: 'MAGNET 33.md', label: 'Magnet Edisi 33' },
+        { id: 'magnet34', col: 'MAGNET 34', file: 'MAGNET 34.md', label: 'Magnet Edisi 34' },
+        { id: 'drama', col: 'DRAMA', file: 'DRAMA.md', label: 'Drama' },
+        { id: 'cerpen', col: 'CERPEN', file: 'CERPEN.md', label: 'Cerpen' },
+        { id: 'rasa_asa', col: '29 RASA DAN ASA', file: '29 RASA DAN ASA.md', label: '29 Rasa dan Asa' },
+        { id: 'exhibition', col: 'EXHIBITION KESENIAN', file: 'EXHIBITION KESENIAN.md', label: 'Exhibition Kesenian' },
+        { id: 'p5_lingkungan', col: 'P5 LINGKUNGAN', file: 'P5 LINGKUNGAN.md', label: 'P5 Lingkungan' },
+        { id: 'p5_wirausaha', col: 'P5 KEWIRAUSAHAAN', file: 'P5 KEWIRAUSAHAAN.md', label: 'P5 Kewirausahaan' },
+        { id: 'p5_teknologi', col: 'P5 TEKNOLOGI', file: 'P5 TEKNOLOGI.md', label: 'P5 Teknologi' },
+        { id: 'fisika', col: 'FISIKA', file: 'FISIKA.md', label: 'Fisika' }
       ],
       'PENGHARGAAN': [
         { id: 'prestasi', col: 'PRESTASI', file: null, label: 'Prestasi' },
@@ -1255,45 +1251,69 @@
         }
 
         // Normalize role name
-        const cleanRole = role.replace(/^(anggota|koordinator|vice koordinator|vk),?\s*/i, '').trim().toLowerCase();
+        let cleanRole = role.replace(/^(anggota|koordinator|vice koordinator|vk),?\s*/i, '').trim().toLowerCase();
+        cleanRole = cleanRole.replace(/^sie\.?\s+/i, '').replace(/^divisi\s+/i, '').trim();
+        cleanRole = cleanRole.replace(/\u00e2\u20ac\u2122|[’‘]/g, "'").replace(/[+&]/g, ' ');
+        // Special case aliases
+        if (cleanRole.includes('karya ilmiah')) cleanRole = 'lkti';
+        if (cleanRole.includes('cerdas cermat')) cleanRole = 'smart and quick';
+        if (cleanRole.includes('ratoe jaroeh')) cleanRole = 'ratoh jaroe';
         
         // Split content into lines
         const lines = content.split('\n').map(l => l.trim());
         
-        // Search for a line that contains the cleanRole or keywords
+        // Search for heading or title line matching cleanRole
         let matchIndex = -1;
+        // Pass 1: Check markdown headers (#) or role definition lines (**) first (exclude list bullets)
         for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].toLowerCase();
-          if (line.includes(cleanRole) && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
+          const lTrim = lines[i];
+          const isBullet = lTrim.startsWith('-') || lTrim.startsWith('*') || lTrim.startsWith('•');
+          const isHeader = !isBullet && (lTrim.startsWith('#') || lTrim.startsWith('**') || (lTrim.includes('—') && lTrim.length < 80));
+          if (isHeader && lTrim.toLowerCase().includes(cleanRole)) {
             matchIndex = i;
             break;
           }
         }
         
-        // If not found, try a looser match with words
+        // Pass 2: Fallback to any non-bullet short title line containing cleanRole
+        if (matchIndex === -1) {
+          for (let i = 0; i < lines.length; i++) {
+            const lTrim = lines[i];
+            const isBullet = lTrim.startsWith('-') || lTrim.startsWith('*') || lTrim.startsWith('•');
+            if (!isBullet && lTrim.toLowerCase().includes(cleanRole) && lTrim.length < 100) {
+              matchIndex = i;
+              break;
+            }
+          }
+        }
+        
+        // Pass 3: If not found, try word match on headers
         if (matchIndex === -1) {
           const words = cleanRole.split(/\s+/).filter(w => w.length > 2);
           if (words.length > 0) {
             for (let i = 0; i < lines.length; i++) {
-              const line = lines[i].toLowerCase();
-              const matchAll = words.every(w => line.includes(w));
-              if (matchAll && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
+              const lTrim = lines[i];
+              const isBullet = lTrim.startsWith('-') || lTrim.startsWith('*') || lTrim.startsWith('•');
+              const isHeader = !isBullet && (lTrim.startsWith('#') || lTrim.startsWith('**') || (lTrim.includes('—') && lTrim.length < 80));
+              if (isHeader && words.every(w => lTrim.toLowerCase().includes(w))) {
                 matchIndex = i;
                 break;
               }
             }
           }
         }
-        
-        // If still not found, try matching any key words
+
+        // Pass 4: Looser word match on non-bullet lines
         if (matchIndex === -1) {
           const words = cleanRole.split(/\s+/).filter(w => w.length > 2);
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].toLowerCase();
-            const matchAny = words.some(w => line.includes(w));
-            if (matchAny && (line.startsWith('#') || line.includes('—') || lines[i].length < 100)) {
-              matchIndex = i;
-              break;
+          if (words.length > 0) {
+            for (let i = 0; i < lines.length; i++) {
+              const lTrim = lines[i];
+              const isBullet = lTrim.startsWith('-') || lTrim.startsWith('*') || lTrim.startsWith('•');
+              if (!isBullet && words.every(w => lTrim.toLowerCase().includes(w)) && lTrim.length < 100) {
+                matchIndex = i;
+                break;
+              }
             }
           }
         }
@@ -1304,16 +1324,16 @@
             const line = lines[j];
             const lineLower = line.toLowerCase();
             
-            // Stop if we hit a new role block
+            // Stop if we hit a new role block (heading, horizontal rule, or numbered title)
             const lineTrim = line.trim();
-            if (
-              lineTrim.startsWith('#') || 
-              lineTrim.startsWith('---') || 
-              (lineTrim.includes('—') && lineTrim.length < 80) ||
-              /^\d+\./.test(lineTrim) || 
-              /^\w+\d+\./.test(lineTrim) ||
+            const isBullet = lineTrim.startsWith('-') || lineTrim.startsWith('*') || lineTrim.startsWith('•');
+            const isNewSection = !isBullet && (
+              lineTrim.startsWith('#') ||
+              lineTrim.startsWith('---') ||
+              /^\d+\.\s+[A-Z]/.test(lineTrim) ||
               /^(koordinator sie)/i.test(lineTrim)
-            ) {
+            );
+            if (isNewSection) {
               break;
             }
             
@@ -1324,8 +1344,12 @@
               continue;
             }
             
-            // Skip date/organization line if it looks like one
-            if (lineLower.includes('osis') || lineLower.includes('man') || lineLower.includes('duration:') || lineLower.includes('location:') || /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|202\d)\b/i.test(lineLower)) {
+            // Skip date/organization header line if it looks like one
+            const isMetaLine = lineTrim.length < 90 && (
+              lineLower.includes('osis') || lineLower.includes('man ') || lineLower.includes('duration:') || lineLower.includes('location:') ||
+              /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{4}\b/i.test(lineLower)
+            );
+            if (isMetaLine) {
               continue;
             }
             
