@@ -1326,10 +1326,12 @@
             
             // Stop if we hit a new role block (heading, horizontal rule, or numbered title)
             const lineTrim = line.trim();
-            const isBullet = lineTrim.startsWith('-') || lineTrim.startsWith('*') || lineTrim.startsWith('•');
+            if (lineTrim.startsWith('---')) {
+              break;
+            }
+            const isBullet = lineTrim.startsWith('- ') || lineTrim.startsWith('* ') || lineTrim.startsWith('• ');
             const isNewSection = !isBullet && (
               lineTrim.startsWith('#') ||
-              lineTrim.startsWith('---') ||
               /^\d+\.\s+[A-Z]/.test(lineTrim) ||
               /^(koordinator sie)/i.test(lineTrim)
             );
