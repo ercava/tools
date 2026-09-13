@@ -1645,10 +1645,10 @@
       return '';
     }
     function sectionOf(t) {
-      if (t === 'pemasukan') return 'pemasukan';
-      if (t === 'pengeluaran') return 'pengeluaran';
-      if (t === 'tagihan') return 'tagihan';
-      if (t === 'tabungan' || t === 'tabungan&investasi') return 'tabungan';
+      if (/^(pemasukan|income|masuk)$/.test(t)) return 'pemasukan';
+      if (/^(pengeluaran|expense|keluar)$/.test(t)) return 'pengeluaran';
+      if (/^(tagihan|bills?|bayar)$/.test(t)) return 'tagihan';
+      if (/tabungan|investasi|saving|simpanan/.test(t)) return 'tabungan';
       return '';
     }
     // Scan tab geometry once, cache per sheet+tab. Falls back to hardcoded.
@@ -1798,17 +1798,18 @@
     window.confirmReceipt = async () => {
       if (!pendingReceipt) return;
       
-      const cat = pendingReceipt.category;
+      const cat = String(pendingReceipt.category || '').toLowerCase();
+      const type = String(pendingReceipt.type || '').toLowerCase();
       let targetTable = 'Pengeluaran';
       let tableKey = 'pengeluaran';
 
-      if (cat === 'Pemasukan' || pendingReceipt.type === 'pemasukan') {
+      if (cat.includes('pemasukan') || type === 'pemasukan' || cat.includes('income')) {
         targetTable = 'Pemasukan';
         tableKey = 'pemasukan';
-      } else if (cat === 'Tabungan & Investasi' || pendingReceipt.type === 'tabungan') {
+      } else if (cat.includes('tabungan') || cat.includes('investasi') || cat.includes('saving') || type === 'tabungan') {
         targetTable = 'Tabungan & Investasi';
         tableKey = 'tabungan';
-      } else if (cat === 'Tagihan' || pendingReceipt.type === 'tagihan') {
+      } else if (cat.includes('tagihan') || cat.includes('bill') || type === 'tagihan') {
         targetTable = 'Tagihan';
         tableKey = 'tagihan';
       }
@@ -2084,7 +2085,17 @@ Output JSON only in one of these structures:
 
         // Expense / Financial transaction handling
         pendingReceipt = parsed;
-        if (!EXPENSE_CATEGORIES.includes(pendingReceipt.category) && !['Pemasukan', 'Tabungan & Investasi', 'Tagihan'].includes(pendingReceipt.category)) {
+        const catLower = String(pendingReceipt.category || '').toLowerCase();
+        if (catLower.includes('tabungan') || catLower.includes('investasi') || catLower.includes('saving')) {
+          pendingReceipt.category = "Tabungan & Investasi";
+          pendingReceipt.type = "tabungan";
+        } else if (catLower.includes('pemasukan') || catLower.includes('income')) {
+          pendingReceipt.category = "Pemasukan";
+          pendingReceipt.type = "pemasukan";
+        } else if (catLower.includes('tagihan') || catLower.includes('bill')) {
+          pendingReceipt.category = "Tagihan";
+          pendingReceipt.type = "tagihan";
+        } else if (!EXPENSE_CATEGORIES.some(c => c.toLowerCase() === catLower)) {
           pendingReceipt.category = "Lainnya";
         }
         showReceiptVerification(pendingReceipt);
