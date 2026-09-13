@@ -1481,8 +1481,29 @@
           // Fetch specific role copy if file is mapped
           let resolvedBlurb = await getSpecificBlurb(item.file, role, fallbackBlurb);
           
-          // Clean up hashtags and excessive spacing
-          resolvedBlurb = resolvedBlurb.replace(/#\w+/g, '').replace(/\s\s+/g, ' ').trim();
+          // Clean up redundant header lines at the beginning of the blurb
+          const blurbLines = resolvedBlurb.split('\n');
+          while (blurbLines.length > 0) {
+            const lt = blurbLines[0].trim();
+            const isBullet = lt.startsWith('- ') || lt.startsWith('* ') || lt.startsWith('• ');
+            const isHeader = !isBullet && (
+              (lt.startsWith('**') && (lt.endsWith('**') || lt.includes('—') || lt.includes('|') || lt.includes('/'))) ||
+              (lt.includes('—') && lt.length < 90) ||
+              (lt.includes('|') && (/osis/i.test(lt) || /anniversary/i.test(lt) || /duration:/i.test(lt) || /\b202\d\b/.test(lt)))
+            );
+            if (isHeader || !lt) {
+              blurbLines.shift();
+            } else {
+              break;
+            }
+          }
+          resolvedBlurb = blurbLines.join('\n').trim();
+
+          // Clean up hashtags, raw markdown bold formatting, and excessive spacing
+          resolvedBlurb = resolvedBlurb
+            .replace(/\*\*(.*?)\*\*/g, '$1')
+            .replace(/#\w+/g, '')
+            .trim();
 
           const duration = datesMapping[item.id] || 'Feb 2024';
 
