@@ -696,7 +696,7 @@
         <a href="terms.html" style="color: var(--muted); text-decoration: underline;">Terms</a> &bull; 
         <a href="privacy.html" style="color: var(--muted); text-decoration: underline;">Privacy</a> &bull;
         <a href="status/" style="color: var(--muted); text-decoration: underline;">Status</a> &bull;
-        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.6</a>
+        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.7</a>
       </div>
     </div>
   </div>
@@ -758,9 +758,11 @@
                 <span style="color: var(--muted); font-size: 0.85rem;">Mata Uang</span>
                 <select id="currency-select" style="font-size: 0.8rem; font-weight: 600; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; color: var(--text);" onchange="changeCurrency(this.value)">
                   <option value="IDR">IDR (Rp)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="JPY">JPY (¥)</option>
+                  <option value="SAR">SAR (﷼ - Riyal)</option>
                   <option value="AUD">AUD ($)</option>
                   <option value="KRW">KRW (₩)</option>
-                  <option value="SAR">SAR (﷼)</option>
                 </select>
               </div>
             </div>
@@ -849,6 +851,15 @@
               </div>
               <div class="overview-total" id="overview-total-val">Rp 0</div>
               <div style="font-size: 0.78rem; color: var(--muted);" id="overview-period-label">Memuat data sheet...</div>
+            </div>
+
+            <div class="overview-card">
+              <div class="overview-title">
+                <span>Rata-Rata Pengeluaran per Hari</span>
+                <span id="daily-avg-source" style="font-size: 0.72rem; font-weight: 600; color: var(--muted); background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">Sheet</span>
+              </div>
+              <div class="overview-total" id="overview-daily-avg-val" style="color: #0284c7;">Rp 0</div>
+              <div id="overview-daily-status" style="font-size: 0.78rem; color: var(--muted);">Menghitung dari data periode...</div>
             </div>
 
             <div class="overview-card">
@@ -979,14 +990,20 @@
     let currentCurrency = localStorage.getItem("rarity_currency") || "IDR";
     function formatCurrency(val) {
       const n = val || 0;
+      if (currentCurrency === "USD") {
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n);
+      }
+      if (currentCurrency === "JPY") {
+        return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 }).format(n);
+      }
+      if (currentCurrency === "SAR") {
+        return new Intl.NumberFormat("ar-SA", { style: "currency", currency: "SAR", minimumFractionDigits: 2 }).format(n);
+      }
       if (currentCurrency === "AUD") {
         return new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 2 }).format(n);
       }
       if (currentCurrency === "KRW") {
         return new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 }).format(n);
-      }
-      if (currentCurrency === "SAR") {
-        return new Intl.NumberFormat("en-SA", { style: "currency", currency: "SAR", minimumFractionDigits: 2 }).format(n);
       }
       return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
     }
@@ -1623,7 +1640,7 @@
 
     // Hardcoded fallback geometry (original template). Auto-detect tries first.
     const FALLBACK_LAYOUT = {
-      monthCell: 'C10', yearCell: 'C12',
+      monthCell: 'C10', yearCell: 'C12', dailyAvgCell: 'H4',
       tables: {
         pengeluaran: { startRow: 66, colStart: 'F', colEnd: 'J', order: ['date', 'merchant', 'category', 'amount', 'notes'] },
         pemasukan:   { startRow: 48, colStart: 'M', colEnd: 'P', order: ['date', 'merchant', 'amount', 'notes'] },
@@ -1674,6 +1691,16 @@
               layout.monthCell = colL(c) + (r + 1);
               layout.yearCell = colL(c) + (r + 3);
               break outer;
+            }
+          }
+        }
+        // Daily spending average cell: "Rata Rata Pengeluaran per Hari" -> value typically row below
+        for (let r = 0; r < Math.min(20, grid.length); r++) {
+          for (let c = 0; c < (grid[r] || []).length; c++) {
+            const txt = normCell(cell(r, c));
+            if (txt.includes("ratarata") && (txt.includes("hari") || txt.includes("pengeluaran"))) {
+              layout.dailyAvgCell = colL(c) + (r + 2);
+              break;
             }
           }
         }
@@ -2582,6 +2609,46 @@ Output JSON only in one of these structures:
 
         // Update Total Display
         totalVal.innerText = rupiah(grandTotal);
+
+        // Update Daily Average Spending
+        const dailyAvgElem = document.getElementById("overview-daily-avg-val");
+        const dailyStatusElem = document.getElementById("overview-daily-status");
+        const dailySourceElem = document.getElementById("daily-avg-source");
+
+        let sheetAvgVal = null;
+        if (layout.dailyAvgCell) {
+          try {
+            const encAvg = encodeURIComponent(`'${tab}'!${layout.dailyAvgCell}`);
+            const avgRes = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encAvg}`, {
+              headers: { "Authorization": `Bearer ${accessToken}` }
+            });
+            if (avgRes.ok) {
+              const avgData = await avgRes.json();
+              const rawVal = avgData.values?.[0]?.[0];
+              if (rawVal) {
+                const parsedNum = parseInt(String(rawVal).replace(/[^0-9]/g, ""), 10);
+                if (!isNaN(parsedNum) && parsedNum > 0) sheetAvgVal = parsedNum;
+              }
+            }
+          } catch (e) {
+            console.warn("[DEBUG] Fetch dailyAvgCell failed:", e);
+          }
+        }
+
+        if (sheetAvgVal !== null) {
+          dailyAvgElem.innerText = rupiah(sheetAvgVal);
+          if (dailySourceElem) dailySourceElem.innerText = "Sheet";
+          if (dailyStatusElem) dailyStatusElem.innerText = `Sinkron dari cell ${layout.dailyAvgCell}`;
+        } else {
+          // Compute fallback based on active days in month or transaction days
+          const now = new Date();
+          const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+          const dayElapsed = Math.max(1, now.getDate());
+          const computedAvg = Math.round(grandTotal / (grandTotal > 0 ? dayElapsed : daysInMonth));
+          dailyAvgElem.innerText = rupiah(computedAvg);
+          if (dailySourceElem) dailySourceElem.innerText = "Kalkulasi";
+          if (dailyStatusElem) dailyStatusElem.innerText = `Berdasarkan ${dayElapsed} hari berjalan`;
+        }
 
         // Render 5 Recent Transactions (Reverse chronological)
         const recent5 = [...transactions].reverse().slice(0, 5);
