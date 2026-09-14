@@ -11,9 +11,8 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"></noscript>
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;900&family=Mulish:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -21,11 +20,11 @@
                     colors: {
                         'ercava-dark': '#152638',
                         'ercava-charcoal': '#263B4C',
-                        'ercava-soft': '#F8FAFC',
+                        'ercava-soft': '#f0f4f8',
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Montserrat', 'sans-serif'],
+                        sans: ['Mulish', 'system-ui', 'sans-serif'],
+                        heading: ['Unbounded', 'system-ui', 'sans-serif'],
                         mono: ['Roboto Mono', 'monospace'],
                     }
                 }
@@ -35,13 +34,20 @@
     <style>
         :root {
             --primary: #26568c;
+            --primary-light: #3a7bc8;
             --accent: #152638;
             --bg: #ffffff;
-            --bg-light: #f8fafc;
+            --bg-light: #f0f4f8;
             --text: #1f2937;
+            --text-light: #4b5563;
             --muted: #64748b;
             --line: #e2e8f0;
-            /* aliases for internal usage */
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --card-hover: 0 8px 24px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --font-heading: 'Unbounded', system-ui, sans-serif;
+            --font-body: 'Mulish', system-ui, -apple-system, Arial, sans-serif;
             --mario-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
             --mario-blue: var(--accent);
             --mario-charcoal: #263B4C;
@@ -53,85 +59,211 @@
         .border-ercava-dark { border-color: #152638 !important; }
         .bg-ercava-charcoal { background-color: #263B4C !important; }
         .text-ercava-charcoal { color: #263B4C !important; }
-        .bg-ercava-soft { background-color: #F8FAFC !important; }
-        .text-ercava-soft { color: #F8FAFC !important; }
+        .bg-ercava-soft { background-color: #f0f4f8 !important; }
+        .text-ercava-soft { color: #f0f4f8 !important; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%2326568c' fill-opacity='0.045' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E") !important;
+            color: var(--text);
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: var(--font-heading) !important;
+        }
 
         footer {
-            background-color: #152638 !important;
+            background-color: var(--accent) !important;
             color: #ffffff !important;
         }
 
         #pngLink, #madrasahPng, #orgPng {
-            background-color: #152638 !important;
+            background-color: var(--accent) !important;
             color: #ffffff !important;
             display: block;
+            border-radius: 999px !important;
+            transition: all 0.25s ease;
         }
 
         #pngLink:hover, #madrasahPng:hover, #orgPng:hover {
-            background-color: #000000 !important;
+            background-color: var(--primary) !important;
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
         }
 
         #svgLink {
-            border: 2px solid #152638 !important;
-            color: #152638 !important;
+            border: 2px solid var(--accent) !important;
+            color: var(--accent) !important;
             display: block;
+            border-radius: 999px !important;
+            transition: all 0.25s ease;
         }
 
         #svgLink:hover {
-            background-color: #ffffff !important;
+            background-color: var(--bg-light) !important;
+            border-color: var(--primary) !important;
+            color: var(--primary) !important;
+            transform: scale(1.03);
         }
 
         .preview-card, .reveal-card, .asset-card {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--line);
             box-shadow: none !important;
             transform: none !important;
-            transition: border-color 0.2s ease;
-            border-radius: 1.5rem;
+            border-radius: var(--radius);
         }
 
         .preview-card:hover, .reveal-card:hover, .asset-card:hover {
             box-shadow: none !important;
+            border-color: var(--line) !important;
             transform: none !important;
-            border-color: #cbd5e1;
         }
 
-        /* Stylized Scrollbar */
+        /* Section Titles */
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        /* Page transitions on content wrapper (so fixed elements stay fixed to screen) */
+        #pageContent.page-transition-out {
+            opacity: 0 !important;
+            transform: translateX(-24px) !important;
+            transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        #pageContent.page-transition-in {
+            animation: pageSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes pageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .section-heading-title {
+            font-family: var(--font-heading);
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+        .section-heading-sub {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-top: 0.35rem;
+            max-width: 540px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Prevent default image drag that disrupts carousel dragging */
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+        img.drag-as-file {
+            -webkit-user-drag: auto !important;
+            user-drag: auto !important;
+        }
+
+        /* Stylized Scrollbar & Draggable Carousel */
         .carousel-container {
             scrollbar-width: none;
             -ms-overflow-style: none;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            scroll-snap-type: none !important;
+            scroll-behavior: auto !important;
+        }
+        .carousel-container.is-dragging {
+            cursor: grabbing;
+            scroll-snap-type: none !important;
+            scroll-behavior: auto !important;
+        }
+        .carousel-container.is-dragging * {
+            pointer-events: none;
+            user-select: none;
         }
 
         .carousel-container::-webkit-scrollbar {
             display: none;
         }
 
-        .carousel-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 10px;
-            margin: 0 40px;
+        /* Vertical 3-Icon Dock at Right of Screen */
+        #sideDock {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+            background: rgba(21, 38, 56, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.85rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), pointer-events 0.35s ease;
+            animation: dockSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes dockSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+        #sideDock.dock-hidden {
+            opacity: 0;
+            transform: translateY(-50%) translateX(40px);
+            pointer-events: none;
+        }
+        .dock-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+            position: relative;
+        }
+        .dock-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.15) translateX(-3px);
+        }
+        .dock-btn.active {
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(38, 86, 140, 0.4);
         }
 
-        .carousel-container::-webkit-scrollbar-thumb {
-            background: var(--mario-charcoal);
-            border-radius: 10px;
-            border: 2px solid transparent;
-            background-clip: padding-box;
-        }
-
-        .carousel-container::-webkit-scrollbar-thumb:hover {
-            background: var(--mario-blue);
-        }
-
-        /* Clean minimal transitions */
+        /* Clean transitions */
         .squishy {
-            transition: opacity 0.15s ease, border-color 0.15s ease;
+            transition: all 0.25s ease;
         }
         .squishy:hover {
-            opacity: 0.9;
+            transform: scale(1.03);
         }
         .squishy:active {
-            opacity: 0.75;
+            transform: scale(0.97);
         }
     </style>
     <script type="application/ld+json">
@@ -205,25 +337,49 @@
     </script>
 </head>
 
-<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed relative">
-    <!-- Mario UI Background -->
-    <div class="mario-bg-container">
-        <div class="mario-pattern"></div>
-        <div class="mario-gradient-overlay"></div>
-    </div>
+<body class="text-ercava-dark font-sans leading-relaxed relative">
+    <!-- Vertical 3-Icon Navigation Dock on the right (fixed to viewport) -->
+    <nav id="sideDock" aria-label="Quick Navigation">
+        <a href="index.html" class="dock-btn active" title="Portal" aria-label="Home Portal">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </a>
+        <a href="directory.html" class="dock-btn" title="Asset Directory" aria-label="Asset Directory">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="7" height="7" x="3" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="14" rx="1"/>
+                <rect width="7" height="7" x="3" y="14" rx="1"/>
+            </svg>
+        </a>
+        <a href="attribution.html" class="dock-btn" title="Attributions" aria-label="Attributions">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </a>
+    </nav>
 
-    <main class="max-w-6xl mx-auto px-6 py-20 relative z-10">
-        <header class="text-center mb-20">
-            <p class="font-mono text-sm tracking-[0.3em] uppercase text-ercava-charcoal mb-4">Welcome to</p>
-            <h1 class="font-mono text-6xl font-bold tracking-tight mb-4">Ercava Iconography Center</h1>
-            <p class="max-w-2xl mx-auto text-sm text-slate-500 font-medium leading-relaxed">
+    <div id="pageContent" class="page-transition-in">
+    <main class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+        <header class="text-center mb-16">
+            <p class="font-heading text-xs tracking-widest uppercase text-[var(--primary)] font-semibold mb-3">Welcome to</p>
+            <h1 class="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--accent)] mb-4">Ercava Iconography Center</h1>
+            <p class="max-w-2xl mx-auto text-sm sm:text-base text-[var(--muted)] font-normal leading-relaxed">
                 A central platform providing access to a catalog of Ercava-related iconography and artworks.
             </p>
         </header>
 
         <section class="mb-32">
-            <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 mb-6">Ercava Identity Kit</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-3xl preview-card">
+            <div class="section-header">
+                <h2 class="section-heading-title">Ercava Identity Kit</h2>
+                <p class="section-heading-sub">Primary brand marks, emblems, and official identity components.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden preview-card">
                 <div
                     class="lg:col-span-8 bg-white flex items-center justify-center p-12 min-h-[450px] border-r border-slate-100">
                     <img loading="lazy" id="mainPreview" src="assets/resized/980/Logo_Gradien_980.png" 
@@ -265,15 +421,17 @@
 
         <section class="mb-32">
             <div class="flex items-center justify-between mb-8 max-w-4xl mx-auto">
-                <button onclick="scrollCarousel('artworkCarousel', -344)" class="nav-button squishy" aria-label="Previous artwork">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <button onclick="scrollCarousel('artworkCarousel', -344)" class="nav-button squishy p-2 rounded-full border border-[var(--line)] bg-white text-[var(--accent)] hover:bg-[var(--bg-light)]" aria-label="Previous artwork">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 m-0">Artwork Showcase</h2>
-                <button onclick="scrollCarousel('artworkCarousel', 344)" class="nav-button squishy" aria-label="Next artwork">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="text-center">
+                    <h2 class="section-heading-title">Artwork Showcase</h2>
+                </div>
+                <button onclick="scrollCarousel('artworkCarousel', 344)" class="nav-button squishy p-2 rounded-full border border-[var(--line)] bg-white text-[var(--accent)] hover:bg-[var(--bg-light)]" aria-label="Next artwork">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
@@ -281,46 +439,49 @@
             </div>
             <div class="carousel-relative artwork-container">
                 <div id="artworkCarousel"
-                    class="carousel-container flex overflow-x-auto gap-6 pb-8 snap-x scroll-smooth no-scrollbar">
+                    class="carousel-container flex overflow-x-auto gap-6 pb-8 scroll-smooth no-scrollbar">
                     <div
-                        class="reveal-card snap-center shrink-0 w-80 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+                        class="reveal-card shrink-0 w-80 bg-white p-4 border border-slate-100">
                         <img loading="lazy" src="assets/erc/Kapal_Comet.png" alt="Kapal Comet" class="rounded-xl mb-4 h-48 w-full object-cover">
                         <p class="font-bold text-sm">Kapal Comet</p>
                     </div>
                     <div
-                        class="reveal-card snap-center shrink-0 w-80 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+                        class="reveal-card shrink-0 w-80 bg-white p-4 border border-slate-100">
                         <img loading="lazy" src="assets/erc/Kucing_Comet.png" alt="Kucing Comet" class="rounded-xl mb-4 h-48 w-full object-cover">
                         <p class="font-bold text-sm">Kucing Comet</p>
                     </div>
                     <div
-                        class="reveal-card snap-center shrink-0 w-80 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+                        class="reveal-card shrink-0 w-80 bg-white p-4 border border-slate-100">
                         <img loading="lazy" src="assets/erc/Tifo Color.png" alt="Tifo Color" class="rounded-xl mb-4 h-48 w-full object-cover">
                         <p class="font-bold text-sm">Tifo Color</p>
                     </div>
                     <div
-                        class="reveal-card snap-center shrink-0 w-80 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+                        class="reveal-card shrink-0 w-80 bg-white p-4 border border-slate-100">
                         <img loading="lazy" src="assets/erc/maskot.jpg" alt="Maskot Standard" class="rounded-xl mb-4 h-48 w-full object-cover">
                         <p class="font-bold text-sm">Maskot Standard</p>
                     </div>
                     <div
-                        class="reveal-card snap-center shrink-0 w-80 bg-white p-4 rounded-2xl shadow-lg border border-slate-100">
+                        class="reveal-card shrink-0 w-80 bg-white p-4 border border-slate-100">
                         <img loading="lazy" src="assets/erc/maskot birthday.png" alt="Maskot Birthday" class="rounded-xl mb-4 h-48 w-full object-cover">
                         <p class="font-bold text-sm">Maskot Birthday</p>
                     </div>
                 </div>
+            </div>
         </section>
 
         <section class="mb-32">
             <div class="flex items-center justify-between mb-8 max-w-4xl mx-auto">
-                <button onclick="scrollCarousel('outfitCarousel', -572)" class="nav-button squishy" aria-label="Previous outfit">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <button onclick="scrollCarousel('outfitCarousel', -572)" class="nav-button squishy p-2 rounded-full border border-[var(--line)] bg-white text-[var(--accent)] hover:bg-[var(--bg-light)]" aria-label="Previous outfit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 m-0">Outfit Wardrobe</h2>
-                <button onclick="scrollCarousel('outfitCarousel', 572)" class="nav-button squishy" aria-label="Next outfit">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                <div class="text-center">
+                    <h2 class="section-heading-title">Outfit Wardrobe</h2>
+                </div>
+                <button onclick="scrollCarousel('outfitCarousel', 572)" class="nav-button squishy p-2 rounded-full border border-[var(--line)] bg-white text-[var(--accent)] hover:bg-[var(--bg-light)]" aria-label="Next outfit">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
@@ -328,51 +489,51 @@
             </div>
             <div class="carousel-relative outfit-container">
                 <div id="outfitCarousel"
-                    class="carousel-container flex items-stretch overflow-x-auto gap-8 pb-8 snap-x scroll-smooth no-scrollbar">
+                    class="carousel-container flex items-stretch overflow-x-auto gap-8 pb-8 scroll-smooth no-scrollbar">
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Jersey Basket Mockup.png" alt="Jersey Basket" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">Jersey Basket</p>
                     </div>
                     <div
-                        class="reveal-card snap-center shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Jersey Dark Mockup.png" alt="Jersey Dark" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">Jersey Dark</p>
                     </div>
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Jersey Light Mockup.png" alt="Jersey Light" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">Jersey Light</p>
                     </div>
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Shooting Shirt Mockup.png" alt="Shooting Shirt" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">Shooting Shirt</p>
                     </div>
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/T Shirt Mockup.png" alt="T Shirt" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">T Shirt</p>
                     </div>
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Work Jacket Dark Mockup.jpg" alt="Work Jacket Dark" class="w-full h-full object-contain">
                         </div>
                         <p class="font-bold text-lg px-2 mt-auto">Work Jacket Dark</p>
                     </div>
                     <div
-                        class="reveal-card snap-start shrink-0 w-[540px] bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col">
+                        class="reveal-card shrink-0 w-[540px] bg-white p-6 border border-slate-100 flex flex-col">
                         <div class="aspect-[2/1] bg-slate-50 rounded-xl overflow-hidden mb-6">
                             <img loading="lazy" src="assets/mockups/Work Jacket Light Mockup.jpg" alt="Work Jacket Light" class="w-full h-full object-contain">
                         </div>
@@ -383,9 +544,11 @@
         </section>
 
         <section class="mb-32">
-            <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 mb-6">Madrasah And School Activities
-            </h2>
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-3xl preview-card">
+            <div class="section-header">
+                <h2 class="section-heading-title">Madrasah &amp; School Activities</h2>
+                <p class="section-heading-sub">Logos and official emblems of clubs, extracurriculars, and institutional bodies.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden preview-card">
                 <div
                     class="lg:col-span-8 bg-white flex items-center justify-center p-12 min-h-[450px] border-r border-slate-100">
                     <img loading="lazy" id="madrasahPreview" src="assets/resized/980/KEMENAG_980.png" 
@@ -448,9 +611,12 @@
 
 
         <section class="mb-32">
-            <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 mb-6">OS Cendekia</h2>
+            <div class="section-header">
+                <h2 class="section-heading-title">OS Cendekia</h2>
+                <p class="section-heading-sub">Official organization logos, division badges, and leadership marks.</p>
+            </div>
             <div
-                class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden rounded-3xl preview-card text-ercava-dark">
+                class="grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden preview-card text-ercava-dark">
                 <div
                     class="lg:col-span-8 bg-white flex items-center justify-center p-12 min-h-[450px] border-r border-slate-100">
                     <img loading="lazy" id="orgPreview" src="assets/resized/980/OS_Black_980.png" 
@@ -521,10 +687,12 @@
         </section>
 
         <section class="mb-32">
-            <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-400 mb-8 text-center">Definitive
-                Identity Guide</h2>
+            <div class="section-header">
+                <h2 class="section-heading-title">Definitive Identity Guide</h2>
+                <p class="section-heading-sub">The official handbook detailing rules, colors, geometry, and asset usage.</p>
+            </div>
             <div
-                class="bg-ercava-dark rounded-[3rem] p-12 text-white flex flex-col lg:flex-row items-center gap-12 shadow-2xl overflow-hidden relative group">
+                class="bg-ercava-dark rounded-2xl p-8 sm:p-12 text-white flex flex-col lg:flex-row items-center gap-12 overflow-hidden relative group">
 
                 <div class="lg:w-1/3 relative">
                     <div class="bg-white/5 p-4 rounded-2xl border border-white/10 shadow-lg">
@@ -562,8 +730,10 @@
         </section>
 
         <section class="mb-32" style="margin-bottom:1rem">
-            <h2 class="text-xs font-bold uppercase tracking-[0.3em] text-slate-600 mb-8 text-center">Resource Bundles
-            </h2>
+            <div class="section-header">
+                <h2 class="section-heading-title">Resource Bundles</h2>
+                <p class="section-heading-sub">All-in-one archive packages curated by category.</p>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 transition group text-ercava-dark">
                     <h3 class="font-bold text-lg mb-2 text-ercava-dark">ERCAVA Kit</h3>
@@ -637,6 +807,7 @@
             </div>
         </div>
     </footer>
+    </div>
 
     <script>
         async function forceDownload(url, filename) {
@@ -722,9 +893,15 @@
 
         function updateGallery3(title, desc, img) {
             const madrasahPreview = document.getElementById('madrasahPreview');
-            const baseName = img.replace('.png', '').replace('assets/ic/', '');
-            madrasahPreview.src = `assets/resized/980/${baseName}_980.png`;
-            madrasahPreview.srcset = `assets/resized/490/${baseName}_490.png 490w, assets/resized/980/${baseName}_980.png 980w, assets/resized/1960/${baseName}_1960.png 1960w`;
+            const baseName = img.replace(/\.(png|jpg|jpeg|svg)$/i, '').replace('assets/ic/', '');
+            // Check if known resized asset exists, otherwise use img directly
+            if (baseName === 'KEMENAG') {
+                madrasahPreview.src = `assets/resized/980/${baseName}_980.png`;
+                madrasahPreview.srcset = `assets/resized/490/${baseName}_490.png 490w, assets/resized/980/${baseName}_980.png 980w, assets/resized/1960/${baseName}_1960.png 1960w`;
+            } else {
+                madrasahPreview.src = img;
+                madrasahPreview.removeAttribute('srcset');
+            }
             document.getElementById('madrasahTitle').innerText = title;
             document.getElementById('madrasahDesc').innerText = desc;
 
@@ -734,9 +911,15 @@
 
         function updateGallery5(title, desc, img) {
             const orgPreview = document.getElementById('orgPreview');
-            let baseName = img.replace('.png', '').replace('assets/os/', '').replace(' ', '_');
-            orgPreview.src = `assets/resized/980/${baseName}_980.png`;
-            orgPreview.srcset = `assets/resized/490/${baseName}_490.png 490w, assets/resized/980/${baseName}_980.png 980w, assets/resized/1960/${baseName}_1960.png 1960w`;
+            let baseName = img.replace(/\.(png|jpg|jpeg|svg)$/i, '').replace('assets/os/', '').replace(/\s+/g, '_');
+            // Check if known resized asset exists, otherwise use img directly
+            if (baseName === 'OS_Black' || baseName === 'OS_White') {
+                orgPreview.src = `assets/resized/980/${baseName}_980.png`;
+                orgPreview.srcset = `assets/resized/490/${baseName}_490.png 490w, assets/resized/980/${baseName}_980.png 980w, assets/resized/1960/${baseName}_1960.png 1960w`;
+            } else {
+                orgPreview.src = img;
+                orgPreview.removeAttribute('srcset');
+            }
             document.getElementById('orgTitle').innerText = title;
             document.getElementById('orgDesc').innerText = desc.toUpperCase();
 
@@ -788,6 +971,123 @@
             setTimeout(() => {
                 star.remove();
             }, 1000);
+        });
+
+        // Allow image drag as file only after right click
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                const img = e.target;
+                img.classList.add('drag-as-file');
+                img.setAttribute('draggable', 'true');
+                const cleanUp = () => {
+                    img.classList.remove('drag-as-file');
+                    img.removeAttribute('draggable');
+                    window.removeEventListener('mouseup', cleanUp);
+                    window.removeEventListener('dragend', cleanUp);
+                };
+                window.addEventListener('mouseup', cleanUp, { once: true });
+                window.addEventListener('dragend', cleanUp, { once: true });
+            }
+        });
+
+        // Suppress native drag when not initiated via right-click
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG' && !e.target.classList.contains('drag-as-file')) {
+                e.preventDefault();
+            }
+        });
+
+        // Smooth drag to scroll with momentum for carousels
+        function enableCarouselDrag(carouselId) {
+            const carousel = document.getElementById(carouselId);
+            if (!carousel) return;
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            let velX = 0;
+            let lastX = 0;
+            let momentumID;
+
+            carousel.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // Only drag scroll on primary (left) mouse button
+                isDown = true;
+                carousel.classList.add('is-dragging');
+                startX = e.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+                lastX = e.pageX;
+                velX = 0;
+                cancelAnimationFrame(momentumID);
+            });
+
+            const stopDrag = () => {
+                if (!isDown) return;
+                isDown = false;
+                carousel.classList.remove('is-dragging');
+                // Inertia momentum scroll
+                const momentumLoop = () => {
+                    if (Math.abs(velX) > 0.5) {
+                        carousel.scrollLeft += velX;
+                        velX *= 0.94;
+                        momentumID = requestAnimationFrame(momentumLoop);
+                    }
+                };
+                momentumID = requestAnimationFrame(momentumLoop);
+            };
+
+            carousel.addEventListener('mouseleave', stopDrag);
+            carousel.addEventListener('mouseup', stopDrag);
+
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - startX);
+                carousel.scrollLeft = scrollLeft - walk;
+                velX = -(e.pageX - lastX) * 0.8;
+                lastX = e.pageX;
+            });
+        }
+
+        enableCarouselDrag('artworkCarousel');
+        enableCarouselDrag('outfitCarousel');
+
+        // Hide side dock when footer reaches view
+        const sideDock = document.getElementById('sideDock');
+        const footerElem = document.querySelector('footer');
+        if (sideDock && footerElem) {
+            const checkDockVisibility = () => {
+                const rect = footerElem.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                // If footer top is within 80px above viewport bottom or in view, hide dock
+                if (rect.top <= windowHeight - 40) {
+                    sideDock.classList.add('dock-hidden');
+                } else {
+                    sideDock.classList.remove('dock-hidden');
+                }
+            };
+            window.addEventListener('scroll', checkDockVisibility, { passive: true });
+            window.addEventListener('resize', checkDockVisibility, { passive: true });
+            checkDockVisibility();
+        }
+
+        // Smooth sliding page transition on navigation links
+        document.querySelectorAll('.dock-btn, footer a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.startsWith('http') && !href.startsWith('mailto:')) {
+                link.addEventListener('click', (e) => {
+                    if (link.classList.contains('active') && href.includes(window.location.pathname.split('/').pop())) {
+                        return;
+                    }
+                    e.preventDefault();
+                    const pageContent = document.getElementById('pageContent') || document.body;
+                    pageContent.classList.remove('page-transition-in');
+                    pageContent.classList.add('page-transition-out');
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 240);
+                });
+            }
         });
 
         // Initialize default click handlers

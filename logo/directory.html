@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asset Directory</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;900&family=Mulish:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,11 +17,11 @@
                     colors: {
                         'ercava-dark': '#152638',
                         'ercava-charcoal': '#263B4C',
-                        'ercava-soft': '#F8FAFC',
+                        'ercava-soft': '#f0f4f8',
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Montserrat', 'sans-serif'],
+                        sans: ['Mulish', 'system-ui', 'sans-serif'],
+                        heading: ['Unbounded', 'system-ui', 'sans-serif'],
                         mono: ['Roboto Mono', 'monospace'],
                     }
                 }
@@ -31,15 +31,34 @@
     <style>
         :root {
             --primary: #26568c;
+            --primary-light: #3a7bc8;
             --accent: #152638;
             --bg: #ffffff;
-            --bg-light: #f8fafc;
+            --bg-light: #f0f4f8;
             --text: #1f2937;
+            --text-light: #4b5563;
             --muted: #64748b;
             --line: #e2e8f0;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --card-hover: 0 8px 24px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --font-heading: 'Unbounded', system-ui, sans-serif;
+            --font-body: 'Mulish', system-ui, -apple-system, Arial, sans-serif;
             --mario-squish: cubic-bezier(0.34, 1.56, 0.64, 1);
             --mario-blue: var(--accent);
             --mario-charcoal: #263B4C;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-light);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%2326568c' fill-opacity='0.045' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E") !important;
+            color: var(--text);
+        }
+
+        h1, h2, h3, .font-heading {
+            font-family: var(--font-heading) !important;
         }
 
         .bg-ercava-dark { background-color: #152638 !important; }
@@ -47,10 +66,10 @@
         .border-ercava-dark { border-color: #152638 !important; }
         .bg-ercava-charcoal { background-color: #263B4C !important; }
         .text-ercava-charcoal { color: #263B4C !important; }
-        .bg-ercava-soft { background-color: #F8FAFC !important; }
+        .bg-ercava-soft { background-color: #f0f4f8 !important; }
 
         footer {
-            background-color: #152638 !important;
+            background-color: var(--accent) !important;
             color: #ffffff !important;
         }
 
@@ -135,32 +154,130 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--mario-blue);
         }
+
+        /* Vertical 3-Icon Dock at Right of Screen */
+        #sideDock {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.85rem;
+            background: rgba(21, 38, 56, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 0.85rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), pointer-events 0.35s ease;
+            animation: dockSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes dockSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50%) translateX(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(-50%) translateX(0);
+            }
+        }
+        #sideDock.dock-hidden {
+            opacity: 0;
+            transform: translateY(-50%) translateX(40px);
+            pointer-events: none;
+        }
+        .dock-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-decoration: none;
+            position: relative;
+        }
+        .dock-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.15) translateX(-3px);
+        }
+        .dock-btn.active {
+            color: #ffffff;
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(38, 86, 140, 0.4);
+        }
+        /* Prevent default image drag that disrupts interactions */
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+        img.drag-as-file {
+            -webkit-user-drag: auto !important;
+            user-drag: auto !important;
+        }
+        /* Page transitions on content wrapper (so fixed elements stay fixed to screen) */
+        #pageContent.page-transition-out {
+            opacity: 0 !important;
+            transform: translateX(-24px) !important;
+            transition: opacity 0.28s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        #pageContent.page-transition-in {
+            animation: pageSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes pageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
 
-<body class="bg-ercava-soft text-ercava-dark font-sans leading-relaxed">
-    <!-- Mario UI Background -->
-    <div class="mario-bg-container">
-        <div class="mario-pattern"></div>
-        <div class="mario-gradient-overlay"></div>
-    </div>
+<body class="text-ercava-dark font-sans leading-relaxed">
+    <!-- Vertical 3-Icon Navigation Dock on the right -->
+    <nav id="sideDock" aria-label="Quick Navigation">
+        <a href="index.html" class="dock-btn" title="Portal" aria-label="Home Portal">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </a>
+        <a href="directory.html" class="dock-btn active" title="Asset Directory" aria-label="Asset Directory">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="7" height="7" x="3" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="3" rx="1"/>
+                <rect width="7" height="7" x="14" y="14" rx="1"/>
+                <rect width="7" height="7" x="3" y="14" rx="1"/>
+            </svg>
+        </a>
+        <a href="attribution.html" class="dock-btn" title="Attributions" aria-label="Attributions">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </a>
+    </nav>
 
-    <div class="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        <nav class="mb-12">
-            <a href="index.html"
-                class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-ercava-dark transition squishy">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Portal
-            </a>
-        </nav>
+    <div id="pageContent" class="page-transition-in">
 
-        <header class="mb-16">
-            <h1 class="font-mono text-5xl font-bold mb-4">Asset Directory</h1>
-            <p class="text-slate-500 max-w-xl">A complete collection of Ercava iconograpy available for use.</p>
+    <div class="max-w-7xl mx-auto px-6 py-16 relative z-10">
+        <header class="mb-14 text-center">
+            <span class="inline-block font-heading text-xs uppercase tracking-widest text-[var(--primary)] font-bold px-3 py-1 bg-[var(--bg-light)] rounded-full border border-[var(--line)] mb-3">Catalog</span>
+            <h1 class="font-heading text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--accent)] mb-3">Asset Directory</h1>
+            <p class="text-[var(--muted)] max-w-xl mx-auto text-sm sm:text-base">A complete collection of Ercava iconography available for use.</p>
         </header>
 
         <div id="assetGrid" class="masonry-grid">
@@ -272,11 +389,11 @@
         assets.forEach(asset => {
             const isImage = asset.path.match(/\.(jpg|jpeg|png|gif|svg)$/i);
             const card = document.createElement('div');
-            card.className = "asset-card group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-slate-400 transition-colors";
+            card.className = "asset-card group bg-white rounded-xl overflow-hidden border border-[var(--line)] transition-all";
 
             let previewHtml = '';
             if (isImage) {
-                previewHtml = `<div class="p-4 bg-slate-50"><img src="${asset.path}" alt="${asset.name}" class="w-full h-auto rounded-2xl object-contain max-h-96"></div>`;
+                previewHtml = `<div class="p-4 bg-[var(--bg-light)]"><img src="${asset.path}" alt="${asset.name}" class="w-full h-auto rounded-lg object-contain max-h-96"></div>`;
             } else {
                 previewHtml = `<div class="aspect-square bg-ercava-dark flex flex-col items-center justify-center p-8 text-white">
                     <span class="text-4xl mb-4">📄</span>
@@ -286,16 +403,16 @@
 
             card.innerHTML = `
                 ${previewHtml}
-                <div class="p-6">
+                <div class="p-5">
                     <div class="flex items-start justify-between mb-4">
                         <div>
-                            <h3 class="font-bold text-sm mb-1">${asset.name.replace(/_/g, ' ')}</h3>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">${asset.path.split('.').pop()}</p>
+                            <h3 class="font-heading font-semibold text-sm mb-1 text-[var(--accent)]">${asset.name.replace(/_/g, ' ')}</h3>
+                            <p class="text-[10px] text-[var(--muted)] uppercase tracking-widest font-bold">${asset.path.split('.').pop()}</p>
                         </div>
                     </div>
-                    <button onclick="forceDownload('${asset.path}')" class="w-full py-3 bg-ercava-dark text-white rounded-xl font-bold text-[10px] tracking-widest hover:bg-black transition-colors flex items-center justify-center gap-2 squishy">
+                    <button onclick="forceDownload('${asset.path}')" class="w-full py-2.5 bg-[var(--accent)] text-white rounded-full font-heading font-semibold text-[11px] tracking-wider hover:bg-[var(--primary)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                         DOWNLOAD
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
                     </button>
@@ -304,6 +421,66 @@
             grid.appendChild(card);
         });
 
+        // Hide side dock when footer reaches view
+        const sideDock = document.getElementById('sideDock');
+        const footerElem = document.querySelector('footer');
+        if (sideDock && footerElem) {
+            const checkDockVisibility = () => {
+                const rect = footerElem.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                if (rect.top <= windowHeight - 40) {
+                    sideDock.classList.add('dock-hidden');
+                } else {
+                    sideDock.classList.remove('dock-hidden');
+                }
+            };
+            window.addEventListener('scroll', checkDockVisibility, { passive: true });
+            window.addEventListener('resize', checkDockVisibility, { passive: true });
+            checkDockVisibility();
+        }
+
+        // Allow image drag as file only after right click
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                const img = e.target;
+                img.classList.add('drag-as-file');
+                img.setAttribute('draggable', 'true');
+                const cleanUp = () => {
+                    img.classList.remove('drag-as-file');
+                    img.removeAttribute('draggable');
+                    window.removeEventListener('mouseup', cleanUp);
+                    window.removeEventListener('dragend', cleanUp);
+                };
+                window.addEventListener('mouseup', cleanUp, { once: true });
+                window.addEventListener('dragend', cleanUp, { once: true });
+            }
+        });
+
+        // Suppress native drag when not initiated via right-click
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG' && !e.target.classList.contains('drag-as-file')) {
+                e.preventDefault();
+            }
+        });
+
+        // Smooth sliding page transition on navigation links
+        document.querySelectorAll('.dock-btn, footer a').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.startsWith('http') && !href.startsWith('mailto:')) {
+                link.addEventListener('click', (e) => {
+                    if (link.classList.contains('active') && href.includes(window.location.pathname.split('/').pop())) {
+                        return;
+                    }
+                    e.preventDefault();
+                    const pageContent = document.getElementById('pageContent') || document.body;
+                    pageContent.classList.remove('page-transition-in');
+                    pageContent.classList.add('page-transition-out');
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 240);
+                });
+            }
+        });
     </script>
 
     <footer class="bg-ercava-dark text-white pt-16 pb-12 px-6 overflow-hidden">
@@ -353,6 +530,7 @@
             </div>
         </div>
     </footer>
+    </div>
 </body>
 
 </html>
