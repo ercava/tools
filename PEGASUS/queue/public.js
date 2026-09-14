@@ -171,6 +171,16 @@ function renderBoard() {
   $('now-serving-number').textContent = ongoing ? ongoing.number : '—';
   $('now-serving-name').textContent = ongoing ? esc(ongoing.name) : 'Tidak ada yang dilayani saat ini';
 
+  const nextEl = $('next-serving');
+  if (nextEl) {
+    const nextCustomer = waiting[0];
+    if (nextCustomer) {
+      nextEl.innerHTML = `Berikutnya: <strong>${esc(nextCustomer.name)}</strong> <span class="next-num">(#${Number(nextCustomer.number)})</span>`;
+    } else {
+      nextEl.innerHTML = '';
+    }
+  }
+
   const chips = $('waiting-chips');
   chips.innerHTML = waiting.slice(0, 12).map((e) =>
     `<span class="waiting-chip">${Number(e.number)}</span>`
