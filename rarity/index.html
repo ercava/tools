@@ -696,7 +696,7 @@
         <a href="terms.html" style="color: var(--muted); text-decoration: underline;">Terms</a> &bull; 
         <a href="privacy.html" style="color: var(--muted); text-decoration: underline;">Privacy</a> &bull;
         <a href="status/" style="color: var(--muted); text-decoration: underline;">Status</a> &bull;
-        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.8</a>
+        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.9</a>
       </div>
     </div>
   </div>
@@ -760,6 +760,8 @@
                   <option value="IDR">IDR (Rp)</option>
                   <option value="USD">USD ($)</option>
                   <option value="GBP">GBP (£ - Pound Sterling)</option>
+                  <option value="EUR">EUR (€ - Euro)</option>
+                  <option value="HKD">HKD (HK$ - Hong Kong Dollar)</option>
                   <option value="RUB">RUB (₽ - Ruble)</option>
                   <option value="JPY">JPY (¥)</option>
                   <option value="SAR">SAR (﷼ - Riyal)</option>
@@ -997,6 +999,12 @@
       }
       if (currentCurrency === "GBP") {
         return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: 2 }).format(n);
+      }
+      if (currentCurrency === "EUR") {
+        return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(n);
+      }
+      if (currentCurrency === "HKD") {
+        return new Intl.NumberFormat("zh-HK", { style: "currency", currency: "HKD", minimumFractionDigits: 2 }).format(n);
       }
       if (currentCurrency === "RUB") {
         return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", minimumFractionDigits: 2 }).format(n);
