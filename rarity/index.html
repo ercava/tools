@@ -696,7 +696,7 @@
         <a href="terms.html" style="color: var(--muted); text-decoration: underline;">Terms</a> &bull; 
         <a href="privacy.html" style="color: var(--muted); text-decoration: underline;">Privacy</a> &bull;
         <a href="status/" style="color: var(--muted); text-decoration: underline;">Status</a> &bull;
-        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.7</a>
+        <a href="versions/" style="font-family: monospace; color: var(--muted); text-decoration: underline;">v1.2.8</a>
       </div>
     </div>
   </div>
@@ -759,6 +759,8 @@
                 <select id="currency-select" style="font-size: 0.8rem; font-weight: 600; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; background: #fff; color: var(--text);" onchange="changeCurrency(this.value)">
                   <option value="IDR">IDR (Rp)</option>
                   <option value="USD">USD ($)</option>
+                  <option value="GBP">GBP (£ - Pound Sterling)</option>
+                  <option value="RUB">RUB (₽ - Ruble)</option>
                   <option value="JPY">JPY (¥)</option>
                   <option value="SAR">SAR (﷼ - Riyal)</option>
                   <option value="AUD">AUD ($)</option>
@@ -855,7 +857,7 @@
 
             <div class="overview-card">
               <div class="overview-title">
-                <span>Rata-Rata Pengeluaran per Hari</span>
+                <span>Median Pengeluaran per Hari</span>
                 <span id="daily-avg-source" style="font-size: 0.72rem; font-weight: 600; color: var(--muted); background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">Sheet</span>
               </div>
               <div class="overview-total" id="overview-daily-avg-val" style="color: #0284c7;">Rp 0</div>
@@ -992,6 +994,12 @@
       const n = val || 0;
       if (currentCurrency === "USD") {
         return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n);
+      }
+      if (currentCurrency === "GBP") {
+        return new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: 2 }).format(n);
+      }
+      if (currentCurrency === "RUB") {
+        return new Intl.NumberFormat("ru-RU", { style: "currency", currency: "RUB", minimumFractionDigits: 2 }).format(n);
       }
       if (currentCurrency === "JPY") {
         return new Intl.NumberFormat("ja-JP", { style: "currency", currency: "JPY", maximumFractionDigits: 0 }).format(n);
@@ -1694,11 +1702,11 @@
             }
           }
         }
-        // Daily spending average cell: "Rata Rata Pengeluaran per Hari" -> value typically row below
+        // Daily spending cell: "Rata Rata Pengeluaran per Hari" or "Median Pengeluaran per Hari" -> value typically row below
         for (let r = 0; r < Math.min(20, grid.length); r++) {
           for (let c = 0; c < (grid[r] || []).length; c++) {
             const txt = normCell(cell(r, c));
-            if (txt.includes("ratarata") && (txt.includes("hari") || txt.includes("pengeluaran"))) {
+            if ((txt.includes("median") || txt.includes("ratarata")) && (txt.includes("hari") || txt.includes("pengeluaran"))) {
               layout.dailyAvgCell = colL(c) + (r + 2);
               break;
             }
@@ -2638,16 +2646,24 @@ Output JSON only in one of these structures:
         if (sheetAvgVal !== null) {
           dailyAvgElem.innerText = rupiah(sheetAvgVal);
           if (dailySourceElem) dailySourceElem.innerText = "Sheet";
-          if (dailyStatusElem) dailyStatusElem.innerText = `Sinkron dari cell ${layout.dailyAvgCell}`;
+          if (dailyStatusElem) dailyStatusElem.innerText = `Sinkron rumus Median dari cell ${layout.dailyAvgCell}`;
         } else {
-          // Compute fallback based on active days in month or transaction days
-          const now = new Date();
-          const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-          const dayElapsed = Math.max(1, now.getDate());
-          const computedAvg = Math.round(grandTotal / (grandTotal > 0 ? dayElapsed : daysInMonth));
-          dailyAvgElem.innerText = rupiah(computedAvg);
+          // Fallback algorithm matching: =MEDIAN(QUERY(F67:I; "SELECT SUM(I) WHERE F IS NOT NULL GROUP BY F LABEL SUM(I) ''"))
+          // 1. Group daily totals by date
+          const dailySums = {};
+          transactions.forEach(tx => {
+            const d = tx.date;
+            dailySums[d] = (dailySums[d] || 0) + tx.amount;
+          });
+          const sortedSums = Object.values(dailySums).sort((a, b) => a - b);
+          let medianVal = 0;
+          if (sortedSums.length > 0) {
+            const mid = Math.floor(sortedSums.length / 2);
+            medianVal = sortedSums.length % 2 !== 0 ? sortedSums[mid] : Math.round((sortedSums[mid - 1] + sortedSums[mid]) / 2);
+          }
+          dailyAvgElem.innerText = rupiah(medianVal);
           if (dailySourceElem) dailySourceElem.innerText = "Kalkulasi";
-          if (dailyStatusElem) dailyStatusElem.innerText = `Berdasarkan ${dayElapsed} hari berjalan`;
+          if (dailyStatusElem) dailyStatusElem.innerText = `Median dari ${sortedSums.length} hari belanja aktif`;
         }
 
         // Render 5 Recent Transactions (Reverse chronological)
